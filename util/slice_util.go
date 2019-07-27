@@ -16,21 +16,25 @@ func SliceEquals(slice1, slice2 []int) bool {
 	return true
 }
 
-func SliceCopy(in []int) (out []int) {
-	return append(in[:0:0], in...)
+func SliceCopy(in []int) []int {
+	out := make([]int, len(in))
+
+	copy(out, in)
+
+	return out
 }
 
 func SliceAtoi(in []string) []int {
-	var ret = make([]int, 0, len(in))
+	var ret = make([]int, len(in))
 
-	for _, a := range in {
-		i, err := strconv.Atoi(a)
+	for i, a := range in {
+		value, err := strconv.Atoi(a)
 
 		if err != nil {
 			panic(err)
 		}
 
-		ret = append(ret, i)
+		ret[i] = value
 	}
 
 	return ret

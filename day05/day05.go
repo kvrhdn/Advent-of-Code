@@ -17,8 +17,6 @@ func main() {
 }
 
 func JumpThroughInstructionsUntilOutOfBounds(instructions []int) int {
-
-
 	maxIndex := len(instructions)
 
 	steps := 0

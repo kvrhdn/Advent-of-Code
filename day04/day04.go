@@ -30,10 +30,10 @@ func countValidPassphrases(input string, validator Validator) int {
 }
 
 func ValidatePassphrase(passphrase string, validator Validator) bool {
-	words := strings.Split(passphrase, " ")
+	words := strings.Fields(passphrase)
 
 	for i, word1 := range words {
-		for _, word2 := range words[i + 1:] {
+		for _, word2 := range words[i+1:] {
 			if !validator(word1, word2) {
 				return false
 			}

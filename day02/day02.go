@@ -43,7 +43,7 @@ func Day02InputToInts(input string) (output [][]int) {
 	lines := strings.Split(input, "\n")
 
 	for _, line := range lines {
-		words := strings.Split(line, " ")
+		words := strings.Fields(line)
 
 		var values []int
 
@@ -94,5 +94,5 @@ func EvenlyDivisibleResultOf(values []int) int {
 }
 
 func isEvenlyDivisible(value1, value2 int) bool {
-	return value1 % value2 == 0
+	return value1%value2 == 0
 }

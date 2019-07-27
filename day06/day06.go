@@ -19,7 +19,7 @@ func main() {
 }
 
 func initMemoryBankFrom(input string) []int {
-	splitInput := strings.Split(input, " ")
+	splitInput := strings.Fields(input)
 
 	return util.SliceAtoi(splitInput)
 }
@@ -41,7 +41,7 @@ func RedistributeCyclesUntilLoop(memoryBank []int) (cycles, loopSize int) {
 	}
 
 	for i := len(prevBanks) - 2; i > 0; i-- {
-		if util.SliceEquals(prevBanks[i], prevBanks[len(prevBanks) - 1]) {
+		if util.SliceEquals(prevBanks[i], prevBanks[len(prevBanks)-1]) {
 			return cycles, len(prevBanks) - 1 - i
 		}
 	}
