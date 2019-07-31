@@ -15,7 +15,7 @@ func TestManhattanDistanceFromStorageLocationOf(t *testing.T) {
 		{1024, 31},
 	}
 	for _, c := range cases {
-		got := ManhattanDistanceFromStorageLocationOf(c.in)
+		got := DetermineDistanceToStorageLocationInSpiralMemory(c.in)
 		if got != c.expected {
 			t.Errorf("ManhattanDistanceFromStorageLocationOf(%v) = %v, but expected %v", c.in, got, c.expected)
 		}
