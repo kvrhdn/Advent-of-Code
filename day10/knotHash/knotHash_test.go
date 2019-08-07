@@ -1,4 +1,4 @@
-package main
+package knotHash
 
 import (
 	"github.com/koenaad/Advent-of-Code-2017/util"
