@@ -13,5 +13,5 @@ func main() {
 	g := grid.InitGridKnotHash(input)
 
 	fmt.Printf("Puzzle 1: squares used = %v", g.SquaresOccupied())
-	fmt.Printf("Puzzle 1: regions after regionalizing = %v", g.Regionalize())
+	fmt.Printf("Puzzle 2: regions after regionalizing = %v", g.Regionalize())
 }
