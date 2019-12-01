@@ -34,4 +34,4 @@ jobs:
           args: >
             deploy --dir www/dist --prod
             --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }}
-            --message "GithubActions"
+            --message DeployGithubActions
