@@ -14,5 +14,5 @@ fn day01_part1() {
 
 #[wasm_bindgen_test]
 fn day01_part2() {
-    assert_eq!(day01::part2("".into()), "TODO: solution of day 01, part 2");
+    assert_eq!(part2(INPUT.to_string()), 4896902);
 }
