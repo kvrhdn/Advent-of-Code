@@ -5,14 +5,11 @@ use wasm_bindgen_test::*;
 
 wasm_bindgen_test_configure!(run_in_browser);
 
-#[wasm_bindgen_test]
-fn pass() {
-    assert_eq!(1 + 1, 2);
-}
+static INPUT: &str = include_str!("../input.txt");
 
 #[wasm_bindgen_test]
 fn day01_part1() {
-    assert_eq!(day01::part1("".into()), "TODO: solution of day 01, part 1");
+    assert_eq!(part1(INPUT.to_string()), 3266516);
 }
 
 #[wasm_bindgen_test]

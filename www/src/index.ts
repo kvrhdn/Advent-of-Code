@@ -12,7 +12,7 @@ solveButton.onclick = (e: Event) => {
     console.log(`Solving for input: ${input}`)
 
     const resultPart1 = part1(input);
-    responsePart1.innerText = resultPart1;
+    responsePart1.innerText = resultPart1.toString();
 
     console.log(`Solved part 1: ${resultPart1}`);
 
