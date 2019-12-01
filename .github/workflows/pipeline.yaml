@@ -1,0 +1,37 @@
+name: CI/CD
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Run Cargo tests
+        run: cargo test --verbose
+
+      - name: Run wasm integration tests
+        run: wasm-pack test --firefox --headless
+        working-directory: ./day01
+
+      - run: wasm-pack build
+        working-directory: ./day01
+
+      - run: npm install
+        working-directory: ./www
+
+      - run: npm run build
+        working-directory: ./www
+
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@master
+        with:
+          args: >
+            deploy --dir www/dist --prod
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }}
+            --message "GithubActions"
