@@ -1,9 +1,10 @@
 body {
     background: #222;
-    width: 100%;
+    width: 99%;
     height: 100%;
     font-family: Consolas, monaco, monospace;
-    color: #eee
+    color: #eee;
+    padding-left: 10px;
 }
 
 a {
