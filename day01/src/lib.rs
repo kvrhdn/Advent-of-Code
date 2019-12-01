@@ -18,13 +18,13 @@ mod tests {
     fn test_part1() {
         let result = part1("".to_string());
 
-        assert_eq!(result, "Solution of day 01, part 1".to_string());
+        assert_eq!(result, "TODO: solution of day 01, part 1".to_string());
     }
 
     #[test]
     fn test_part2() {
         let result = part2("".to_string());
 
-        assert_eq!(result, "Solution of day 01, part 2".to_string());
+        assert_eq!(result, "TODO: solution of day 01, part 2".to_string());
     }
 }
