@@ -17,7 +17,7 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
 
 /// Calculate the sum of the fuel requirements for all of the modules on the spacecraft, also
 /// taking into account the mass of the added fuel.
-/// See: https://adventofcode.com/2019/day/1
+/// See: https://adventofcode.com/2019/day/1#part2
 #[wasm_bindgen]
 pub fn part2(input: &str) -> Result<i32, JsValue> {
     let sum = parse_input(input)?
