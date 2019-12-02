@@ -1,3 +1,6 @@
+mod program;
+
+use program::IntcodeProgram;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -6,20 +9,33 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 /// See: https://adventofcode.com/2019/day/2
 #[wasm_bindgen]
 pub fn part1(input: &str) -> Result<u32, JsValue> {
-    let mut list: IntcodeProgram = parse_input(input)?.into();
+    let mut program: IntcodeProgram = parse_input(input)?.into();
 
-    list.set(1, 12);
-    list.set(2, 2);
+    program.set_noun_and_verb(12, 2);
+    program.run()?;
 
-    list.run()?;
-
-    Ok(list.get(0))
+    Ok(program.get(0))
 }
 
 /// See: https://adventofcode.com/2019/day/2#part2
 #[wasm_bindgen]
-pub fn part2(_input: &str) -> Result<i32, JsValue> {
-    Ok(0)
+pub fn part2(input: &str) -> Result<u32, JsValue> {
+    let program: IntcodeProgram = parse_input(input)?.into();
+
+    for noun in 0..99 {
+        for verb in 0..99 {
+            let mut test_program = program.clone();
+
+            test_program.set_noun_and_verb(noun, verb);
+            test_program.run()?;
+
+            if test_program.get(0) == 19_690_720 {
+                return Ok((100 * noun) + verb)
+            }
+        }
+    }
+
+    Err("could not find a noun and verb".into())
 }
 
 /// Parse the input as a list of integers.
@@ -33,58 +49,6 @@ fn parse_input(input: &str) -> Result<Vec<u32>, &'static str> {
                 .map_err(|_| "could not parse input as integers")
         })
         .collect()
-}
-
-struct IntcodeProgram {
-    list: Vec<u32>,
-}
-
-impl From<Vec<u32>> for IntcodeProgram {
-    fn from(list: Vec<u32>) -> IntcodeProgram {
-        IntcodeProgram { list }
-    }
-}
-
-impl IntcodeProgram {
-    fn index_wrap(&self, i: usize) -> usize {
-        i % self.list.len()
-    }
-
-    fn get(&self, i: usize) -> u32 {
-        self.list[self.index_wrap(i)]
-    }
-
-    fn set(&mut self, i: usize, value: u32) {
-        let index = self.index_wrap(i);
-        self.list[index] = value;
-    }
-
-    fn run(&mut self) -> Result<(), &'static str> {
-        let mut index = 0;
-        loop {
-            match self.get(index) {
-                1 => {
-                    let op1 = self.get(index + 1) as usize;
-                    let op2 = self.get(index + 2) as usize;
-                    let result = self.get(index + 3) as usize;
-
-                    self.set(result, self.get(op1) + self.get(op2));
-                },
-                2 => {
-                    let op1 = self.get(index + 1) as usize;
-                    let op2 = self.get(index + 2) as usize;
-                    let result = self.get(index + 3) as usize;
-
-                    self.set(result, self.get(op1) * self.get(op2));
-                },
-                99 => break,
-                _ => return Err("got unexpected opcode in intcode program"),
-            }
-
-            index += 4;
-        }
-        Ok(())
-    }
 }
 
 #[cfg(test)]

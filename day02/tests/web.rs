@@ -14,5 +14,5 @@ fn day01_part1() {
 
 #[wasm_bindgen_test]
 fn day01_part2() {
-    assert_eq!(part2(INPUT), Ok(0));
+    assert_eq!(part2(INPUT), Ok(5696));
 }
