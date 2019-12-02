@@ -22,8 +22,8 @@ pub fn part1(input: &str) -> Result<u32, JsValue> {
 pub fn part2(input: &str) -> Result<u32, JsValue> {
     let program: IntcodeProgram = parse_input(input)?.into();
 
-    for noun in 0..99 {
-        for verb in 0..99 {
+    for noun in 0..=99 {
+        for verb in 0..=99 {
             let mut test_program = program.clone();
 
             test_program.set_noun_and_verb(noun, verb);
