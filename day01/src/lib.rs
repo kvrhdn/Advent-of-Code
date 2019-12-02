@@ -57,20 +57,25 @@ fn total_fuel_required(mass: i32) -> i32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::*;
 
     #[test]
-    fn table_test_fuel_required() {
-        assert_eq!(fuel_required(12), 2);
-        assert_eq!(fuel_required(14), 2);
-        assert_eq!(fuel_required(1969), 654);
-        assert_eq!(fuel_required(100_756), 33_583);
+    fn parse_input() {
+        assert_eq!(crate::parse_input("123\n-5\n0\n"), Ok(vec![123, -5, 0]));
+        assert!(crate::parse_input("123\na\n0\n").is_err());
     }
 
     #[test]
-    fn table_test_total_fuel_required() {
-        assert_eq!(total_fuel_required(14), 2);
-        assert_eq!(total_fuel_required(1969), 966);
-        assert_eq!(total_fuel_required(100_756), 50_346);
+    fn fuel_required() {
+        assert_eq!(crate::fuel_required(12), 2);
+        assert_eq!(crate::fuel_required(14), 2);
+        assert_eq!(crate::fuel_required(1969), 654);
+        assert_eq!(crate::fuel_required(100_756), 33_583);
+    }
+
+    #[test]
+    fn total_fuel_required() {
+        assert_eq!(crate::total_fuel_required(14), 2);
+        assert_eq!(crate::total_fuel_required(1969), 966);
+        assert_eq!(crate::total_fuel_required(100_756), 50_346);
     }
 }
