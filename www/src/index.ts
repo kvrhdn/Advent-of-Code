@@ -9,9 +9,14 @@ const solveButton = document.getElementById('solve') as HTMLButtonElement;
 solveButton.onclick = (e: Event) => {
     const input = inputTextArea.value;
 
-    const resultPart1 = part1(input);
+    try {
+        const resultPart1 = part1(input);
     responsePart1.innerText = resultPart1.toString();
 
     const resultPart2 = part2(input);
     responsePart2.innerText = resultPart2.toString();
+    } catch (err) {
+        console.error(`An error occured: ${err}.`);
+        alert(`An error occured: ${err}.`);
+    }
 };
