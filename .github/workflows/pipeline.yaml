@@ -30,18 +30,20 @@ jobs:
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-      - name: Run Cargo tests
+      - name: Run unit tests (Cargo test)
         run: cargo test --verbose
 
-      - name: Run wasm integration tests day01
-        run: wasm-pack test --firefox --headless day01
+      - name: Run wasm integration tests (wasm-pack test))
+        run: >
+          for dir in day*; do
+            wasm-pack test --firefox --headless $dir
+          done;
 
-      - name: Run wasm integration tests day02
-        run: wasm-pack test --firefox --headless day02
-
-      - run: wasm-pack build day01
-
-      - run: wasm-pack build day02
+      - name: Build all wasm packages
+        run: >
+          for dir in day*; do
+            wasm-pack build $dir
+          done
 
       - run: npm install
         working-directory: ./www
