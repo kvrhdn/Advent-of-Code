@@ -34,18 +34,14 @@ jobs:
         run: cargo test --verbose
 
       - name: Run wasm integration tests day01
-        run: wasm-pack test --firefox --headless
-        working-directory: ./day01
+        run: wasm-pack test --firefox --headless day01
 
       - name: Run wasm integration tests day02
-        run: wasm-pack test --firefox --headless
-        working-directory: ./day02
+        run: wasm-pack test --firefox --headless day02
 
       - run: wasm-pack build day01
-        working-directory: ./day01
 
       - run: wasm-pack build day02
-        working-directory: ./day02
 
       - run: npm install
         working-directory: ./www
