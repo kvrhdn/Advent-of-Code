@@ -8,6 +8,7 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+intcode = { path = "../intcode" }
 wasm-bindgen = "0.2"
 wee_alloc = "0.4"
 

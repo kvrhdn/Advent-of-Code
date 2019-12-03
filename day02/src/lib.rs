@@ -1,6 +1,4 @@
-mod program;
-
-use program::IntcodeProgram;
+use intcode::IntcodeProgram;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
