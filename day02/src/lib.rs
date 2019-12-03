@@ -44,7 +44,6 @@ fn parse_input(input: &str) -> Result<Vec<u32>, &'static str> {
         .trim_end()
         .split(',')
         .map(|l| {
-            println!("{}", l);
             l.parse::<u32>()
                 .map_err(|_| "could not parse input as integers")
         })
