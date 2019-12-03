@@ -8,6 +8,7 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
+common = { path = "../common" }
 wasm-bindgen = "0.2"
 wee_alloc = "0.4"
 

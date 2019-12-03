@@ -1,3 +1,4 @@
+use common::grid::*;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -6,9 +7,11 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 /// See: https://adventofcode.com/2019/day/3
 #[wasm_bindgen]
 pub fn part1(input: &str) -> Result<u32, JsValue> {
-    let _wireSegments = parse_input(input)?;
+    let _wires: Vec<Wire> = parse_input(input)?
+        .into_iter()
+        .map(Wire::from_segments)
+        .collect();
 
-    // trace both entries, get list of positions
     // grab union of both
     // find nearest
     // return
@@ -22,63 +25,78 @@ pub fn part2(_input: &str) -> Result<u32, JsValue> {
     Err("not implemented yet".into())
 }
 
-#[derive(Debug, Eq, PartialEq)]
-struct WireSegment {
-    direction: Direction,
-    length: u32,
+/// A wire is represented as a sequence of the positions that it covers.
+struct Wire {
+    positions: Vec<Pos>,
 }
 
-#[derive(Debug, Eq, PartialEq)]
-enum Direction {
-    Up,
-    Down,
-    Left,
-    Right,
-}
+impl Wire {
+    /// Construct a wire from a series of wire segments, starting at position (0, 0).
+    fn from_segments(segments: Vec<WireSegment>) -> Self {
+        let mut positions = Vec::<Pos>::new();
+        let mut curr = Pos::at(0, 0);
 
-impl From<char> for Direction {
-    fn from(c: char) -> Self {
-        match c {
-            'U' => Direction::Up,
-            'D' => Direction::Down,
-            'L' => Direction::Left,
-            'R' => Direction::Right,
-            _ => panic!("aaa"),
+        positions.push(curr);
+
+        for s in segments {
+            for _ in 0..s.length {
+                curr = curr.step(s.direction);
+
+                positions.push(curr);
+            }
         }
+
+        Self { positions }
     }
 }
 
+/// A wire segment is a straight part of a wire, described relatively to another segment.
+#[derive(Debug, Eq, PartialEq)]
+struct WireSegment {
+    direction: Dir,
+    length: u32,
+}
+
 fn parse_input(input: &str) -> Result<Vec<Vec<WireSegment>>, &'static str> {
-    input.lines()
-        .map(|l| {
-            l
-                .split(',')
-                .map(|segment| {
-                    let direction: Direction = segment
-                        .chars().nth(0)
-                        .ok_or("could not access the first character")?
-                        .into();
-
-                    let length = segment[1..].parse::<u32>()
-                        .map_err(|_| "could not parse input as integers")?;
-
-                    Ok(WireSegment {
-                        direction,
-                        length,
-                    })
-                })
-                .collect()
-        })
+    input
+        .lines()
+        .map(parse_as_wire_segments)
         .collect()
+}
+
+fn parse_as_wire_segments(input: &str) -> Result<Vec<WireSegment>, &'static str> {
+    input
+        .split(',')
+        .map(parse_wire_segment)
+        .collect()
+}
+
+fn parse_wire_segment(segment: &str) -> Result<WireSegment, &'static str> {
+    let first_char = segment.chars().nth(0)
+        .ok_or("could not access the first character")?;
+
+    let direction = match first_char {
+        'U' => Dir::Up,
+        'D' => Dir::Down,
+        'L' => Dir::Left,
+        'R' => Dir::Right,
+        _ => return Err("invalid direction"),
+    };
+
+    let length = segment[1..]
+        .parse::<u32>()
+        .map_err(|_| "could not parse input as integers")?;
+
+    Ok(WireSegment { direction, length })
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::Direction::*;
-    use crate::WireSegment;
+    use common::grid::{Dir::*, Pos};
+    use crate::{Wire, WireSegment};
 
     #[test]
-    fn parse_input() {
+    fn parse_input_into_wire_segments() {
         let input = "U123,D32\nL12345,R1";
         let expected = vec![
             vec![WireSegment { direction: Up, length: 123 }, WireSegment { direction: Down, length: 32 }],
@@ -88,5 +106,25 @@ mod tests {
         let result = crate::parse_input(&input).unwrap();
 
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn wire_from_wire_segments() {
+        let input = vec![
+            WireSegment { direction: Up, length: 2 },
+            WireSegment { direction: Left, length: 1 },
+            WireSegment { direction: Down, length: 3 },
+            WireSegment { direction: Right, length: 1 },
+        ];
+
+        let wire = Wire::from_segments(input);
+
+        assert_eq!(wire.positions, vec![
+            Pos::at(0, 0),
+            Pos::at(0, 1), Pos::at(0, 2),
+            Pos::at(-1, 2),
+            Pos::at(-1, 1), Pos::at(-1, 0), Pos::at(-1, -1),
+            Pos::at(0, -1),
+        ]);
     }
 }
