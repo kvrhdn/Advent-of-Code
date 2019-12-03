@@ -1,4 +1,7 @@
 use common::grid::*;
+
+use std::collections::HashSet;
+use std::iter::FromIterator;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -7,16 +10,30 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 /// See: https://adventofcode.com/2019/day/3
 #[wasm_bindgen]
 pub fn part1(input: &str) -> Result<u32, JsValue> {
-    let _wires: Vec<Wire> = parse_input(input)?
+    let wires: Vec<Wire> = parse_input(input)?
         .into_iter()
         .map(Wire::from_segments)
         .collect();
 
-    // grab union of both
-    // find nearest
-    // return
+    let position_sets: Vec<HashSet<Pos>> = wires
+        .into_iter()
+        .map(|wire| HashSet::from_iter(wire.positions.into_iter()))
+        .collect();
 
-    Err("not implemented yet".into())
+    if position_sets.len() != 2 {
+        return Err("expected input to contain exactly two wires".into());
+    }
+    let set_0 = position_sets.get(0).unwrap();
+    let set_1 = position_sets.get(1).unwrap();
+
+    let intersection: Vec<&Pos> = set_0.intersection(set_1).collect();
+
+    intersection
+        .iter()
+        .map(|&&p| distance_origin(p))
+        .filter(|&distance| distance != 0)   // origin is also an intersection of the wires
+        .min()
+        .ok_or_else(|| "expected the wires to have at least one intersection that is not the origin".into())
 }
 
 /// See: https://adventofcode.com/2019/day/3#part2
@@ -58,21 +75,17 @@ struct WireSegment {
 }
 
 fn parse_input(input: &str) -> Result<Vec<Vec<WireSegment>>, &'static str> {
-    input
-        .lines()
-        .map(parse_as_wire_segments)
-        .collect()
+    input.lines().map(parse_as_wire_segments).collect()
 }
 
 fn parse_as_wire_segments(input: &str) -> Result<Vec<WireSegment>, &'static str> {
-    input
-        .split(',')
-        .map(parse_wire_segment)
-        .collect()
+    input.split(',').map(parse_wire_segment).collect()
 }
 
 fn parse_wire_segment(segment: &str) -> Result<WireSegment, &'static str> {
-    let first_char = segment.chars().nth(0)
+    let first_char = segment
+        .chars()
+        .nth(0)
         .ok_or("could not access the first character")?;
 
     let direction = match first_char {
@@ -92,8 +105,8 @@ fn parse_wire_segment(segment: &str) -> Result<WireSegment, &'static str> {
 
 #[cfg(test)]
 mod tests {
-    use common::grid::{Dir::*, Pos};
     use crate::{Wire, WireSegment};
+    use common::grid::{Dir::*, Pos};
 
     #[test]
     fn parse_input_into_wire_segments() {
