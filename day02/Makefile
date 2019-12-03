@@ -1,4 +1,4 @@
-test:	test_cargo test_wasm
+test:	test_cargo test_wasm build
 
 test_cargo:
 	cargo test
