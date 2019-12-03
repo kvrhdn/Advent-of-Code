@@ -1,45 +1,37 @@
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct IntcodeProgram {
-    list: Vec<u32>,
+pub struct Computer {
+    memory: Vec<u32>,
 }
 
-impl From<Vec<u32>> for IntcodeProgram {
-    fn from(list: Vec<u32>) -> IntcodeProgram {
-        IntcodeProgram { list }
-    }
-}
-
-impl IntcodeProgram {
-    fn index_wrap(&self, i: usize) -> usize {
-        i % self.list.len()
+impl Computer {
+    /// Initialize a new intcode computer with the given program.
+    pub fn new(program: Vec<u32>) -> Self {
+        Computer { memory: program }
     }
 
-    pub fn get(&self, i: usize) -> u32 {
-        self.list[self.index_wrap(i)]
+    /// Return the value stored in memory at position `addr`.
+    pub fn get(&self, addr: usize) -> u32 {
+        self.memory[addr]
     }
 
-    fn set(&mut self, i: usize, value: u32) {
-        let index = self.index_wrap(i);
-        self.list[index] = value;
+    /// Set the memory at position `addr` to `value`.
+    pub fn set(&mut self, addr: usize, value: u32) {
+        self.memory[addr] = value;
     }
 
-    pub fn set_noun_and_verb(&mut self, noun: u32, verb: u32) {
-        self.set(1, noun);
-        self.set(2, verb);
-    }
-
+    /// Run the program loaded into memory until the halt instruction is reached
+    /// or the program panics.
     pub fn run(&mut self) -> Result<(), &'static str> {
-        let mut index = 0;
+        let mut ir_ptr = 0;
+
         loop {
-            match self.get(index) {
-                1 => self.apply_operation(index + 1, index + 2, index + 3, |a, b| a + b),
-                2 => self.apply_operation(index + 1, index + 2, index + 3, |a, b| a * b),
-                99 => break,
+            match self.get(ir_ptr) {
+                1 => self.apply_operation(ir_ptr + 1, ir_ptr + 2, ir_ptr + 3, |a, b| a + b),
+                2 => self.apply_operation(ir_ptr + 1, ir_ptr + 2, ir_ptr + 3, |a, b| a * b),
+                99 => return Ok(()),
                 _ => return Err("got unexpected opcode in intcode program"),
             }
-            index += 4;
+            ir_ptr += 4;
         }
-        Ok(())
     }
 
     fn apply_operation<F>(
@@ -75,11 +67,11 @@ mod tests {
         ];
 
         for (input, expected) in cases {
-            let mut program: IntcodeProgram = input.into();
+            let mut computer = Computer::new(input);
 
-            program.run().unwrap();
+            computer.run().unwrap();
 
-            assert_eq!(program, expected.into());
+            assert_eq!(computer.memory, expected);
         }
     }
 }
