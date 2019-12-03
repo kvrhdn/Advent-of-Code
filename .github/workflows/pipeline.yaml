@@ -34,16 +34,10 @@ jobs:
         run: cargo test --verbose
 
       - name: Run wasm integration tests (wasm-pack test))
-        run: >
-          for dir in day*; do
-            wasm-pack test --firefox --headless $dir
-          done;
+        run: make test_wasm
 
       - name: Build all wasm packages
-        run: >
-          for dir in day*; do
-            wasm-pack build $dir
-          done
+        run: make build
 
       - run: npm install
         working-directory: ./www
