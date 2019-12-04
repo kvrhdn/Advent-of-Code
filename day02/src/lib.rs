@@ -1,4 +1,5 @@
 use common::console_utils::Timer;
+use intcode::Computer;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -9,9 +10,9 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub fn part1(input: &str) -> Result<u32, JsValue> {
     Timer::new("rust::part1");
 
-    let program = parse_input(input)?;
+    let mut program = parse_input(input)?;
 
-    let mut computer = intcode::Computer::new(program);
+    let mut computer = Computer::new(&mut program);
     set_noun_and_verb(&mut computer, 12, 2);
 
     computer.run()?;
@@ -25,11 +26,13 @@ pub fn part2(input: &str) -> Result<u32, JsValue> {
     Timer::new("rust::part2");
 
     let program = parse_input(input)?;
+    let mut program_copy = vec![0u32; program.len()];
 
     for noun in 0..=99 {
         for verb in 0..=99 {
-            let mut computer = intcode::Computer::new(program.clone());
+            program_copy.copy_from_slice(&program);
 
+            let mut computer = Computer::new(&mut program_copy);
             set_noun_and_verb(&mut computer, noun, verb);
 
             computer.run()?;
@@ -55,7 +58,7 @@ fn parse_input(input: &str) -> Result<Vec<u32>, &'static str> {
         .collect()
 }
 
-pub fn set_noun_and_verb(computer: &mut intcode::Computer, noun: u32, verb: u32) {
+fn set_noun_and_verb(computer: &mut Computer, noun: u32, verb: u32) {
     computer.set(1, noun);
     computer.set(2, verb);
 }

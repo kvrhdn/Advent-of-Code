@@ -1,10 +1,10 @@
-pub struct Computer {
-    memory: Vec<u32>,
+pub struct Computer<'a> {
+    memory: &'a mut [u32],
 }
 
-impl Computer {
+impl <'a> Computer<'a> {
     /// Initialize a new intcode computer with the given program.
-    pub fn new(program: Vec<u32>) -> Self {
+    pub fn new(program: &'a mut [u32]) -> Self {
         Computer { memory: program }
     }
 
@@ -58,7 +58,7 @@ mod tests {
 
     #[test]
     fn table_test_run() {
-        let cases = vec![
+        let cases: Vec<(Vec<u32>, Vec<u32>)> = vec![
             (vec![1, 0, 0, 0, 99], vec![2, 0, 0, 0, 99]),
             (vec![2, 3, 0, 3, 99], vec![2, 3, 0, 6, 99]),
             (vec![2, 4, 4, 5, 99, 0], vec![2, 4, 4, 5, 99, 9801]),
@@ -66,12 +66,12 @@ mod tests {
             (vec![1, 9, 10, 3, 2, 3, 11, 0, 99, 30, 40, 50], vec![3500, 9, 10, 70, 2, 3, 11, 0, 99, 30, 40, 50]),
         ];
 
-        for (input, expected) in cases {
-            let mut computer = Computer::new(input);
+        for (mut input, expected) in cases {
+            let mut computer = Computer::new(&mut input);
 
             computer.run().unwrap();
 
-            assert_eq!(computer.memory, expected);
+            assert_eq!(expected, computer.memory);
         }
     }
 }
