@@ -1,3 +1,4 @@
+use common::console_utils::Timer;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -7,6 +8,8 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 /// See: https://adventofcode.com/2019/day/1
 #[wasm_bindgen]
 pub fn part1(input: &str) -> Result<i32, JsValue> {
+    Timer::new("rust::part1");
+
     let sum = parse_input(input)?
         .iter()
         .map(|&mass| fuel_required(mass))
@@ -20,6 +23,8 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
 /// See: https://adventofcode.com/2019/day/1#part2
 #[wasm_bindgen]
 pub fn part2(input: &str) -> Result<i32, JsValue> {
+    Timer::new("rust::part2");
+
     let sum = parse_input(input)?
         .iter()
         .map(|&mass| total_fuel_required(mass))

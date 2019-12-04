@@ -1,3 +1,4 @@
+use common::console_utils::Timer;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -6,6 +7,8 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 /// See: https://adventofcode.com/2019/day/2
 #[wasm_bindgen]
 pub fn part1(input: &str) -> Result<u32, JsValue> {
+    Timer::new("rust::part1");
+
     let program = parse_input(input)?;
 
     let mut computer = intcode::Computer::new(program);
@@ -19,6 +22,8 @@ pub fn part1(input: &str) -> Result<u32, JsValue> {
 /// See: https://adventofcode.com/2019/day/2#part2
 #[wasm_bindgen]
 pub fn part2(input: &str) -> Result<u32, JsValue> {
+    Timer::new("rust::part2");
+
     let program = parse_input(input)?;
 
     for noun in 0..=99 {
