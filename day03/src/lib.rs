@@ -16,22 +16,36 @@ pub fn part1(input: &str) -> Result<u32, JsValue> {
     Timer::new("rust::part1");
 
     let wires = parse_input(input)?;
-    let intersections = get_intersections(wires)?;
 
-    intersections
+    get_intersections(&wires)?
         .iter()
-        .map(|&p| distance_origin(p))
-        .filter(|&distance| distance != 0) // origin is also an intersection of the wires
+        .filter(|&&&p| p != Pos::at(0, 0))    // origin is also an intersection of the wires
+        .map(|&&p| distance_origin(p))
         .min()
         .ok_or_else(|| "expected the wires to have at least one intersection that is not the origin".into())
 }
 
 /// See: https://adventofcode.com/2019/day/3#part2
 #[wasm_bindgen]
-pub fn part2(_input: &str) -> Result<u32, JsValue> {
+pub fn part2(input: &str) -> Result<u32, JsValue> {
     Timer::new("rust::part2");
 
-    Err("not implemented yet".into())
+    let wires = parse_input(input)?;
+
+    get_intersections(&wires)?
+        .iter()
+        .filter(|&&&p| p != Pos::at(0, 0))    // origin is also an intersection of the wires
+        .map(|&&p| {
+            wires
+                .iter()
+                .map(|wire| {
+                    wire.shortest_length(p)
+                        .unwrap_or(std::u32::MAX)
+                })
+                .sum()
+        })
+        .min()
+        .ok_or_else(|| "expected the wires to have at least one intersection that is not the origin".into())
 }
 
 fn parse_input(input: &str) -> Result<Vec<Wire>, &'static str> {
@@ -48,11 +62,11 @@ fn parse_input(input: &str) -> Result<Vec<Wire>, &'static str> {
         .collect()
 }
 
-fn get_intersections(wires: Vec<Wire>) -> Result<Vec<Pos>, &'static str> {
+fn get_intersections(wires: &[Wire]) -> Result<Vec<&Pos>, &'static str> {
     let position_sets = wires
-        .into_iter()
-        .map(|wire| HashSet::from_iter(wire.positions.into_iter()))
-        .collect::<Vec<HashSet<Pos>>>();
+        .iter()
+        .map(|wire| HashSet::from_iter(wire.positions.iter()))
+        .collect::<Vec<HashSet<&Pos>>>();
 
     if position_sets.len() != 2 {
         return Err("expected input to contain exactly two wires");

@@ -20,19 +20,11 @@ impl Pos {
 }
 
 pub fn distance(p1: Pos, p2: Pos) -> u32 {
-    abs(p1.x - p2.x) + abs(p1.y - p2.y)
+    ((p2.x - p1.x).abs() + (p2.y - p1.y).abs()) as u32
 }
 
 pub fn distance_origin(p: Pos) -> u32 {
     distance(p, Pos::at(0, 0))
-}
-
-fn abs(value: i32) -> u32 {
-    if value < 0 {
-        -value as u32
-    } else {
-        value as u32
-    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -50,12 +42,25 @@ mod tests {
     #[test]
     fn test_distance() {
         let cases = vec![
+            (Pos::at(2, 3), Pos::at(2, 3), 0),
             (Pos::at(0, 0), Pos::at(2, 3), 5),
             (Pos::at(5, 1), Pos::at(-2, 1), 7),
         ];
 
         for (p1, p2, expected) in cases {
             assert_eq!(distance(p1, p2), expected);
+        }
+    }
+
+    #[test]
+    fn test_distance_origin() {
+        let cases = vec![
+            (Pos::at(0, 0), 0),
+            (Pos::at(5, 1), 6),
+        ];
+
+        for (p, expected) in cases {
+            assert_eq!(distance_origin(p), expected);
         }
     }
 

@@ -48,6 +48,17 @@ impl Wire {
 
         Self { positions }
     }
+
+    /// Returns the shortest amount of steps from the origin to the given
+    /// position following the wire.
+    pub fn shortest_length(&self, target: Pos) -> Option<u32> {
+        self.positions
+            .iter()
+            .enumerate()
+            .filter(|(_, &p)| p == target)
+            .map(|(i, _)| i as u32)
+            .min()
+    }
 }
 
 #[cfg(test)]
