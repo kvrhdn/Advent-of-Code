@@ -2,7 +2,19 @@ pub struct Computer<'a> {
     memory: &'a mut [u32],
 }
 
-impl <'a> Computer<'a> {
+/// Load a program from text.
+pub fn load_program(input: &str) -> Result<Vec<u32>, &'static str> {
+    input
+        .trim_end()
+        .split(',')
+        .map(|l| {
+            l.parse::<u32>()
+                .map_err(|_| "could not parse input as integers")
+        })
+        .collect()
+}
+
+impl<'a> Computer<'a> {
     /// Initialize a new intcode computer with the given program.
     pub fn new(program: &'a mut [u32]) -> Self {
         Computer { memory: program }
@@ -55,6 +67,14 @@ impl <'a> Computer<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_load_program() {
+        assert_eq!(load_program("123,25,0\n"), Ok(vec![123, 25, 0]));
+        assert!(load_program("123,-5,0\n").is_err());
+        assert!(load_program("123,a,0\n").is_err());
+    }
+
 
     #[test]
     fn table_test_run() {
