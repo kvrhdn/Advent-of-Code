@@ -60,8 +60,8 @@
 /// 
 /// Parameters can be access in two manners:
 /// 
-/// ///     - Direct access:
-///         - By ref: the value in Intcode; 
+///         - Direct: use the value stored in memory directly
+///         - By ref: use the value stored in memory as address to load another value
 ///
 pub struct Computer<'a> {
     memory: &'a mut [i32],
