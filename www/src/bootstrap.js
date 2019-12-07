@@ -10,5 +10,8 @@ import('./index_day03.ts')
 import('./index_day04.ts')
   .catch(err => console.error(`Error importing 'index_day04.ts':${err}`));
 
-  import('./index_day05.ts')
+import('./index_day05.ts')
   .catch(err => console.error(`Error importing 'index_day05.ts':${err}`));
+
+import('./index_day06.ts')
+  .catch(err => console.error(`Error importing 'index_day06.ts':${err}`));
