@@ -20,10 +20,10 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
     for phase_settings in heap {
         let output = run_through_amplifiers(&amplifier_controller_software, &phase_settings)?;
 
-                        if output > largest_output {
-                            largest_output = output;
-                        }
-                    }
+        if output > largest_output {
+            largest_output = output;
+        }
+    }
 
     Ok(largest_output)
 }
