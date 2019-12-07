@@ -127,13 +127,14 @@ impl<'a> Computer<'a> {
     /// Run the program loaded into memory until the halt instruction is reached
     /// or the program panics.
     pub fn run(&mut self) -> Result<(), &'static str> {
-        self.run_with_input(0)
+        self.run_with_input(&[])
     }
 
     /// Run the program loaded into memory until the halt instruction is reached
     /// or the program panics.
-    pub fn run_with_input(&mut self, input: i32) -> Result<(), &'static str> {
+    pub fn run_with_input(&mut self, input: &[i32]) -> Result<(), &'static str> {
         let mut ir_ptr = 0;
+        let mut input_list = input;
 
         loop {
             let opcode = self.get(ir_ptr);
@@ -161,7 +162,11 @@ impl<'a> Computer<'a> {
                 },
                 // input
                 3 => {
-                    self.set_by_ref(ir_ptr + 1, input);
+                    let (value, remainder) = input_list.split_first()
+                        .ok_or("expected input, can't proceed")?;
+                    input_list = remainder;
+
+                    self.set_by_ref(ir_ptr + 1, *value);
                     ir_ptr += 2;
                 },
                 // output
@@ -282,7 +287,7 @@ mod tests {
             let mut program_copy = program.clone();
             let mut computer = Computer::new(&mut program_copy);
 
-            computer.run_with_input(input).unwrap();
+            computer.run_with_input(&[input]).unwrap();
 
             println!("output: {:?}", computer.get_output());
             assert_eq!(*computer.get_output().get(0).unwrap(), expected);

@@ -13,7 +13,7 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
     let mut program = load_program(input)?;
     let mut computer = Computer::new(&mut program);
 
-    computer.run_with_input(1)?;
+    computer.run_with_input(&[1])?;
 
     let output = computer.get_output();
 
@@ -38,7 +38,7 @@ pub fn part2(input: &str) -> Result<i32, JsValue> {
     let mut program = load_program(input)?;
     let mut computer = Computer::new(&mut program);
 
-    computer.run_with_input(5)?;
+    computer.run_with_input(&[5])?;
 
     let diagnostic_code = computer.get_output().get(0)
         .ok_or("diagnostics test created no output")?;
