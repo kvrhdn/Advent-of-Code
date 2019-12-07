@@ -1,7 +1,5 @@
 use common::console_utils::Timer;
 use intcode::*;
-use std::collections::HashSet;
-use std::iter::FromIterator;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -16,28 +14,16 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
 
     let mut largest_output = 0;
 
-    for ps1 in 0..=4 {
-        for ps2 in 0..=4 {
-            for ps3 in 0..=4 {
-                for ps4 in 0..=4 {
-                    for ps5 in 0..=4 {
-                        let settings = vec![ps1, ps2, ps3, ps4, ps5];
+    let mut phase_settings = vec![0, 1, 2, 3, 4];
+    let heap = permutohedron::Heap::new(&mut phase_settings);;
 
-                        // check that we have 5 unique phase settings
-                        if HashSet::<i32>::from_iter(settings.iter().cloned()).len() != 5 {
-                            continue;
-                        }
-
-                        let output = run_through_amplifiers(&amplifier_controller_software, &settings[0..5])?;
+    for phase_settings in heap {
+        let output = run_through_amplifiers(&amplifier_controller_software, &phase_settings)?;
 
                         if output > largest_output {
                             largest_output = output;
                         }
                     }
-                }
-            }
-        }
-    }
 
     Ok(largest_output)
 }
