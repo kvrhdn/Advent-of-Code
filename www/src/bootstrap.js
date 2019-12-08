@@ -18,3 +18,6 @@ import('./index_day06.ts')
 
 import('./index_day07.ts')
   .catch(err => console.error(`Error importing 'index_day07.ts':${err}`));
+
+import('./index_day08.ts')
+  .catch(err => console.error(`Error importing 'index_day08.ts':${err}`));
