@@ -28,9 +28,9 @@ pub fn part2(input: &str) -> Result<i32, JsValue> {
         .map_err(|err| err.into())
 }
 
-fn find_largest_output<f>(program: &[i32], phase_range: RangeInclusive<i32>, run: f) -> Result<i32, &'static str>
+fn find_largest_output<F>(program: &[i32], phase_range: RangeInclusive<i32>, run: F) -> Result<i32, &'static str>
 where
-    f: Fn(&[i32], &[i32]) -> Result<i32, &'static str>,
+    F: Fn(&[i32], &[i32]) -> Result<i32, &'static str>,
 {
     let mut largest_output = 0;
 
