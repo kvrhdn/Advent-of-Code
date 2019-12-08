@@ -10,10 +10,11 @@ use State::*;
 /// An Intcode program is an array of integers. The Intcode program starts by
 /// executing the instruction at position 0. After executing the instruction,
 /// the instruction pointer will increase by the number of values in the
-/// instruction (a step can range between 2 and 4 positions). Notable exception
-/// are jump instructions, which manipulate the instruction pointer directly.
+/// instruction (an instruction can contain various amount of parameters).
+/// Notable exception are jump instructions, which manipulate the instruction
+/// pointer directly.
 /// 
-/// An Intcode program can read and output data through the input and output
+/// An Intcode program can read and write data through the input and output
 /// buffers respectively.
 /// 
 /// Instructions
@@ -21,7 +22,12 @@ use State::*;
 /// Instructions consist of an opcode followed by a list of parameters. The
 /// amount of parameters is dependent on the instruction.
 /// The opcode of an instruction both contains the instruction type and the
-/// parameter mode.
+/// parameter mode. Parameters can be accessed in two manners:
+/// 
+///   - Direct: use the value stored in memory directly, also known as
+///     immediate mode.
+///   - By ref: use the value stored in memory as address to load another
+///     value, also known as position mode.
 /// 
 /// Opcodes
 /// 
@@ -38,7 +44,7 @@ use State::*;
 ///     - parameter 1 [by ref]: location to store the input
 /// 
 /// 4   OUTPUT (>day 05)
-///     - parameter [by ref]: read a value
+///     - parameter [direct or by ref]: read a value
 ///     - store the read value in the output buffer
 ///
 /// 5   JUMP-IF-TRUE (>day 05)
@@ -62,13 +68,6 @@ use State::*;
 /// 
 /// Encountering an unknown opcode means something went wrong and may throw an expection.
 /// 
-/// Parameters
-/// 
-/// Parameters can be access in two manners:
-/// 
-///   - Direct use the value stored in memory directly
-///   - By ref use the value stored in memory as address to load another value
-///
 pub struct Computer<'a> {
     ir_ptr: usize,
     state: State,
@@ -116,7 +115,8 @@ impl<'a> Computer<'a> {
         }
     }
 
-    /// Read one value from the output buffer, returns None if buffer is empty.
+    /// Read and consume one value from the output buffer, returns None if the
+    /// output buffer is empty.
     pub fn get_output(&mut self) -> Option<i32> {
         if self.output.is_empty() {
             None
@@ -125,7 +125,8 @@ impl<'a> Computer<'a> {
         }
     }
 
-    /// Returns a reference to the entire output buffer.
+    /// Returns a read-only reference to the entire output buffer. To consume
+    /// the buffer use `get_output()`.
     pub fn get_output_buffer(&self) -> &[i32] {
         &self.output
     }
@@ -140,102 +141,95 @@ impl<'a> Computer<'a> {
         self.memory[addr] = value;
     }
 
-    /// Return the value stored in memory at the position designated by the
-    /// value at `addr`.
-    fn get_by_ref(&self, addr: usize) -> i32 {
-        self.memory[self.get(addr) as usize]
-    }
+    /// Get the parameter at ir_ptr + index, using the parameter mode as marked
+    /// by the opcode at ir_ptr. Index starts at 1 for the first parameter of
+    /// an instruction.
+    fn get_param(&self, index: u32) -> i32 {
+        let immediate_mode = is_digit_set(self.get(self.ir_ptr), index + 1);
+        let address = self.ir_ptr + index as usize;
 
-    fn get_with_mode(&self, addr: usize, immediate: bool) -> i32 {
-        if immediate {
-            self.get(addr)
+        if immediate_mode {
+            self.get(address)
         } else {
-            self.get_by_ref(addr)
+            self.get(self.get(address) as usize)
         }
     }
 
-    /// Set the memory at position designated by the value at `addr` to
-    /// `value`.
-    fn set_by_ref(&mut self, addr: usize, value: i32) {
-        self.set(self.get(addr) as usize, value)
+    /// Set the memory at position designated by the value at ir_ptr + index
+    /// to value. Index starts at 1 for the first parameter of an instruction.
+    /// Does not support immediate or position mode and always uses position
+    /// mode.
+    fn set_by_param(&mut self, index: u32, value: i32) {
+        let address = self.get(self.ir_ptr + index as usize) as usize;
+
+        self.set(address, value);
     }
 
     /// Run the program loaded in memory until program is halted, blocked or
     /// dead.
     pub fn run(&mut self) -> Result<(), &'static str> {
         loop {
-            let opcode = self.get(self.ir_ptr);
-
-            match opcode % 100 {
-                // add
+            match self.get(self.ir_ptr) % 100 {
+                // ADD
                 1 => {
-                    let op1 = self.get_with_mode(self.ir_ptr + 1, is_digit_set(opcode, 2));
-                    let op2 = self.get_with_mode(self.ir_ptr + 2, is_digit_set(opcode, 3));
+                    let value = self.get_param(1) + self.get_param(2);
+                    self.set_by_param(3, value);
 
-                    let result = op1 + op2;
-
-                    self.set_by_ref(self.ir_ptr + 3, result);
                     self.ir_ptr += 4;
                 },
-                // multiply
+                // MULTIPLY
                 2 => {
-                    let op1 = self.get_with_mode(self.ir_ptr + 1, is_digit_set(opcode, 2));
-                    let op2 = self.get_with_mode(self.ir_ptr + 2, is_digit_set(opcode, 3));
+                    let value = self.get_param(1) * self.get_param(2);
+                    self.set_by_param(3, value);
 
-                    let result = op1 * op2;
-
-                    self.set_by_ref(self.ir_ptr + 3, result);
                     self.ir_ptr += 4;
                 },
-                // input
+                // INPUT
                 3 => {
                     if self.input.is_empty() {
                         self.state = BLOCKED;
                         return Ok(());
                     }
-
                     let value = self.input.remove(0);
+                    self.set_by_param(1, value);
 
-                    self.set_by_ref(self.ir_ptr + 1, value);
                     self.ir_ptr += 2;
                 },
-                // output
+                // OUTPUT
                 4 => {
-                    self.output.push(self.get_with_mode(self.ir_ptr + 1, is_digit_set(opcode, 2)));
+                    self.output.push(self.get_param(1));
+
                     self.ir_ptr += 2;
                 },
-                // jump-if-true
+                // JUMP-IF-TRUE
                 5 => {
-                    if self.get_with_mode(self.ir_ptr + 1, is_digit_set(opcode, 2)) != 0 {
-                        self.ir_ptr = self.get_with_mode(self.ir_ptr + 2, is_digit_set(opcode, 3)) as usize;
-                    } else { 
-                        self.ir_ptr += 3;
-                    }
-                },
-                // jump-if-false
-                6 => {
-                    if self.get_with_mode(self.ir_ptr + 1, is_digit_set(opcode, 2)) == 0 {
-                        self.ir_ptr = self.get_with_mode(self.ir_ptr + 2, is_digit_set(opcode, 3)) as usize;
-                    } else { 
-                        self.ir_ptr += 3;
-                    }
-                },
-                // less-than
-                7 => {
-                    if self.get_with_mode(self.ir_ptr + 1, is_digit_set(opcode, 2)) < self.get_with_mode(self.ir_ptr + 2, is_digit_set(opcode, 3)) {
-                        self.set_by_ref(self.ir_ptr + 3, 1);
+                    if self.get_param(1) != 0 {
+                        self.ir_ptr = self.get_param(2) as usize;
                     } else {
-                        self.set_by_ref(self.ir_ptr + 3, 0);
+                        self.ir_ptr += 3;
                     }
+                },
+                // JUMP-IF-FALSE
+                6 => {
+                    if self.get_param(1) == 0 {
+                        self.ir_ptr = self.get_param(2) as usize;
+                    } else { 
+                        self.ir_ptr += 3;
+                    }
+                },
+                // LESS-THAN
+                7 => {
+                    // a bool when cast to integer is guaranteed to be 1 or 0: https://doc.rust-lang.org/std/primitive.bool.html
+                    let value = (self.get_param(1) < self.get_param(2)) as i32;
+                    self.set_by_param(3, value);
+
                     self.ir_ptr += 4;
                 },
                 // equals
                 8 => {
-                    if self.get_with_mode(self.ir_ptr + 1, is_digit_set(opcode, 2)) == self.get_with_mode(self.ir_ptr + 2, is_digit_set(opcode, 3)) {
-                        self.set_by_ref(self.ir_ptr + 3, 1);
-                    } else {
-                        self.set_by_ref(self.ir_ptr + 3, 0);
-                    }
+                    let value = (self.get_param(1) == self.get_param(2)) as i32;
+                    self.set_by_param(3, value);
+
                     self.ir_ptr += 4;
                 },
                 // halt
@@ -243,7 +237,10 @@ impl<'a> Computer<'a> {
                     self.state = HALTED;
                     return Ok(());
                 },
-                _ => panic!("got unexpected opcode \"{}\" in intcode program at position \"{}\"", opcode, self.ir_ptr),
+                _ => {
+                    self.state = DEAD;
+                    return Err("reached an unsupported opcode, can't proceed")
+                },
             }
         }
     }
