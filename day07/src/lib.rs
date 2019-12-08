@@ -142,38 +142,3 @@ fn run_through_amplifiers_with_feedback(amplifier_controller_software: &[i32], p
 
     Ok(signal)
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_run_through_amplifiers() {
-        // (program, phase settings, expected output)
-        let test_cases = vec![
-            (
-                vec![3, 15, 3, 16, 1002, 16, 10, 16, 1, 16, 15, 15, 4, 15, 99, 0, 0],
-                vec![4, 3, 2, 1, 0],
-                43210,
-            ),
-            (
-                vec![3, 23, 3, 24, 1002, 24, 10, 24, 1002, 23, -1, 23, 101, 5, 23, 23, 1, 24, 23, 23, 4, 23, 99, 0, 0],
-                vec![0, 1, 2, 3, 4],
-                54321,
-            ),
-            (
-                vec![3, 31, 3, 32, 1002, 32, 10, 32, 1001, 31, -2, 31, 1007, 31, 0, 33, 1002, 33, 7, 33, 1, 33, 31, 31, 1, 32, 31, 31, 4, 31, 99, 0, 0, 0],
-                vec![1, 0, 4, 3, 2],
-                65210,
-            ),
-        ];
-
-        for (program, phase_settings, expected) in test_cases {
-            let got = run_through_amplifiers(&program, &phase_settings).unwrap();
-
-            if got != expected {
-                panic!("run_through_amplifiers({:?}, {:?}) = {}, but expected {}", program, phase_settings, got, expected);
-            }
-        }
-    }
-}
