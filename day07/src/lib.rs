@@ -45,11 +45,11 @@ fn run_through_amplifiers(amplifier_controller_software: &[i32], phase_settings:
         runtime.copy_from_slice(amplifier_controller_software);
         let mut amp = Computer::new(&mut runtime);
 
-        amp.run_with_input(&[*phase_setting, input])?;
+        amp.put_input(*phase_setting);
+        amp.put_input(input);
+        amp.run()?;
 
-        input = *amp
-            .get_output()
-            .first()
+        input = amp.get_output()
             .ok_or("amplifier controller software did not output any value")?;
     }
 

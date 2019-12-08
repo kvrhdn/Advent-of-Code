@@ -13,10 +13,10 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
     let mut program = load_program(input)?;
     let mut computer = Computer::new(&mut program);
 
-    computer.run_with_input(&[1])?;
+    computer.put_input(1);
+    computer.run()?;
 
-    let output = computer.get_output();
-
+    let output = computer.get_output_buffer();
     if output.is_empty() {
         return Err("diagnostics test created no output".into());
     }
@@ -27,7 +27,7 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
         return Err("diagnostics test failed".into());
     }
 
-    Ok(*computer.get_output().last().unwrap())
+    Ok(*output.last().unwrap())
 }
 
 /// See: https://adventofcode.com/2019/day/5#part2
@@ -38,10 +38,11 @@ pub fn part2(input: &str) -> Result<i32, JsValue> {
     let mut program = load_program(input)?;
     let mut computer = Computer::new(&mut program);
 
-    computer.run_with_input(&[5])?;
+    computer.put_input(5);
+    computer.run()?;
 
-    let diagnostic_code = computer.get_output().get(0)
+    let diagnostic_code = computer.get_output()
         .ok_or("diagnostics test created no output")?;
 
-    Ok(*diagnostic_code)
+    Ok(diagnostic_code)
 }
