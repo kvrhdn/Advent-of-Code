@@ -1,5 +1,6 @@
 use common::console_utils::Timer;
 use intcode::*;
+use std::ops::RangeInclusive;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -10,22 +11,10 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub fn part1(input: &str) -> Result<i32, JsValue> {
     Timer::new("rust::part1");
 
-    let amplifier_controller_software = load_program(input)?;
+    let program = load_program(input)?;
 
-    let mut largest_output = 0;
-
-    let mut phase_settings = vec![0, 1, 2, 3, 4];
-    let heap = permutohedron::Heap::new(&mut phase_settings);;
-
-    for phase_settings in heap {
-        let output = run_through_amplifiers(&amplifier_controller_software, &phase_settings)?;
-
-        if output > largest_output {
-            largest_output = output;
-        }
-    }
-
-    Ok(largest_output)
+    find_largest_output(&program, 0..=4, run_through_amplifiers)
+        .map_err(|err| err.into())
 }
 
 /// See: https://adventofcode.com/2019/day/7#part2
@@ -33,15 +22,23 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
 pub fn part2(input: &str) -> Result<i32, JsValue> {
     Timer::new("rust::part2");
 
-    let amplifier_controller_software = load_program(input)?;
+    let program = load_program(input)?;
 
+    find_largest_output(&program, 5..=9, run_through_amplifiers_with_feedback)
+        .map_err(|err| err.into())
+}
+
+fn find_largest_output<f>(program: &[i32], phase_range: RangeInclusive<i32>, run: f) -> Result<i32, &'static str>
+where
+    f: Fn(&[i32], &[i32]) -> Result<i32, &'static str>,
+{
     let mut largest_output = 0;
 
-    let mut phase_settings = vec![5, 6, 7, 8, 9];
-    let heap = permutohedron::Heap::new(&mut phase_settings);;
+    let mut phase_settings: Vec<i32> = phase_range.collect();
+    let permutations = permutohedron::Heap::new(&mut phase_settings);
 
-    for phase_settings in heap {
-        let output = run_through_amplifiers_with_feedback(&amplifier_controller_software, &phase_settings)?;
+    for phase_settings in permutations {
+        let output = run(&program, &phase_settings)?;
 
         if output > largest_output {
             largest_output = output;
@@ -64,7 +61,8 @@ fn run_through_amplifiers(amplifier_controller_software: &[i32], phase_settings:
         amp.put_input(signal);
         amp.run()?;
 
-        signal = amp.get_output()
+        signal = amp
+            .get_output()
             .ok_or("amplifier controller software did not output any value")?;
     }
 
@@ -108,32 +106,27 @@ fn run_through_amplifiers_with_feedback(amplifier_controller_software: &[i32], p
         amp_1.put_input(signal);
         amp_1.run()?;
 
-        signal = amp_1.get_output()
-            .ok_or("amp 1 did not have any output")?;
+        signal = amp_1.get_output().ok_or("amp 1 did not have any output")?;
 
         amp_2.put_input(signal);
         amp_2.run()?;
 
-        signal = amp_2.get_output()
-            .ok_or("amp 2 did not have any output")?;
+        signal = amp_2.get_output().ok_or("amp 2 did not have any output")?;
 
         amp_3.put_input(signal);
         amp_3.run()?;
 
-        signal = amp_3.get_output()
-            .ok_or("amp 3 did not have any output")?;
+        signal = amp_3.get_output().ok_or("amp 3 did not have any output")?;
 
         amp_4.put_input(signal);
         amp_4.run()?;
 
-        signal = amp_4.get_output()
-            .ok_or("amp 4 did not have any output")?;
+        signal = amp_4.get_output().ok_or("amp 4 did not have any output")?;
 
         amp_5.put_input(signal);
         amp_5.run()?;
 
-        signal = amp_5.get_output()
-            .ok_or("amp 5 did not have any output")?;
+        signal = amp_5.get_output().ok_or("amp 5 did not have any output")?;
 
         if amp_5.get_state() == State::HALTED {
             break;
