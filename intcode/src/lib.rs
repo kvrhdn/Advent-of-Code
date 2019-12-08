@@ -219,7 +219,7 @@ impl<'a> Computer<'a> {
                 },
                 // LESS-THAN
                 7 => {
-                    // a bool when cast to integer is guaranteed to be 1 or 0: https://doc.rust-lang.org/std/primitive.bool.html
+                    // a bool when cast as integer is guaranteed to be 1 or 0: https://doc.rust-lang.org/std/primitive.bool.html
                     let value = (self.get_param(1) < self.get_param(2)) as i32;
                     self.set_by_param(3, value);
 
