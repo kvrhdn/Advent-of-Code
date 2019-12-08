@@ -10,6 +10,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 common = { path = "../common" }
 intcode = { path = "../intcode" }
+itertools = "0.8.2"
 permutohedron = "0.2"
 wasm-bindgen = "0.2"
 wee_alloc = "0.4"

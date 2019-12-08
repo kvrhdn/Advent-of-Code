@@ -1,5 +1,6 @@
 use common::console_utils::Timer;
 use intcode::*;
+use itertools::Itertools;
 use std::ops::RangeInclusive;
 use wasm_bindgen::prelude::*;
 
@@ -13,8 +14,8 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
 
     let program = load_program(input)?;
 
-    find_largest_output(&program, 0..=4, run_through_amplifiers)
-        .map_err(|err| err.into())
+    find_largest_output(&program, 0..=4, amplify_single_passthrough)
+        .map_err(|e| e.into())
 }
 
 /// See: https://adventofcode.com/2019/day/7#part2
@@ -24,11 +25,15 @@ pub fn part2(input: &str) -> Result<i32, JsValue> {
 
     let program = load_program(input)?;
 
-    find_largest_output(&program, 5..=9, run_through_amplifiers_with_feedback)
-        .map_err(|err| err.into())
+    find_largest_output(&program, 5..=9, amplify_with_feedback)
+        .map_err(|e| e.into())
 }
 
-fn find_largest_output<F>(program: &[i32], phase_range: RangeInclusive<i32>, run: F) -> Result<i32, &'static str>
+fn find_largest_output<F>(
+    program: &[i32],
+    phase_range: RangeInclusive<i32>,
+    run: F,
+) -> Result<i32, &'static str>
 where
     F: Fn(&[i32], &[i32]) -> Result<i32, &'static str>,
 {
@@ -48,89 +53,72 @@ where
     Ok(largest_output)
 }
 
-fn run_through_amplifiers(amplifier_controller_software: &[i32], phase_settings: &[i32]) -> Result<i32, &'static str> {
-    let mut runtime = vec![0; amplifier_controller_software.len()];
+fn amplify_single_passthrough(
+    amplifier_controller_software: &[i32],
+    phase_settings: &[i32],
+) -> Result<i32, &'static str> {
+
+    let mut program_copy = vec![0; amplifier_controller_software.len()];
 
     let mut signal = 0;
 
-    for phase_setting in phase_settings {
-        runtime.copy_from_slice(amplifier_controller_software);
-        let mut amp = Computer::new(&mut runtime);
+    for phase in phase_settings {
+        program_copy.copy_from_slice(amplifier_controller_software);
+        let mut amp = Computer::new(&mut program_copy);
 
-        amp.put_input(*phase_setting);
+        amp.put_input(*phase);
         amp.put_input(signal);
         amp.run()?;
 
-        signal = amp
-            .get_output()
-            .ok_or("amplifier controller software did not output any value")?;
+        signal = amp.get_output()
+            .ok_or("amplifier controller software did not output a value")?;
     }
 
     Ok(signal)
 }
 
-fn run_through_amplifiers_with_feedback(amplifier_controller_software: &[i32], phase_settings: &[i32]) -> Result<i32, &'static str> {
-    let mut program_amp_1 = vec![0; amplifier_controller_software.len()];
-    program_amp_1.copy_from_slice(amplifier_controller_software);
+fn amplify_with_feedback(
+    amplifier_controller_software: &[i32],
+    phase_settings: &[i32],
+) -> Result<i32, &'static str> {
+    // allocate memory for amps
+    let mut memory_buffers = vec![0; phase_settings.len() * amplifier_controller_software.len()];
+    
+    // initialize memory with control software and link to an amp
+    let mut amps: Vec<Computer> = memory_buffers
+        .chunks_exact_mut(amplifier_controller_software.len())
+        .map(|buffer| {
+            buffer.copy_from_slice(amplifier_controller_software);
+            Computer::new(buffer)
+        })
+        .collect();
 
-    let mut amp_1 = Computer::new(&mut program_amp_1);
-    amp_1.put_input(*phase_settings.get(0).unwrap());
+    // load phase in each amp
+    amps.iter_mut()
+        .zip_eq(phase_settings)
+        .for_each(|(computer, phase)| computer.put_input(*phase));
 
-    let mut program_amp_2 = vec![0; amplifier_controller_software.len()];
-    program_amp_2.copy_from_slice(amplifier_controller_software);
-
-    let mut amp_2 = Computer::new(&mut program_amp_2);
-    amp_2.put_input(*phase_settings.get(1).unwrap());
-
-    let mut program_amp_3 = vec![0; amplifier_controller_software.len()];
-    program_amp_3.copy_from_slice(amplifier_controller_software);
-
-    let mut amp_3 = Computer::new(&mut program_amp_3);
-    amp_3.put_input(*phase_settings.get(2).unwrap());
-
-    let mut program_amp_4 = vec![0; amplifier_controller_software.len()];
-    program_amp_4.copy_from_slice(amplifier_controller_software);
-
-    let mut amp_4 = Computer::new(&mut program_amp_4);
-    amp_4.put_input(*phase_settings.get(3).unwrap());
-
-    let mut program_amp_5 = vec![0; amplifier_controller_software.len()];
-    program_amp_5.copy_from_slice(amplifier_controller_software);
-
-    let mut amp_5 = Computer::new(&mut program_amp_5);
-    amp_5.put_input(*phase_settings.get(4).unwrap());
-
+    let mut amp_index = 0;
     let mut signal = 0;
 
+    // let the amps amplify the signal until all amps are halted
     loop {
-        amp_1.put_input(signal);
-        amp_1.run()?;
+        let amp = amps.get_mut(amp_index).unwrap();
 
-        signal = amp_1.get_output().ok_or("amp 1 did not have any output")?;
-
-        amp_2.put_input(signal);
-        amp_2.run()?;
-
-        signal = amp_2.get_output().ok_or("amp 2 did not have any output")?;
-
-        amp_3.put_input(signal);
-        amp_3.run()?;
-
-        signal = amp_3.get_output().ok_or("amp 3 did not have any output")?;
-
-        amp_4.put_input(signal);
-        amp_4.run()?;
-
-        signal = amp_4.get_output().ok_or("amp 4 did not have any output")?;
-
-        amp_5.put_input(signal);
-        amp_5.run()?;
-
-        signal = amp_5.get_output().ok_or("amp 5 did not have any output")?;
-
-        if amp_5.get_state() == State::HALTED {
+        // Stop looping if the next amp has halted, this isn't exactly what the
+        // puzzle describes but it in practice this will always stop when amp 1
+        // has halted and thus all other amps as well.
+        if amp.get_state() == State::HALTED {
             break;
         }
+
+        amp.put_input(signal);
+        amp.run()?;
+
+        signal = amp.get_output()
+            .ok_or("amplifier controller software did not output a value")?;
+
+        amp_index = (amp_index + 1) % amps.len();
     }
 
     Ok(signal)
