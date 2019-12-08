@@ -9,7 +9,7 @@ static INPUT: &str = include_str!("../input.txt");
 
 #[wasm_bindgen_test]
 fn day08_part1() {
-    assert_eq!(part1(INPUT), Ok(0));
+    assert_eq!(part1(INPUT), Ok(2048));
 }
 
 #[wasm_bindgen_test]
