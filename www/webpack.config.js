@@ -2,7 +2,7 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require('path');
 
 module.exports = {
-  entry: "./src/bootstrap.js",
+  entry: "./src/bootstrap.ts",
   devtool: 'inline-source-map',
   module: {
     rules: [
