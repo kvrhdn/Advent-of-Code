@@ -7,12 +7,12 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 /// See: https://adventofcode.com/2019/day/2
 #[wasm_bindgen]
-pub fn part1(input: &str) -> Result<i32, JsValue> {
+pub fn part1(input: &str) -> Result<i64, JsValue> {
     Timer::new("rust::part1");
 
-    let mut program = load_program(input)?;
+    let program = load_program(input)?;
 
-    let mut computer = Computer::new(&mut program);
+    let mut computer = Computer::new(program);
     set_noun_and_verb(&mut computer, 12, 2);
 
     computer.run()?;
@@ -22,17 +22,14 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
 
 /// See: https://adventofcode.com/2019/day/2#part2
 #[wasm_bindgen]
-pub fn part2(input: &str) -> Result<i32, JsValue> {
+pub fn part2(input: &str) -> Result<i64, JsValue> {
     Timer::new("rust::part2");
 
     let program = load_program(input)?;
-    let mut program_copy = vec![0; program.len()];
 
     for noun in 0..=99 {
         for verb in 0..=99 {
-            program_copy.copy_from_slice(&program);
-
-            let mut computer = Computer::new(&mut program_copy);
+            let mut computer = Computer::new(program.clone());
             set_noun_and_verb(&mut computer, noun, verb);
 
             computer.run()?;
@@ -46,7 +43,7 @@ pub fn part2(input: &str) -> Result<i32, JsValue> {
     Err("could not find a noun and verb".into())
 }
 
-fn set_noun_and_verb(computer: &mut Computer, noun: i32, verb: i32) {
+fn set_noun_and_verb(computer: &mut Computer, noun: i64, verb: i64) {
     computer.set(1, noun);
     computer.set(2, verb);
 }

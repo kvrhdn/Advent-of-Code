@@ -7,11 +7,11 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 /// See: https://adventofcode.com/2019/day/5
 #[wasm_bindgen]
-pub fn part1(input: &str) -> Result<i32, JsValue> {
+pub fn part1(input: &str) -> Result<i64, JsValue> {
     Timer::new("rust::part1");
 
-    let mut program = load_program(input)?;
-    let mut computer = Computer::new(&mut program);
+    let program = load_program(input)?;
+    let mut computer = Computer::new(program);
 
     computer.put_input(1);
     computer.run()?;
@@ -32,11 +32,11 @@ pub fn part1(input: &str) -> Result<i32, JsValue> {
 
 /// See: https://adventofcode.com/2019/day/5#part2
 #[wasm_bindgen]
-pub fn part2(input: &str) -> Result<i32, JsValue> {
+pub fn part2(input: &str) -> Result<i64, JsValue> {
     Timer::new("rust::part2");
 
-    let mut program = load_program(input)?;
-    let mut computer = Computer::new(&mut program);
+    let program = load_program(input)?;
+    let mut computer = Computer::new(program);
 
     computer.put_input(5);
     computer.run()?;
