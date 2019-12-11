@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Advent of Code 2019 | <%= htmlWebpackPlugin.options.pageName %></title>
+  <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+
+<body>
+  <noscript>This page contains WebAssembly and Javascript content, please enable Javascript in your browser.</noscript>
+
+  <h1>Advent of Code 2019 🎄</h1>
+  <p>Solutions to the <a href="https://adventofcode.com/2019/leaderboard">Advent of Code 2019</a>, made in Rust and
+    compiled to WebAssembly. Now available in your local browser!</p>
+  <p>Explore the code on Github: <a
+      href="https://github.com/koenaad/advent-of-code-2019">koenaad/advent-of-code-2019</a>.</p>
+
+  <p>Day:
+    <a href="./d01">01</a> | <a href="./d02">02</a> | <a href="./d03">03</a> | <a href="./d04">04</a> | <a href="./d05">05</a> |
+    <a href="./d06">06</a> | <a href="./d07">07</a> | <a href="./d08">08</a> | <a href="./d09">09</a> | <a href="./d10">10</a>
+  </p>
+
+  <hr>
+
+  <h2>Day <%= htmlWebpackPlugin.options.pageName %></h2>
+  <!-- TODO these URLs are wrong when pageName has a leading zero... -->
+  <p>View the <a href="https://adventofcode.com/2019/day/<%= htmlWebpackPlugin.options.pageName %>">puzzle description</a>
+    [<a href="https://adventofcode.com/2019/day/<%= htmlWebpackPlugin.options.pageName %>/input">input</a>].</p>
+
+  <p>Input</p>
+  <textarea type="text" id="input" placeholder="Paste your input here..."></textarea>
+  <br />
+  <button id="solve_button">Solve</button>
+
+  <p>⭐️ Part 1: <span class="response" id="response_part1">TBD</span></p>
+  <p>⭐️ Part 2: <span class="response" id="response_part2">TBD</span></p>
+
+</body>
+
+</html>

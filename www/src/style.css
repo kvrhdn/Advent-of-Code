@@ -1,10 +1,15 @@
 body {
     background: #222;
     width: 99%;
+    max-width: 800px;
+    padding: 0px 10px 0px 10px;
     height: 100%;
     font-family: Consolas, monaco, monospace;
     color: #eee;
-    padding-left: 10px;
+}
+
+hr {
+    border-width: 1px;
 }
 
 a {
@@ -13,7 +18,9 @@ a {
 
 textarea {
     background: #eee;
-    font-size: medium;
+    font-size: 1em;
+    width: 99%;
+    height: 8em;
     padding: 5px;
 }
 
