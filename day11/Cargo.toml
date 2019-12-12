@@ -1,5 +1,5 @@
 [package]
-name = "day10"
+name = "day11"
 version = "0.1.0"
 authors = ["Koenraad Verheyden <mail@koenraadverheyden.com>"]
 edition = "2018"
@@ -9,8 +9,15 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 common = { path = "../common" }
+intcode = { path = "../intcode" }
 wasm-bindgen = "0.2"
 wee_alloc = "0.4"
+
+[dependencies.web-sys]
+version = "0.3"
+features = [
+  "console",
+]
 
 [dev-dependencies]
 wasm-bindgen-test = "0.2"

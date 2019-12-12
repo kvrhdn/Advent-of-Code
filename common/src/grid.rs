@@ -4,9 +4,18 @@ pub struct Pos {
     pub y: i32,
 }
 
+impl From<(i32, i32)> for Pos {
+    fn from(tuple: (i32, i32)) -> Self {
+        Self {
+            x: tuple.0,
+            y: tuple.1,
+        }
+    }
+}
+
 impl Pos {
     pub fn at(x: i32, y: i32) -> Self {
-        Pos { x, y }
+        Self { x, y }
     }
 
     pub fn step(self, dir: Dir) -> Self {
@@ -33,6 +42,26 @@ pub enum Dir {
     Down,
     Left,
     Right,
+}
+
+impl Dir {
+    pub fn turn_left(self) -> Self {
+        match self {
+            Dir::Up => Dir::Left,
+            Dir::Down => Dir::Right,
+            Dir::Left => Dir::Down,
+            Dir::Right => Dir::Up,
+        }
+    }
+
+    pub fn turn_right(self) -> Self {
+        match self {
+            Dir::Up => Dir::Right,
+            Dir::Down => Dir::Left,
+            Dir::Left => Dir::Up,
+            Dir::Right => Dir::Down,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -63,5 +92,4 @@ mod tests {
             assert_eq!(distance_origin(p), expected);
         }
     }
-
 }

@@ -1,6 +1,6 @@
 #![cfg(target_arch = "wasm32")]
 
-use day10::*;
+use day11::*;
 use wasm_bindgen_test::*;
 
 wasm_bindgen_test_configure!(run_in_browser);
@@ -8,11 +8,11 @@ wasm_bindgen_test_configure!(run_in_browser);
 static INPUT: &str = include_str!("../input.txt");
 
 #[wasm_bindgen_test]
-fn day10_part1() {
-    assert_eq!(part1(INPUT), Ok(0));
+fn day11_part1() {
+    assert_eq!(part1(INPUT), Ok(2373));
 }
 
 #[wasm_bindgen_test]
-fn day10_part2() {
-    assert_eq!(part2(INPUT), Ok(0));
+fn day11_part2() {
+    assert_eq!(part2(INPUT), Ok("See the console".into()));
 }
