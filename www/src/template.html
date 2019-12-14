@@ -25,9 +25,8 @@
   <hr>
 
   <h2>Day <%= htmlWebpackPlugin.options.pageName %></h2>
-  <!-- TODO these URLs are wrong when pageName has a leading zero... -->
-  <p>View the <a href="https://adventofcode.com/2019/day/<%= htmlWebpackPlugin.options.pageName %>">puzzle description</a>
-    [<a href="https://adventofcode.com/2019/day/<%= htmlWebpackPlugin.options.pageName %>/input">input</a>].</p>
+  <p>View the <a href="https://adventofcode.com/2019/day/<%= Number(htmlWebpackPlugin.options.pageName) %>">puzzle description</a>
+    [<a href="https://adventofcode.com/2019/day/<%= Number(htmlWebpackPlugin.options.pageName) %>/input">input</a>].</p>
 
   <p>Input</p>
   <textarea type="text" id="input" placeholder="Paste your input here..."></textarea>
