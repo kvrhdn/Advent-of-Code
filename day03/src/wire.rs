@@ -52,6 +52,7 @@ impl Wire {
     /// Returns the shortest amount of steps from the origin to the given
     /// position following the wire.
     pub fn shortest_length(&self, target: Pos) -> Option<u32> {
+        // TODO this can likely be replaced by a simple find...
         self.positions
             .iter()
             .enumerate()
