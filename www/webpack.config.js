@@ -1,3 +1,4 @@
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
@@ -17,12 +18,14 @@ module.exports = {
     acc[`d${day}`] = `./src/day_${day}.ts`;
     return acc;
   }, {}),
-  // entry: entries,
   output: {
-    filename: "[name]/bootstrap.js",
-    path: path.resolve(__dirname, "dist"),
+    filename: '[name]/script.js',
+    chunkFilename: '[name].[chunkhash].js',
+    publicPath: "/",
+    path: path.resolve(__dirname, 'dist'),
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new CopyWebpackPlugin(['src/index.html', 'src/style.css']),
     // generate a HtmlWebpackPlugin for each day, this generates a static html
     // page with the correct entry script

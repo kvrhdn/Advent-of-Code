@@ -39,7 +39,7 @@ jobs:
       - name: Build all wasm packages
         run: make build
 
-      - run: npm install
+      - run: npm ci
         working-directory: ./www
 
       - run: npm run build
