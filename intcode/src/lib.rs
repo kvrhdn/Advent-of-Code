@@ -285,6 +285,32 @@ impl Computer {
             }
         }
     }
+
+    /// Run the program loaded in memory in diagnostics mode, in this mode a
+    /// test input is provided to the program. The diagnostics program is
+    /// expected test various parts of the intcode computer and output values
+    /// indicating how far off the result of the test are from the expected
+    /// values.
+    /// Finally, the program will output a diagnostic code. This code is
+    /// returned from run_diagnostics_test if all other tests were successful.
+    /// The computer has to be reset before running another program.
+    pub fn run_diagnostics_test(&mut self, test_input: i64) -> Result<i64, &'static str> {
+        self.put_input(test_input);
+        self.run()?;
+
+        let output = self.get_output_buffer();
+        if output.is_empty() {
+            return Err("diagnostics test created no output");
+        }
+    
+        if output[0..output.len() - 1]
+                .iter()
+                .any(|&val| val != 0) {
+            return Err("diagnostics test failed");
+        }
+
+        Ok(*output.last().unwrap())
+    }
 }
 
 /// Load a program from text.

@@ -12,21 +12,8 @@ pub fn part1(input: &str) -> Result<i64, JsValue> {
 
     let mut computer = Computer::new_from_input(input)?;
 
-    computer.put_input(1);
-    computer.run()?;
-
-    let output = computer.get_output_buffer();
-    if output.is_empty() {
-        return Err("diagnostics test created no output".into());
-    }
-
-    if output[0..output.len() - 1]
-            .iter()
-            .any(|&val| val != 0) {
-        return Err("diagnostics test failed".into());
-    }
-
-    Ok(*output.last().unwrap())
+    computer.run_diagnostics_test(1)
+        .map_err(|err| err.into())
 }
 
 /// See: https://adventofcode.com/2019/day/5#part2
@@ -36,11 +23,6 @@ pub fn part2(input: &str) -> Result<i64, JsValue> {
 
     let mut computer = Computer::new_from_input(input)?;
 
-    computer.put_input(5);
-    computer.run()?;
-
-    let diagnostic_code = computer.get_output()
-        .ok_or("diagnostics test created no output")?;
-
-    Ok(diagnostic_code)
+    computer.run_diagnostics_test(5)
+        .map_err(|err| err.into())
 }
