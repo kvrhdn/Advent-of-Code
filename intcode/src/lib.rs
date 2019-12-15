@@ -278,7 +278,7 @@ impl Computer {
 
                     self.ir_ptr += 2;
                 },
-                // halt
+                // HALT
                 99 => {
                     self.state = HALTED;
                     return Ok(());
