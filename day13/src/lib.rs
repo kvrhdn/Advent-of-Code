@@ -1,9 +1,10 @@
+mod sparse_grid;
+
 use common::console_utils::Timer;
-use common::grid::*;
 use intcode::*;
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
-use std::collections::HashMap;
+use sparse_grid::*;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -31,7 +32,10 @@ pub fn part1(input: &str) -> Result<u32, JsValue> {
             screen.set((x, y).into(), tile);
         });
 
-    Ok(screen.iterate().filter(|&tile| *tile == Tile::Block).count() as u32)
+    Ok(screen
+        .iterate()
+        .filter(|&tile| *tile == Tile::Block)
+        .count() as u32)
 }
 
 /// See: https://adventofcode.com/2019/day/13#part2
@@ -42,7 +46,8 @@ pub fn part2(_input: &str) -> Result<u32, JsValue> {
     Ok(0)
 }
 
-#[derive(Eq, FromPrimitive, PartialEq)]
+#[derive(Clone, Copy, Eq, FromPrimitive, PartialEq)]
+#[repr(u8)]
 enum Tile {
     Empty = 0,
     Wall = 1,
@@ -51,28 +56,8 @@ enum Tile {
     Ball = 4,
 }
 
-struct SparseGrid<T> {
-    map: HashMap<Pos, T>,
-}
-
-impl<T> SparseGrid<T> {
-    fn new() -> Self {
-        Self {
-            map: HashMap::new(),
-        }
-    }
-
-    fn get(&self, pos: Pos) -> Option<&T> {
-        self.map.get(&pos)
-    }
-
-    fn set(&mut self, pos: Pos, value: T) {
-        self.map.insert(pos, value);
-    }
-
-    /// Iterates over all filled-in positions, does not visit the positions
-    /// that were not set.
-    fn iterate<'a>(&'a self) -> impl Iterator<Item = &T> + 'a {
-        self.map.values()
+impl Default for Tile {
+    fn default() -> Self {
+        Self::Empty
     }
 }
