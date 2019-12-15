@@ -1,10 +1,9 @@
+mod arcade;
 mod sparse_grid;
 
+use arcade::*;
 use common::console_utils::Timer;
-use intcode::*;
-use num_derive::FromPrimitive;
-use num_traits::FromPrimitive;
-use sparse_grid::*;
+use intcode::load_program;
 use wasm_bindgen::prelude::*;
 
 #[global_allocator]
@@ -15,49 +14,60 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub fn part1(input: &str) -> Result<u32, JsValue> {
     Timer::new("rust::part1");
 
-    let mut computer = Computer::new_from_input(input)?;
+    let program = load_program(input)?;
+    let mut arcade = Arcade::new(program);
 
-    let mut screen = SparseGrid::<Tile>::new();
+    arcade.run()?;
 
-    computer.run()?;
-
-    computer
-        .get_output_buffer()
-        .chunks_exact(3)
-        .for_each(|instruction| {
-            let x = instruction[0] as i32;
-            let y = instruction[1] as i32;
-            let tile = FromPrimitive::from_i64(instruction[2]).unwrap();
-
-            screen.set((x, y).into(), tile);
-        });
-
-    Ok(screen
+    let block_count = arcade
+        .get_screen()
         .iterate()
         .filter(|&tile| *tile == Tile::Block)
-        .count() as u32)
+        .count() as u32;
+
+    Ok(block_count)
 }
 
 /// See: https://adventofcode.com/2019/day/13#part2
 #[wasm_bindgen]
-pub fn part2(_input: &str) -> Result<u32, JsValue> {
+pub fn part2(input: &str) -> Result<i32, JsValue> {
     Timer::new("rust::part2");
 
-    Ok(0)
-}
+    let program = load_program(input)?;
+    let mut arcade = Arcade::new(program);
 
-#[derive(Clone, Copy, Eq, FromPrimitive, PartialEq)]
-#[repr(u8)]
-enum Tile {
-    Empty = 0,
-    Wall = 1,
-    Block = 2,
-    HorizontalPaddle = 3,
-    Ball = 4,
-}
+    arcade.insert_quarters();
 
-impl Default for Tile {
-    fn default() -> Self {
-        Self::Empty
+    loop {
+        arcade.run()?;
+
+        if arcade.get_state() != State::AwaitingInput {
+            break;
+        }
+
+        move_joystick_to_follow_ball(&mut arcade)?;
     }
+
+    Ok(arcade.get_score())
+}
+
+fn move_joystick_to_follow_ball(arcade: &mut Arcade) -> Result<(), &'static str> {
+    let ball = arcade
+        .get_screen()
+        .find(Tile::Ball)
+        .ok_or("could not find ball on screen")?;
+    let paddle = arcade
+        .get_screen()
+        .find(Tile::HorizontalPaddle)
+        .ok_or("could not find paddle on screen")?;
+
+    let joystick_position = match paddle.x {
+        _ if ball.x < paddle.x => JoystickPosition::Left,
+        _ if ball.x > paddle.x => JoystickPosition::Right,
+        _ => JoystickPosition::Neutral,
+    };
+
+    arcade.set_joystick(joystick_position);
+
+    Ok(())
 }

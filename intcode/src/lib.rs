@@ -126,6 +126,11 @@ impl Computer {
         }
     }
 
+    /// Returns whether the output buffer contains any data.
+    pub fn has_output(&self) -> bool {
+        !self.output.is_empty()
+    }
+
     /// Read and consume one value from the output buffer, returns None if the
     /// output buffer is empty.
     pub fn get_output(&mut self) -> Option<i64> {
