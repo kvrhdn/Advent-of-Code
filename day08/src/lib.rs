@@ -66,7 +66,11 @@ pub fn part2(input: &str) -> Result<JsValue, JsValue> {
 }
 
 fn split_layers<'a>(input: &'a str, width: usize, height: usize) -> Vec<&'a [u8]> {
-    input.trim_end().as_bytes().chunks(width * height).collect()
+    input
+        .trim_end()
+        .as_bytes()
+        .chunks_exact(width * height)
+        .collect()
 }
 
 #[cfg(test)]
