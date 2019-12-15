@@ -107,6 +107,11 @@ impl Computer {
         }
     }
 
+    /// Initialize a new intcode computer with the given input.
+    pub fn new_from_input(input: &str) -> Result<Self, &'static str> {
+        Ok(Self::new(load_program(input)?))
+    }
+
     /// The state the program is in.
     pub fn get_state(&self) -> State {
         self.state

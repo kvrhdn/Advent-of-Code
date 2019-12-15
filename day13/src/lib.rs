@@ -14,8 +14,7 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 pub fn part1(input: &str) -> Result<u32, JsValue> {
     Timer::new("rust::part1");
 
-    let program = load_program(input)?;
-    let mut computer = Computer::new(program);
+    let mut computer = Computer::new_from_input(input)?;
 
     let mut screen = SparseGrid::<Tile>::new();
 

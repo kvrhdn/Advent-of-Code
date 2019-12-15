@@ -11,8 +11,7 @@ pub fn part1(input: &str) -> Result<i64, JsValue> {
     Timer::new("rust::part1");
 
     // TODO add function run_diagnostics_test to intcode::Computer, this is same code as day 05
-    let program = load_program(input)?;
-    let mut computer = Computer::new(program);
+    let mut computer = Computer::new_from_input(input)?;
 
     computer.put_input(1);
     computer.run()?;
@@ -36,8 +35,7 @@ pub fn part1(input: &str) -> Result<i64, JsValue> {
 pub fn part2(input: &str) -> Result<i64, JsValue> {
     Timer::new("rust::part2");
 
-    let program = load_program(input)?;
-    let mut computer = Computer::new(program);
+    let mut computer = Computer::new_from_input(input)?;
 
     computer.put_input(2);
     computer.run()?;
