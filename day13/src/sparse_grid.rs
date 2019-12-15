@@ -16,7 +16,7 @@ where
     }
 
     pub fn get(&self, pos: Pos) -> T {
-        self.map.get(&pos).map(|v| *v).unwrap_or_default()
+        self.map.get(&pos).copied().unwrap_or_default()
     }
 
     pub fn set(&mut self, pos: Pos, value: T) {
