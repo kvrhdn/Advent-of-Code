@@ -17,10 +17,12 @@ pub fn part1(input: &str) -> Result<u32, JsValue> {
 
     let layer_least_0 = layers
         .iter()
-        .min_by_key(|&layer| count_chars(layer, '0'))
+        .min_by_key(|&layer| bytecount::count(layer, b'0'))
         .ok_or("expected their to be at least one layer")?;
 
-    Ok(count_chars(layer_least_0, '1') * count_chars(layer_least_0, '2'))
+    let checksum = bytecount::count(layer_least_0, b'1') * bytecount::count(layer_least_0, b'2');
+
+    Ok(checksum as u32)
 }
 
 /// See: https://adventofcode.com/2019/day/8#part2
@@ -30,7 +32,7 @@ pub fn part2(input: &str) -> Result<JsValue, JsValue> {
 
     let layers = split_layers(input, WIDTH, HEIGHT);
 
-    let mut image = [0u8; WIDTH * HEIGHT];
+    let mut image = [' '; WIDTH * HEIGHT];
 
     for x in 0..WIDTH {
         for y in 0..HEIGHT {
@@ -43,35 +45,28 @@ pub fn part2(input: &str) -> Result<JsValue, JsValue> {
                 .nth(0)
                 .ok_or("did find not any non-transparant pixel")?;
 
-            image[pixel_index] = pixel;
+            image[pixel_index] = match pixel {
+                b'0' => ' ',
+                b'1' => '█',
+                _ => return Err("expected all pixels to be '0' or '1'".into()),
+            };
         }
     }
 
-    let s: Vec<String> = image
-        .chunks(WIDTH)
-        .map(|row| {
-            row.iter()
-                .map(|pixel| match pixel {
-                    b'0' => ' ',
-                    b'1' => 'X',
-                    _ => panic!("expected all pixels to be '0' or '1'"),
-                })
-                .collect()
-        })
-        .collect();
+    let string = image
+        .chunks_exact(WIDTH)
+        .map(|chunk| chunk.iter().cloned().collect::<String>())
+        .collect::<Vec<String>>()
+        .join("\n");
 
     console::log_1(&"The solution to day 08, part 2:".into());
-    console::log_1(&s.join("\n").into());
+    console::log_1(&string.into());
 
     Ok("See the console".into())
 }
 
 fn split_layers<'a>(input: &'a str, width: usize, height: usize) -> Vec<&'a [u8]> {
     input.trim_end().as_bytes().chunks(width * height).collect()
-}
-
-fn count_chars(input: &[u8], c: char) -> u32 {
-    bytecount::count(input, c as u8) as u32
 }
 
 #[cfg(test)]
@@ -87,13 +82,5 @@ mod tests {
                 &[b'7', b'8', b'9', b'0', b'1', b'2'],
             ],
         );
-    }
-
-    #[test]
-    fn test_count_char() {
-        assert_eq!(count_chars(&[b'1', b'2', b'3', b'1', b'2', b'2'], '0'), 0);
-        assert_eq!(count_chars(&[b'1', b'2', b'3', b'1', b'2', b'2'], '1'), 2);
-        assert_eq!(count_chars(&[b'1', b'2', b'3', b'1', b'2', b'2'], '2'), 3);
-        assert_eq!(count_chars(&[b'1', b'2', b'3', b'1', b'2', b'2'], '3'), 1);
     }
 }
