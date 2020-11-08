@@ -94,7 +94,12 @@ mod tests {
 
     #[test]
     fn part1_examples() {
-        let examples = vec![(">", 2), ("^>v<", 4), ("^v^v^v^v^v", 2)];
+        #[rustfmt::skip]
+        let examples = vec![
+            (">", 2),
+            ("^>v<", 4),
+            ("^v^v^v^v^v", 2)
+        ];
 
         for e in examples {
             assert_eq!(solve_part1(e.0), e.1);
@@ -103,10 +108,15 @@ mod tests {
 
     #[test]
     fn part2_examples() {
-        let examples = vec![("^v", 3), ("^>v<", 3), ("^v^v^v^v^v", 11)];
+        #[rustfmt::skip]
+        let examples = vec![
+            ("^v", 3),
+            ("^>v<", 3),
+            ("^v^v^v^v^v", 11)
+        ];
 
         for e in examples {
-            assert_eq!(solve_part1(e.0), e.1);
+            assert_eq!(solve_part2(e.0), e.1);
         }
     }
 
