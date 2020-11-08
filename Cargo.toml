@@ -10,6 +10,6 @@ aoc-runner-derive = "0.3.0"
 
 # used by day04
 md5 = "0.7.0"
-# used by day05
+# used by day05 and day06
 fancy-regex = "0.4.0"
 lazy_static = "1.4.0"
