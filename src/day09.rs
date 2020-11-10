@@ -129,23 +129,34 @@ fn solve_part2(input: &(Vec<Connection>, Vec<Route>)) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day09::*;
+    use super::*;
 
     #[test]
     fn connection_parse() {
-        #[rustfmt::skip]
         let examples = vec![
             (
                 "London to Dublin = 464",
-                Connection { from: "London".into(), to: "Dublin".into(), distance: 464 },
+                Connection {
+                    from: "London".into(),
+                    to: "Dublin".into(),
+                    distance: 464,
+                },
             ),
             (
                 "London to Belfast = 518",
-                Connection { from: "London".into(), to: "Belfast".into(), distance: 518 },
+                Connection {
+                    from: "London".into(),
+                    to: "Belfast".into(),
+                    distance: 518,
+                },
             ),
             (
                 "Dublin to Belfast = 1",
-                Connection { from: "Dublin".into(), to: "Belfast".into(), distance: 1 },
+                Connection {
+                    from: "Dublin".into(),
+                    to: "Belfast".into(),
+                    distance: 1,
+                },
             ),
         ];
 

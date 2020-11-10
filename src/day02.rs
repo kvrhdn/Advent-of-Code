@@ -57,7 +57,7 @@ pub fn solve_part2(gifts: &[Gift]) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day02::*;
+    use super::*;
 
     #[test]
     fn examples_parse_gifts() {

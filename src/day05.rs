@@ -59,7 +59,7 @@ fn solve_part2(input: &str) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day05::*;
+    use super::*;
 
     #[test]
     fn examples_is_nice_v1() {
@@ -71,8 +71,8 @@ mod tests {
             ("dvszwmarrgswjxmb", false),
         ];
 
-        for e in examples {
-            assert_eq!(is_nice_v1(e.0), e.1);
+        for (input, expected) in examples {
+            assert_eq!(is_nice_v1(input), expected);
         }
     }
 
@@ -85,8 +85,8 @@ mod tests {
             ("ieodomkazucvgmuy", false),
         ];
 
-        for e in examples {
-            assert_eq!(is_nice_v2(e.0), e.1);
+        for (input, expected) in examples {
+            assert_eq!(is_nice_v2(input), expected);
         }
     }
 

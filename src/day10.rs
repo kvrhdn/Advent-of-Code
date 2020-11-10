@@ -61,7 +61,7 @@ pub fn solve_part2(input: &Vec<u8>) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use crate::day10::*;
+    use super::*;
 
     #[test]
     fn process_times_test() {

@@ -90,7 +90,7 @@ fn solve_part2(input: &str) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day03::*;
+    use super::*;
 
     #[test]
     fn part1_examples() {
@@ -101,8 +101,8 @@ mod tests {
             ("^v^v^v^v^v", 2)
         ];
 
-        for e in examples {
-            assert_eq!(solve_part1(e.0), e.1);
+        for (input, expected) in examples {
+            assert_eq!(solve_part1(input), expected);
         }
     }
 
@@ -115,8 +115,8 @@ mod tests {
             ("^v^v^v^v^v", 11)
         ];
 
-        for e in examples {
-            assert_eq!(solve_part2(e.0), e.1);
+        for (input, expected) in examples {
+            assert_eq!(solve_part2(input), expected);
         }
     }
 

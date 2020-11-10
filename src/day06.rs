@@ -1,7 +1,7 @@
-use std::convert::{TryFrom, TryInto};
 use aoc_runner_derive::{aoc, aoc_generator};
 use fancy_regex::Regex;
 use lazy_static::lazy_static;
+use std::convert::{TryFrom, TryInto};
 
 #[derive(Debug, Eq, PartialEq)]
 enum Command {
@@ -39,8 +39,7 @@ struct Instruction {
 impl Instruction {
     fn parse(s: &str) -> Self {
         lazy_static! {
-            static ref RE: Regex =
-                Regex::new(r"^(.+) (\d+),(\d+) through (\d+),(\d+)").unwrap();
+            static ref RE: Regex = Regex::new(r"^(.+) (\d+),(\d+) through (\d+),(\d+)").unwrap();
         }
         let captures = RE.captures(s).unwrap().unwrap();
 
@@ -113,7 +112,7 @@ fn solve_part2(instructions: &[Instruction]) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day06::*;
+    use super::*;
 
     #[test]
     fn instruction_parse() {
@@ -144,8 +143,8 @@ mod tests {
             ),
         ];
 
-        for e in examples {
-            assert_eq!(Instruction::parse(e.0), e.1);
+        for (input, expected) in examples {
+            assert_eq!(Instruction::parse(input), expected);
         }
     }
 

@@ -32,7 +32,7 @@ fn solve_part2(input: &str) -> u32 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day04::*;
+    use super::*;
 
     #[test]
     fn examples_part1() {
@@ -42,8 +42,8 @@ mod tests {
             ("pqrstuv", 1048970),
         ];
 
-        for e in examples {
-            assert_eq!(solve_part1(e.0), e.1);
+        for (input, expected) in examples {
+            assert_eq!(solve_part1(input), expected);
         }
     }
 

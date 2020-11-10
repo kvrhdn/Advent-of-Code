@@ -167,44 +167,64 @@ fn solve_part2(instructions: &[Instruction]) -> u16 {
 
 #[cfg(test)]
 mod tests {
-    use crate::day07::*;
+    use super::*;
 
     #[test]
     fn instruction_parse() {
-        #[rustfmt::skip]
         let examples = vec![
             (
                 "123 -> x",
-                Instruction { input: Gate::Direct(123.into()), output: "x".into() },
+                Instruction {
+                    input: Gate::Direct(123.into()),
+                    output: "x".into(),
+                },
             ),
             (
                 "ab -> y",
-                Instruction { input: Gate::Direct("ab".into()), output: "y".into() },
+                Instruction {
+                    input: Gate::Direct("ab".into()),
+                    output: "y".into(),
+                },
             ),
             (
                 "x AND y -> d",
-                Instruction { input: Gate::And("x".into(), "y".into()), output: "d".into() },
+                Instruction {
+                    input: Gate::And("x".into(), "y".into()),
+                    output: "d".into(),
+                },
             ),
             (
                 "x OR y -> e",
-                Instruction { input: Gate::Or("x".into(), "y".into()), output: "e".into() },
+                Instruction {
+                    input: Gate::Or("x".into(), "y".into()),
+                    output: "e".into(),
+                },
             ),
             (
                 "x LSHIFT 2 -> f",
-                Instruction { input: Gate::LShift("x".into(), 2), output: "f".into() },
+                Instruction {
+                    input: Gate::LShift("x".into(), 2),
+                    output: "f".into(),
+                },
             ),
             (
                 "y RSHIFT 2 -> g",
-                Instruction { input: Gate::RShift("y".into(), 2), output: "g".into() },
+                Instruction {
+                    input: Gate::RShift("y".into(), 2),
+                    output: "g".into(),
+                },
             ),
             (
                 "NOT x -> h",
-                Instruction { input: Gate::Not("x".into()), output: "h".into() },
+                Instruction {
+                    input: Gate::Not("x".into()),
+                    output: "h".into(),
+                },
             ),
         ];
 
-        for e in examples {
-            assert_eq!(Instruction::parse(e.0), e.1);
+        for (input, expected) in examples {
+            assert_eq!(Instruction::parse(input), expected);
         }
     }
 

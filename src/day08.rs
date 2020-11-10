@@ -49,7 +49,7 @@ fn solve_part2(input: &str) -> usize {
 
 #[cfg(test)]
 mod tests {
-    use crate::day08::*;
+    use super::*;
 
     #[test]
     fn examples_characters_code() {
