@@ -20,3 +20,6 @@ md5 = "0.7.0"
 
 # used by day12
 json = "0.12.4"
+
+# used by day16
+maplit = "1.0.2"
