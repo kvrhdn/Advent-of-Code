@@ -1,7 +1,6 @@
 #[allow(unused_imports)] // parse_input is used by the aoc macro
 use crate::day14::{parse_input, Reindeer};
 use aoc_runner_derive::aoc;
-use std::collections::HashMap;
 
 enum ReindeerState {
     Flying,
@@ -15,6 +14,7 @@ struct ReindeerRunner {
     state: ReindeerState,
     seconds_in_state: u32,
     distance_travelled: u32,
+    points: u32,
 }
 
 impl ReindeerRunner {
@@ -41,6 +41,10 @@ impl ReindeerRunner {
 
         self.distance_travelled
     }
+
+    fn add_point(&mut self) {
+        self.points += 1;
+    }
 }
 
 impl From<&Reindeer> for ReindeerRunner {
@@ -52,43 +56,36 @@ impl From<&Reindeer> for ReindeerRunner {
             state: ReindeerState::Flying,
             seconds_in_state: 0,
             distance_travelled: 0,
+            points: 0,
         }
     }
 }
 
-fn race_with_points_system_runners(reindeer: &[Reindeer], duration: u32) -> HashMap<String, u32> {
-    let mut points = HashMap::<String, u32>::new();
-    let mut runners = HashMap::<String, ReindeerRunner>::new();
-
-    for r in reindeer {
-        points.insert(r.name.clone(), 0);
-        runners.insert(r.name.clone(), r.into());
-    }
+fn race_with_points_system_runners(reindeer: &[Reindeer], duration: u32) -> Vec<ReindeerRunner> {
+    let mut runners: Vec<ReindeerRunner> =
+        reindeer.iter().map(|reindeer| reindeer.into()).collect();
 
     for _ in 1..=duration {
-        let state = runners
+        let lead_distance = runners
             .iter_mut()
-            .map(|(name, runner)| (name, runner.step()))
-            .collect::<Vec<_>>();
+            .map(|runner| runner.step())
+            .max()
+            .unwrap();
 
-        let lead = state.iter().map(|(_, distance)| distance).max().unwrap();
-
-        for (name, distance) in &state {
-            if distance == lead {
-                let reindeer_points = points.get_mut(*name).unwrap();
-                *reindeer_points += 1;
-            }
-        }
+        runners
+            .iter_mut()
+            .filter(|runner| runner.distance_travelled == lead_distance)
+            .for_each(|runner| runner.add_point());
     }
 
-    points
+    runners
 }
 
 #[aoc(day14, part2, runners)]
 fn solve_part2_runners(reindeer: &[Reindeer]) -> u32 {
     let points = race_with_points_system_runners(reindeer, 2503);
 
-    *points.values().max().unwrap()
+    points.iter().map(|r| r.points).max().unwrap()
 }
 
 #[cfg(test)]
