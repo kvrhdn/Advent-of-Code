@@ -4,11 +4,11 @@ use regex::Regex;
 use std::collections::HashMap;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-struct Reindeer {
-    name: String,
-    speed: u32,         // in km/s
-    fly_duration: u32,  // in s
-    rest_duration: u32, // in s
+pub struct Reindeer {
+    pub name: String,
+    pub speed: u32,         // in km/s
+    pub fly_duration: u32,  // in s
+    pub rest_duration: u32, // in s
 }
 
 impl Reindeer {
@@ -86,7 +86,7 @@ fn race_with_points_system(reindeer: &[Reindeer], duration: u32) -> HashMap<Stri
 }
 
 #[aoc_generator(day14)]
-fn parse_input(input: &str) -> Vec<Reindeer> {
+pub fn parse_input(input: &str) -> Vec<Reindeer> {
     input.lines().map(|l| Reindeer::parse(l)).collect()
 }
 
@@ -170,9 +170,9 @@ mod tests {
     fn real_input() {
         let input = include_str!("../input/2015/day14.txt");
 
-        let potentials = parse_input(input);
+        let reindeer = parse_input(input);
 
-        assert_eq!(solve_part1(&potentials), 2660);
-        assert_eq!(solve_part2(&potentials), 1256);
+        assert_eq!(solve_part1(&reindeer), 2660);
+        assert_eq!(solve_part2(&reindeer), 1256);
     }
 }
