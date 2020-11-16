@@ -125,7 +125,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore] // expensive
+    #[ignore = "expensive"]
     fn real_input_part1_iterate() {
         assert_eq!(solve_part1_iterate("36000000"), 831600);
         assert_eq!(solve_part1_iterate("34000000"), 786240);

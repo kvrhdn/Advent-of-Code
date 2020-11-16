@@ -208,7 +208,7 @@ HOHOHO"#;
     }
 
     #[test]
-    #[ignore] // test is unrealible and very slow unoptimized
+    #[ignore = "expensive"]
     fn real_input_part2() {
         let input = include_str!("../input/2015/day19.txt");
 
