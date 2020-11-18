@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 	"github.com/koenaad/Advent-of-Code-2017/util"
 )
 
