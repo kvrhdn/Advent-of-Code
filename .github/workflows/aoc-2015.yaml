@@ -3,7 +3,7 @@ name: AoC 2015
 on:
   push:
     paths:
-    - 'advent-of-code-2015/'
+    - 'advent-of-code-2015/**'
 
 defaults:
   run:
