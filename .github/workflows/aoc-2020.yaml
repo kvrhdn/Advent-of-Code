@@ -1,0 +1,27 @@
+name: AoC 2020
+
+on:
+  push:
+    paths:
+    - 'advent-of-code-2020/**'
+
+defaults:
+  run:
+    working-directory: advent-of-code-2020
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: cargo build
+
+      - run: cargo test
+
+      - run: cargo run --release
