@@ -1,9 +1,11 @@
-package main
+package day22
 
 import (
-	"github.com/koenaad/Advent-of-Code-2017/day22/grid"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day22/grid"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var exampleInput = `..#

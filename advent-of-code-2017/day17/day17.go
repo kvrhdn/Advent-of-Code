@@ -1,17 +1,27 @@
-package main
+package day17
 
 import (
-	"fmt"
-	"github.com/koenaad/Advent-of-Code-2017/day17/circular"
+	"strconv"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day17/circular"
 )
 
-const input = 356
+func SolvePart1(inputString string) interface{} {
+	input, err := strconv.Atoi(inputString)
+	if err != nil {
+		panic(err)
+	}
 
-func main() {
-	fmt.Println("Advent of Code 2017 - day 17")
+	return spinlockAlgorithmFindValueAfter2017(input)
+}
 
-	fmt.Printf("Puzzle 1: value after 2017 = %v\n", spinlockAlgorithmFindValueAfter2017(input))
-	fmt.Printf("Puzzle 2: value after 0 = %v\n", spinlockAlgorithmFindValueAfter0(input, 50000000))
+func SolvePart2(inputString string) interface{} {
+	input, err := strconv.Atoi(inputString)
+	if err != nil {
+		panic(err)
+	}
+
+	return spinlockAlgorithmFindValueAfter0(input, 50000000)
 }
 
 func spinlockAlgorithmFindValueAfter2017(steps int) (valueAfter2017 int) {

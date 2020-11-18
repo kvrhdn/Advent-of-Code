@@ -1,18 +1,18 @@
-package main
+package day03
 
 import (
-    "testing"
+	"testing"
 )
 
 func TestManhattanDistanceFromStorageLocationOf(t *testing.T) {
 	cases := []struct {
-		in       int
+		in       string
 		expected int
 	}{
-		{1, 0},
-		{12, 3},
-		{23, 2},
-		{1024, 31},
+		{"1", 0},
+		{"12", 3},
+		{"23", 2},
+		{"1024", 31},
 	}
 	for _, c := range cases {
 		got := DetermineDistanceToStorageLocationInSpiralMemory(c.in)
@@ -24,14 +24,14 @@ func TestManhattanDistanceFromStorageLocationOf(t *testing.T) {
 
 func TestFirstLoadtestValueGreaterThan(t *testing.T) {
 	cases := []struct {
-		in       int
+		in       string
 		expected int
 	}{
-		{2, 4},
-		{10, 11},
-		{55, 57},
-		{150, 304},
-		{750, 806},
+		{"2", 4},
+		{"10", 11},
+		{"55", 57},
+		{"150", 304},
+		{"750", 806},
 	}
 	for _, c := range cases {
 		got := FirstLoadtestValueGreaterThan(c.in)

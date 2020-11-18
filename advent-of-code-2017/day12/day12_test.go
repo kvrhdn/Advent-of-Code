@@ -1,8 +1,9 @@
-package main
+package day12
 
 import (
-	"github.com/koenaad/Advent-of-Code-2017/day12/program"
 	"testing"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day12/program"
 )
 
 func Test_exampleInput(t *testing.T) {

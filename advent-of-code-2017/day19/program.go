@@ -1,4 +1,4 @@
-package main
+package day19
 
 type Program struct {
 	pos Vec2

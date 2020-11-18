@@ -1,9 +1,9 @@
-package main
+package day08
 
 import (
 	"testing"
 
-	"github.com/koenaad/Advent-of-Code-2017/day08/instruction"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day08/instruction"
 )
 
 func TestEvaluateOn(t *testing.T) {

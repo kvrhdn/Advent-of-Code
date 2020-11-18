@@ -1,30 +1,4 @@
-package main
-
-import (
-	"fmt"
-	"github.com/koenaad/Advent-of-Code-2017/day12/program"
-)
-
-func main() {
-	fmt.Println("Advent of Code 2017 - day 12")
-
-	reports := program.ParseListOfReachabilityReports(input)
-	groups := program.DivideIntoReachabilityGroups(reports)
-
-	fmt.Printf("Puzzle 1: amount of programs in group with Program ID 0: %v\n", sizeOfGroupWithProgram0(groups))
-	fmt.Printf("Puzzle 2: amount of programs: %v\n", len(groups))
-}
-
-func sizeOfGroupWithProgram0(groups []program.ProgramSet) int {
-	for _, group := range groups {
-		if group.Contains(program.ProgramId(0)) {
-			return len(group)
-		}
-	}
-	panic("could not find group with program 0")
-}
-
-var input = `0 <-> 1543
+0 <-> 1543
 1 <-> 66, 1682
 2 <-> 1525
 3 <-> 958
@@ -2023,4 +1997,4 @@ var input = `0 <-> 1543
 1996 <-> 198, 323
 1997 <-> 1853
 1998 <-> 1042, 1127, 1291, 1568
-1999 <-> 433, 1714`
+1999 <-> 433, 1714

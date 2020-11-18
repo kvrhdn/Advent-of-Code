@@ -1,23 +1,25 @@
-package main
+package day18
 
 import (
-	"fmt"
-	"github.com/koenaad/Advent-of-Code-2017/day18/duet"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day18/duet"
 )
 
-func main() {
-	fmt.Println("Advent of Code 2017 - day 18")
-
+func SolvePart1(input string) interface{} {
 	instructions, err := duet.ParseInstructions(input)
 	if err != nil {
 		panic(err)
 	}
 
-	lastFrequency := findLastPlayedFrequency(instructions)
-	fmt.Printf("Puzzle 1: value of the last played frequency at first rcv = %v\n", lastFrequency)
+	return findLastPlayedFrequency(instructions)
+}
 
-	valuesSentByProgram1 := valuesSentByProgram1(instructions)
-	fmt.Printf("Puzzle 2: amount of values sent by program 1 = %v\n", valuesSentByProgram1)
+func SolvePart2(input string) interface{} {
+	instructions, err := duet.ParseInstructions(input)
+	if err != nil {
+		panic(err)
+	}
+
+	return valuesSentByProgram1(instructions)
 }
 
 func findLastPlayedFrequency(instructions []duet.Instruction) int {

@@ -1,8 +1,9 @@
-package main
+package day13
 
 import (
-	"github.com/koenaad/Advent-of-Code-2017/day13/firewall"
 	"testing"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day13/firewall"
 )
 
 func Test_delayNeedToAvoidBeingCaught(t *testing.T) {

@@ -1,8 +1,9 @@
 package knotHash
 
 import (
-	"github.com/koenaad/Advent-of-Code-2017/util"
 	"testing"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/util"
 )
 
 func TestCreateNumbersUpTo(t *testing.T) {

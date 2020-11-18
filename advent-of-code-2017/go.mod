@@ -1,8 +1,9 @@
-module github.com/koenaad/Advent-of-Code-2017
+module github.com/kvrhdn/advent-of-code/advent-of-code-2017
 
-go 1.13
+go 1.15
 
 require (
-	github.com/pkg/errors v0.8.1
-	github.com/stretchr/testify v1.4.0
+	github.com/jessevdk/go-flags v1.4.0
+	github.com/pkg/errors v0.9.1
+	github.com/stretchr/testify v1.6.1
 )

@@ -1,21 +1,17 @@
-package main
+package day15
 
-import (
-	"fmt"
-)
-
-func main() {
-	fmt.Println("Advent of Code 2017 - day 15")
-
+func SolvePart1(input string) interface{} {
 	genDefA1 := GeneratorDefinition{116, 16807, nil}
-	genDefB1 := GeneratorDefinition{229, 48271, nil}
+	genDefB1 := GeneratorDefinition{299, 48271, nil}
 
-	fmt.Printf("Puzzle 1: after 40 million pairs, matches = %v\n", runTheJudge(genDefA1, genDefB1, 40000000))
+	return runTheJudge(genDefA1, genDefB1, 40000000)
+}
 
+func SolvePart2(input string) interface{} {
 	genDefA2 := GeneratorDefinition{116, 16807, notDivisbleBy(4)}
-	genDefB2 := GeneratorDefinition{229, 48271, notDivisbleBy(8)}
+	genDefB2 := GeneratorDefinition{299, 48271, notDivisbleBy(8)}
 
-	fmt.Printf("Puzzle 2: after 5 millions pairs, with picky generators, matches = %v\n", runTheJudge(genDefA2, genDefB2, 5000000))
+	return runTheJudge(genDefA2, genDefB2, 5000000)
 }
 
 func runTheJudge(genDefA GeneratorDefinition, genDefB GeneratorDefinition, count int) (matches int) {

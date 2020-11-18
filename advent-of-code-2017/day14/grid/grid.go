@@ -2,7 +2,8 @@ package grid
 
 import (
 	"fmt"
-	"github.com/koenaad/Advent-of-Code-2017/day10/knotHash"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day10/knotHash"
 )
 
 type Grid struct {

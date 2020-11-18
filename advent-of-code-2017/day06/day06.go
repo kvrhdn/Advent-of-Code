@@ -1,21 +1,25 @@
-package main
+package day06
 
 import (
-	"fmt"
-	"github.com/koenaad/Advent-of-Code-2017/util"
 	"strings"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/util"
 )
 
-var input = "0 5 10 0 11 14 13 4 11 8 8 7 1 4 12 11"
-
-func main() {
-	fmt.Println("Advent of Code 2017 - day 06")
-
+func SolvePart1(input string) interface{} {
 	memoryBank := initMemoryBankFrom(input)
 
-	cycles, loopSize := RedistributeCyclesUntilLoop(memoryBank)
+	cycles, _ := RedistributeCyclesUntilLoop(memoryBank)
 
-	fmt.Printf("Cycles until loop: %v, loop size: %v\n", cycles, loopSize)
+	return cycles
+}
+
+func SolvePart2(input string) interface{} {
+	memoryBank := initMemoryBankFrom(input)
+
+	_, loopSize := RedistributeCyclesUntilLoop(memoryBank)
+
+	return loopSize
 }
 
 func initMemoryBankFrom(input string) []int {

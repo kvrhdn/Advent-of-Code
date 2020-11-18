@@ -1,4 +1,4 @@
-package main
+package day19
 
 type Vec2 struct {
 	x, y int

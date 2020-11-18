@@ -1,18 +1,19 @@
-package main
+package day20
 
 import (
 	"fmt"
-	"github.com/koenaad/Advent-of-Code-2017/day20/particle"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day20/particle"
 )
 
-func main() {
-	fmt.Println("Advent of Code 2017 - day 20")
-
+func SolvePart1(input string) interface{} {
 	world := particle.Parse(input)
-	fmt.Printf("Puzzle 1: particle that remains closest = %v\n", particleThatRemainsClosest(world).ID)
+	return particleThatRemainsClosest(world).ID
+}
 
-	world = particle.Parse(input)
-	fmt.Printf("Puzzle 2: particles remaining after all collisions = %v\n", particlesRemainingAfterCollisions(world))
+func SolvePart2(input string) interface{} {
+	world := particle.Parse(input)
+	return particlesRemainingAfterCollisions(world)
 }
 
 func particleThatRemainsClosest(w particle.World) (closest *particle.Particle) {

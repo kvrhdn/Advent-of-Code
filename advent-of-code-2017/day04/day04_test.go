@@ -1,4 +1,4 @@
-package main
+package day04
 
 import (
 	"testing"
@@ -39,4 +39,3 @@ func TestValidatePassphraseNoAnagrams(t *testing.T) {
 		}
 	}
 }
-

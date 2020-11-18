@@ -1,15 +1,12 @@
-package main
+package day22
 
 import (
-	"fmt"
 	"strings"
 
-	"github.com/koenaad/Advent-of-Code-2017/day22/grid"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day22/grid"
 )
 
-func main() {
-	fmt.Println("Advent of Code 2017 - day 22")
-
+func SolvePart1(input string) interface{} {
 	g := readInput(input)
 	c := &VirusCarrier{
 		pos:       g.Center(),
@@ -17,16 +14,18 @@ func main() {
 		virusImpl: virusV1,
 	}
 
-	fmt.Printf("Puzzle 1: infections after 10 000 V1 bursts = %v\n", infectionsAfterBursts(10_000, g, c))
+	return infectionsAfterBursts(10_000, g, c)
+}
 
-	g = readInput(input)
-	c = &VirusCarrier{
+func SolvePart2(input string) interface{} {
+	g := readInput(input)
+	c := &VirusCarrier{
 		pos:       g.Center(),
 		dir:       grid.North,
 		virusImpl: virusV2,
 	}
 
-	fmt.Printf("Puzzle 2: infections after 10 000 000 V2 bursts = %v\n", infectionsAfterBursts(10_000_000, g, c))
+	return infectionsAfterBursts(10_000_000, g, c)
 }
 
 const (

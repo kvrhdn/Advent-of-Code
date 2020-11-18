@@ -1,8 +1,9 @@
-package main
+package day18
 
 import (
-	"github.com/koenaad/Advent-of-Code-2017/day18/duet"
 	"testing"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day18/duet"
 )
 
 func Test_findLastPlayedFrequency(t *testing.T) {

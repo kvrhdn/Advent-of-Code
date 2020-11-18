@@ -1,53 +1,4 @@
-package main
-
-import (
-	"fmt"
-	"github.com/koenaad/Advent-of-Code-2017/day08/instruction"
-)
-
-func main() {
-	fmt.Println("Advent of Code 2017 - day 08")
-
-	instructions := instruction.ParseListOfJumpInstructions(input)
-
-	bank := instruction.NewRegisterBank()
-	bank.EvaluateAll(instructions)
-
-	name, value := registerWithLargestValue(bank)
-
-	fmt.Printf("Solution 1: register with largest value: %q = %v\n", name, value)
-
-	bank = instruction.NewRegisterBank()
-
-	name, value = registerWithLargestValueDuringEvaluation(instructions, bank)
-
-	fmt.Printf("Solution 2: largest value at any time: %q = %v\n", name, value)
-}
-
-func registerWithLargestValue(bank instruction.RegisterBank) (name string, value int) {
-	for reg, v := range bank {
-		if v > value {
-			name = reg
-			value = v
-		}
-	}
-	return
-}
-
-func registerWithLargestValueDuringEvaluation(instructions []instruction.JumpInstruction, bank instruction.RegisterBank) (name string, value int) {
-	for _, ir := range instructions {
-		bank.Evaluate(ir)
-
-		largestRegister, largestValue := registerWithLargestValue(bank)
-		if largestValue > value {
-			name = largestRegister
-			value = largestValue
-		}
-	}
-	return
-}
-
-var input = `d dec 461 if oiy <= 1
+d dec 461 if oiy <= 1
 phf dec -186 if eai != -2
 oiy inc 585 if lk >= 9
 bz dec -959 if gx < 9
@@ -1046,4 +997,4 @@ phf dec -29 if vyo == -1488
 gx inc -660 if bz >= -5097
 sy dec 878 if oiy < 5975
 x dec 365 if oiy < 5971
-fu inc 131 if rjt == 4175`
+fu inc 131 if rjt == 4175

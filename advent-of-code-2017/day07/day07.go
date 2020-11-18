@@ -1,23 +1,26 @@
-package main
+package day07
 
 import (
 	"fmt"
 	"strings"
 )
 
-func main() {
-	fmt.Println("Advent of Code 2017 - day 07")
+func SolvePart1(input string) interface{} {
+	programTree := ParseInput(input)
+	return programTree.Name
+}
 
+func SolvePart2(input string) interface{} {
 	programTree := ParseInput(input)
 
-	fmt.Printf("The bottom program is %q\n", programTree.Name)
-
+	// TODO
 	unbalancedProgram := FindTopMostUnbalancedProgram(programTree)
 
 	fmt.Printf("Unbalanced program is %q, which holds:\n", unbalancedProgram.Name)
 	for _, p := range unbalancedProgram.Holds {
 		fmt.Printf("- %q (%v), total weight = %v\n", p.Name, p.Weight, p.RecursiveWeight())
 	}
+	return nil
 }
 
 type Program struct {

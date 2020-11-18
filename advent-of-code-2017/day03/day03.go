@@ -1,17 +1,17 @@
-package main
+package day03
 
 import (
-    "fmt"
-	"github.com/koenaad/Advent-of-Code-2017/util"
+	"strconv"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/util"
 )
 
-var input = 277678
+func SolvePart1(input string) interface{} {
+	return DetermineDistanceToStorageLocationInSpiralMemory(input)
+}
 
-func main() {
-	fmt.Println("Advent of Code 2017 - day 03")
-
-	fmt.Println("solution 1 =", DetermineDistanceToStorageLocationInSpiralMemory(input))
-	fmt.Println("solution 2 =", FirstLoadtestValueGreaterThan(input))
+func SolvePart2(input string) interface{} {
+	return FirstLoadtestValueGreaterThan(input)
 }
 
 func doTheSpiral(eachStep func(util.Pos), stopWhen func(util.Pos) bool) util.Pos {
@@ -57,7 +57,12 @@ func doTheSpiral(eachStep func(util.Pos), stopWhen func(util.Pos) bool) util.Pos
 	}
 }
 
-func DetermineDistanceToStorageLocationInSpiralMemory(input int) int {
+func DetermineDistanceToStorageLocationInSpiralMemory(inputString string) interface{} {
+	input, err := strconv.Atoi(inputString)
+	if err != nil {
+		panic(err)
+	}
+
 	if input < 1 {
 		panic("input can't be smaller than 1")
 	}
@@ -76,7 +81,12 @@ func DetermineDistanceToStorageLocationInSpiralMemory(input int) int {
 	return util.ManhattenDistance(util.Pos{0, 0}, lastPos)
 }
 
-func FirstLoadtestValueGreaterThan(input int) int {
+func FirstLoadtestValueGreaterThan(inputString string) interface{} {
+	input, err := strconv.Atoi(inputString)
+	if err != nil {
+		panic(err)
+	}
+
 	grid := NewZeroGrid()
 
 	eachStep := func(pos util.Pos) {

@@ -1,4 +1,4 @@
-package main
+package day11
 
 import (
 	"testing"

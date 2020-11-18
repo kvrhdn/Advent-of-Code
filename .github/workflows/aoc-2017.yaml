@@ -1,0 +1,24 @@
+name: AoC 2017
+
+on:
+  push:
+    paths:
+    - 'advent-of-code-2017/**'
+
+defaults:
+  run:
+    working-directory: advent-of-code-2017
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: go build
+
+      - run: go test ./...
+
+      - run: go run . --all

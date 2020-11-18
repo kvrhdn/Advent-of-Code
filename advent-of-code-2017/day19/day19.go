@@ -1,18 +1,19 @@
-package main
+package day19
 
-import (
-	"fmt"
-)
-
-func main() {
-	fmt.Println("Advent of Code 2017 - day 19")
-
+func SolvePart1(input string) interface{} {
 	rd := NewRoutingDiagram(input)
 
-	path, steps := StepThrough(rd)
+	path, _ := StepThrough(rd)
 
-	fmt.Printf("Puzzle 1: path through routing diagram = %v\n", string(path))
-	fmt.Printf("Puzzle 2: steps the packet needs to go = %v\n", steps)
+	return string(path)
+}
+
+func SolvePart2(input string) interface{} {
+	rd := NewRoutingDiagram(input)
+
+	_, steps := StepThrough(rd)
+
+	return steps
 }
 
 func StepThrough(rd RoutingDiagram) (path []rune, steps int) {

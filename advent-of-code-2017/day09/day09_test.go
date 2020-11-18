@@ -1,4 +1,4 @@
-package main
+package day09
 
 import (
 	"reflect"

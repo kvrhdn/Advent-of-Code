@@ -1,17 +1,15 @@
-package main
+package day14
 
 import (
-	"fmt"
-	"github.com/koenaad/Advent-of-Code-2017/day14/grid"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day14/grid"
 )
 
-var input = "wenycdww"
-
-func main() {
-	fmt.Println("Advent of Code 2017 - day 14")
-
+func SolvePart1(input string) interface{} {
 	g := grid.InitGridKnotHash(input)
+	return g.SquaresOccupied()
+}
 
-	fmt.Printf("Puzzle 1: squares used = %v", g.SquaresOccupied())
-	fmt.Printf("Puzzle 2: regions after regionalizing = %v", g.Regionalize())
+func SolvePart2(input string) interface{} {
+	g := grid.InitGridKnotHash(input)
+	return g.Regionalize()
 }

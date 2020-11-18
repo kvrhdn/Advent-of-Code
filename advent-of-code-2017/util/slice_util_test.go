@@ -24,7 +24,7 @@ func TestSliceCopy(t *testing.T) {
 
 	copy := SliceCopy(original)
 
-	copy[0] = 4;
+	copy[0] = 4
 
 	if original[0] != 1 {
 		t.Errorf("SliceCopy: original slice was impacted by copy")

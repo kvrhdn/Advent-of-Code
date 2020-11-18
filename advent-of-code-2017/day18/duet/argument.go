@@ -2,8 +2,9 @@ package duet
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 func asReg(s string) (r register, err error) {
