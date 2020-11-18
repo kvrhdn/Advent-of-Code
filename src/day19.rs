@@ -83,16 +83,16 @@ fn solve_part2(input: &(Vec<Replacement>, String)) -> u32 {
     println!("Sequence len: {}", sequence.len());
 
     loop {
-        // randomly grab 10 of the smallest molecules, we _assume_ that our
+        // randomly grab some of the smallest molecules, we _assume_ that our
         // path to "e" will use the fastest decreasing molecules. This is not
         // guaranteed to work (i.e. if we follow a dead end). To avoid this we
         // could perhaps dynamically increase the size of the batch, creating a
-        // more diverse mix.
+        // more diverse mix when we don't progress anymore.
         let smallest_len = todo.keys().map(|k| k.len()).min().unwrap();
         let smallest_molecules = todo
             .iter()
             .filter(|(k, _)| k.len() == smallest_len)
-            .take(10)
+            .take(50)
             // clone these molecules so we can insert into todo while looping
             .map(|(k, v)| (k.clone(), *v))
             .collect::<Vec<_>>();
