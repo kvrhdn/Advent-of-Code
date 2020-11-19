@@ -1,10 +1,15 @@
 package day01
 
-import "testing"
+import (
+	"testing"
 
-func TestSumOfDigitsThatMatchNext(t *testing.T) {
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/aoc"
+	"github.com/stretchr/testify/assert"
+)
+
+func TestExamplesPart1(t *testing.T) {
 	cases := []struct {
-		in       string
+		input    string
 		expected int
 	}{
 		{"1122", 3},
@@ -13,16 +18,13 @@ func TestSumOfDigitsThatMatchNext(t *testing.T) {
 		{"91212129", 9},
 	}
 	for _, c := range cases {
-		got := SumOfDigitsThatMatchNext(c.in)
-		if got != c.expected {
-			t.Errorf("SumOfDigitsThatMatchNext(%v) = %v, but expected %v", c.in, got, c.expected)
-		}
+		assert.Equal(t, c.expected, SolvePart1(c.input), "SolvePart1(%s)", c.input)
 	}
 }
 
-func TestSumOfDigitsThatMatchHalfway(t *testing.T) {
+func TestExamplesPart2(t *testing.T) {
 	cases := []struct {
-		in       string
+		input    string
 		expected int
 	}{
 		{"1212", 6},
@@ -32,9 +34,13 @@ func TestSumOfDigitsThatMatchHalfway(t *testing.T) {
 		{"12131415", 4},
 	}
 	for _, c := range cases {
-		got := SumOfDigitsThatMatchHalfway(c.in)
-		if got != c.expected {
-			t.Errorf("SumOfDigitsThatMatchHalfway(%v) = %v, but expected %v", c.in, got, c.expected)
-		}
+		assert.Equal(t, c.expected, SolvePart2(c.input), "SolvePart2(%s)", c.input)
 	}
+}
+
+func TestRealInput(t *testing.T) {
+	input := aoc.ReadInputRelative(2017, 1, "../")
+
+	assert.Equal(t, 1175, SolvePart1(input))
+	assert.Equal(t, 1166, SolvePart2(input))
 }

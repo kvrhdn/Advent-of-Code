@@ -9,9 +9,14 @@ indent_style = space
 indent_size = 4
 insert_final_newline = true
 
+[*.go]
+indent_style = tab
+ij_go_import_sorting = goimports
+
 [*.yaml]
 indent_size = 2
 
 [Makefile]
 indent_style = tab
 indent_size = 8
+

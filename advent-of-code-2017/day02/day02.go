@@ -6,51 +6,39 @@ import (
 )
 
 func SolvePart1(input string) interface{} {
-	return CalculateSumOfRanges(input)
+	values := parseInput(input)
+
+	sum := 0
+	for _, line := range values {
+		sum += rangeOf(line)
+	}
+	return sum
 }
 
 func SolvePart2(input string) interface{} {
-	return CalculateSumOfEvenlyDivisibleResults(input)
-}
-
-func CalculateSumOfRanges(input string) interface{} {
-	values := Day02InputToInts(input)
+	values := parseInput(input)
 
 	sum := 0
-
 	for _, line := range values {
-		sum += RangeOf(line)
+		sum += resultOfEvenlyDivisibleNumber(line)
 	}
-
 	return sum
 }
 
-func CalculateSumOfEvenlyDivisibleResults(input string) interface{} {
-	values := Day02InputToInts(input)
-
-	sum := 0
-
-	for _, line := range values {
-		sum += EvenlyDivisibleResultOf(line)
-	}
-
-	return sum
-}
-
-func Day02InputToInts(input string) (output [][]int) {
+func parseInput(input string) (output [][]int) {
 	lines := strings.Split(input, "\n")
 
 	for _, line := range lines {
-		words := strings.Fields(line)
+		numbers := strings.Fields(line)
 
 		var values []int
 
-		for i := 0; i < len(words); i++ {
-			value, err := strconv.Atoi(words[i])
+		for i := 0; i < len(numbers); i++ {
+			v, err := strconv.Atoi(numbers[i])
 			if err != nil {
 				panic(err)
 			}
-			values = append(values, value)
+			values = append(values, v)
 		}
 
 		output = append(output, values)
@@ -59,7 +47,7 @@ func Day02InputToInts(input string) (output [][]int) {
 	return
 }
 
-func RangeOf(values []int) int {
+func rangeOf(values []int) int {
 	min := values[0]
 	max := values[0]
 
@@ -75,22 +63,16 @@ func RangeOf(values []int) int {
 	return max - min
 }
 
-func EvenlyDivisibleResultOf(values []int) int {
+func resultOfEvenlyDivisibleNumber(values []int) int {
 	for i, value1 := range values {
 		for _, value2 := range values[i+1:] {
-
-			if isEvenlyDivisible(value1, value2) {
+			if value1%value2 == 0 {
 				return value1 / value2
 			}
-			if isEvenlyDivisible(value2, value1) {
+			if value2%value1 == 0 {
 				return value2 / value1
 			}
 		}
 	}
-
-	panic("could not find any evenly divisible pair")
-}
-
-func isEvenlyDivisible(value1, value2 int) bool {
-	return value1%value2 == 0
+	panic("Could not find any evenly divisible pair")
 }

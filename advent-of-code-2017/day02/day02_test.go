@@ -1,72 +1,57 @@
 package day02
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/aoc"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestCalculateSumOfRanges(t *testing.T) {
-	in := "5 1 9 5\n7 5 3\n2 4 6 8"
-	expected := 18
-
-	got := CalculateSumOfRanges(in)
-	if got != expected {
-		t.Errorf("CalculateSumOfRanges(%v) = %v, but expected %v", in, got, expected)
-	}
-}
-
-func TestCalculateSumOfEvenlyDivisibleResults(t *testing.T) {
-	in := "5 9 2 8\n9 4 7 3\n3 8 6 5"
-	expected := 9
-
-	got := CalculateSumOfEvenlyDivisibleResults(in)
-	if got != expected {
-		t.Errorf("CalculateSumOfEvenlyDivisibleResults((%v) = %v, but expected %v", in, got, expected)
-	}
-}
-
-func TestDay02InputToInts(t *testing.T) {
+func TestParseInput(t *testing.T) {
 	cases := []struct {
-		in       string
+		input    string
 		expected [][]int
 	}{
-		{"1 2\n3 4", asSlice([]int{1, 2}, []int{3, 4})},
-		{"321\n3312 41231 234342", asSlice([]int{321}, []int{3312, 41231, 234342})},
+		{"1 2\n3 4", [][]int{{1, 2}, {3, 4}}},
+		{"321\n3312 41231 234342", [][]int{{321}, {3312, 41231, 234342}}},
 	}
 	for _, c := range cases {
-		got := Day02InputToInts(c.in)
-		if !reflect.DeepEqual(got, c.expected) {
-			t.Errorf("Day02InputToInts(%v) = %v, but expected %v", c.in, got, c.expected)
-		}
+		assert.Equal(t, c.expected, parseInput(c.input), "parseInput(%s)", c.input)
 	}
 }
 
-func asSlice(slices ...[]int) (sliceOfSlices [][]int) {
-	for _, slice := range slices {
-		sliceOfSlices = append(sliceOfSlices, slice)
-	}
-	return
+func TestExamplePart1(t *testing.T) {
+	example := `5 1 9 5
+7 5 3
+2 4 6 8`
+
+	assert.Equal(t, 18, SolvePart1(example))
+}
+
+func TestExamplePart2(t *testing.T) {
+	example := `5 9 2 8
+9 4 7 3
+3 8 6 5`
+
+	assert.Equal(t, 9, SolvePart2(example))
 }
 
 func TestRangeOf(t *testing.T) {
 	cases := []struct {
-		in       []int
+		input    []int
 		expected int
 	}{
 		{[]int{1, 2, 3}, 2},
 		{[]int{4, 1, 3}, 3},
 	}
 	for _, c := range cases {
-		got := RangeOf(c.in)
-		if got != c.expected {
-			t.Errorf("RangeOf(%v) = %v, but expected %v", c.in, got, c.expected)
-		}
+		assert.Equal(t, c.expected, rangeOf(c.input), "rangeOf(%v)", c.input)
 	}
 }
 
 func TestEvenlyDivisbleResult(t *testing.T) {
 	cases := []struct {
-		in       []int
+		input    []int
 		expected int
 	}{
 		{[]int{5, 9, 2, 8}, 4},
@@ -74,9 +59,13 @@ func TestEvenlyDivisbleResult(t *testing.T) {
 		{[]int{3, 8, 6, 5}, 2},
 	}
 	for _, c := range cases {
-		got := EvenlyDivisibleResultOf(c.in)
-		if got != c.expected {
-			t.Errorf("EvenlyDivisibleResultOf(%v) = %v, but expected %v", c.in, got, c.expected)
-		}
+		assert.Equal(t, c.expected, resultOfEvenlyDivisibleNumber(c.input), "resultOfEvenlyDivisibleNumber(%v)", c.input)
 	}
+}
+
+func TestRealInput(t *testing.T) {
+	input := aoc.ReadInputRelative(2017, 2, "../")
+
+	assert.Equal(t, 45158, SolvePart1(input))
+	assert.Equal(t, 294, SolvePart2(input))
 }
