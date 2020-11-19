@@ -6,30 +6,28 @@ import (
 )
 
 func SolvePart1(input string) interface{} {
-	return countValidPassphrases(input, NoDuplicates)
+	return countValidPassphrases(input, validatorNoDuplicates)
 }
 
 func SolvePart2(input string) interface{} {
-	return countValidPassphrases(input, NoAnagrams)
+	return countValidPassphrases(input, validatorNoAnagrams)
 }
 
 type Validator func(word1, word2 string) bool
 
 func countValidPassphrases(input string, validator Validator) int {
-	passphrases := strings.Split(input, "\n")
+	count := 0
 
-	amountValid := 0
-
-	for _, passphrase := range passphrases {
-		if ValidatePassphrase(passphrase, validator) {
-			amountValid++
+	for _, passphrase := range strings.Split(input, "\n") {
+		if validatePassphrase(passphrase, validator) {
+			count++
 		}
 	}
 
-	return amountValid
+	return count
 }
 
-func ValidatePassphrase(passphrase string, validator Validator) bool {
+func validatePassphrase(passphrase string, validator Validator) bool {
 	words := strings.Fields(passphrase)
 
 	for i, word1 := range words {
@@ -42,11 +40,11 @@ func ValidatePassphrase(passphrase string, validator Validator) bool {
 	return true
 }
 
-func NoDuplicates(word1, word2 string) bool {
+func validatorNoDuplicates(word1, word2 string) bool {
 	return word1 != word2
 }
 
-func NoAnagrams(word1, word2 string) bool {
+func validatorNoAnagrams(word1, word2 string) bool {
 	if len(word1) != len(word2) {
 		return true
 	}
