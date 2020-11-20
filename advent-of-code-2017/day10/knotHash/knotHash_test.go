@@ -3,7 +3,7 @@ package knotHash
 import (
 	"testing"
 
-	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/util"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/shared/intslice"
 )
 
 func TestCreateNumbersUpTo(t *testing.T) {
@@ -11,7 +11,7 @@ func TestCreateNumbersUpTo(t *testing.T) {
 
 	expected := []int{0, 1, 2, 3, 4}
 
-	if !util.SliceEquals(numbers, expected) {
+	if !intslice.Equals(numbers, expected) {
 		t.Errorf("CreateNumbersUpTo(5): result is %v, but expected %v", numbers, expected)
 	}
 }
@@ -24,7 +24,7 @@ func TestKnotHashRound(t *testing.T) {
 
 	expected := []int{3, 4, 2, 1, 0}
 
-	if !util.SliceEquals(numbers, expected) {
+	if !intslice.Equals(numbers, expected) {
 		t.Errorf("hashed result is %v, but expected %v", numbers, expected)
 	}
 }
@@ -51,7 +51,7 @@ func Test_createLengthsFromInput(t *testing.T) {
 	expected := []int{49, 44, 50, 44, 51, 17, 31, 73, 47, 23}
 
 	got := createLengthsFromInput(in)
-	if !util.SliceEquals(expected, got) {
+	if !intslice.Equals(expected, got) {
 		t.Errorf("createLengthsFromInput(%q): got %v, but expected %v", in, got, expected)
 	}
 }
@@ -61,7 +61,7 @@ func Test_createDenseHash(t *testing.T) {
 	expected := []int{64}
 
 	got := createDenseHash(in)
-	if !util.SliceEquals(expected, got) {
+	if !intslice.Equals(expected, got) {
 		t.Errorf("createDenseHash(%v): got %v, but expected %v", in, got, expected)
 	}
 }

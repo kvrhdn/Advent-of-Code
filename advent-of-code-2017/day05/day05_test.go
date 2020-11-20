@@ -1,25 +1,37 @@
 package day05
 
-import "testing"
+import (
+	"testing"
 
-func TestJumpThroughInstructionsUntilOutOfBounds(t *testing.T) {
-	input := []int{0, 3, 0, 1, -3}
-	expected := 5
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/aoc"
+	"github.com/stretchr/testify/assert"
+)
 
-	got := JumpThroughInstructionsUntilOutOfBounds(input)
+func TestExamplePart1(t *testing.T) {
+	input := `0
+3
+0
+1
+-3`
+	result := SolvePart1(input)
 
-	if got != expected {
-		t.Errorf("JumpThroughInstructionsUntilOutOfBounds(%v): got %v but expected %v", input, got, expected)
-	}
+	assert.Equal(t, 5, result)
 }
 
-func TestSpecialJumpThroughInstructionsUntilOutOfBounds(t *testing.T) {
-	input := []int{0, 3, 0, 1, -3}
-	expected := 10
+func TestExamplePart2(t *testing.T) {
+	input := `0
+3
+0
+1
+-3`
+	result := SolvePart2(input)
 
-	got := SpecialJumpThroughInstructionsUntilOutOfBounds(input)
+	assert.Equal(t, 10, result)
+}
 
-	if got != expected {
-		t.Errorf("SpecialJumpThroughInstructionsUntilOutOfBounds(%v): got %v but expected %v", input, got, expected)
-	}
+func TestRealInput(t *testing.T) {
+	input := aoc.ReadInputRelative(2017, 5, "../")
+
+	assert.Equal(t, 354121, SolvePart1(input))
+	assert.Equal(t, 27283023, SolvePart2(input))
 }

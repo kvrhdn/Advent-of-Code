@@ -4,11 +4,11 @@ import (
 	"strings"
 
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day10/knotHash"
-	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/util"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/shared/intslice"
 )
 
 func SolvePart1(input string) interface{} {
-	lengths := util.SliceAtoi(strings.Split(input, ","))
+	lengths := intslice.Atoi(strings.Split(input, ","))
 
 	numbers := knotHash.CreateNumbersUpTo(255)
 

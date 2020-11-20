@@ -1,8 +1,8 @@
-package util
+package intslice
 
 import "strconv"
 
-func SliceEquals(slice1, slice2 []int) bool {
+func Equals(slice1, slice2 []int) bool {
 	if len(slice1) != len(slice2) {
 		return false
 	}
@@ -16,7 +16,7 @@ func SliceEquals(slice1, slice2 []int) bool {
 	return true
 }
 
-func SliceCopy(in []int) []int {
+func Copy(in []int) []int {
 	out := make([]int, len(in))
 
 	copy(out, in)
@@ -24,18 +24,16 @@ func SliceCopy(in []int) []int {
 	return out
 }
 
-func SliceAtoi(in []string) []int {
-	var ret = make([]int, len(in))
+func Atoi(in []string) []int {
+	var out = make([]int, len(in))
 
 	for i, a := range in {
 		value, err := strconv.Atoi(a)
-
 		if err != nil {
 			panic(err)
 		}
-
-		ret[i] = value
+		out[i] = value
 	}
 
-	return ret
+	return out
 }

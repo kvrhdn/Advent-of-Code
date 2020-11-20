@@ -3,65 +3,45 @@ package day05
 import (
 	"strings"
 
-	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/util"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/shared/intslice"
 )
 
 func SolvePart1(input string) interface{} {
-	instructionsString := strings.Split(input, "\n")
-	instructions := util.SliceAtoi(instructionsString)
+	instructions := parseInput(input)
 
-	return JumpThroughInstructionsUntilOutOfBounds(instructions)
+	return runProgram(instructions, func(ir *int) {
+		*ir += 1
+	})
 }
 
 func SolvePart2(input string) interface{} {
-	instructionsString := strings.Split(input, "\n")
-	instructions := util.SliceAtoi(instructionsString)
+	instructions := parseInput(input)
 
-	return SpecialJumpThroughInstructionsUntilOutOfBounds(instructions)
-}
-
-func JumpThroughInstructionsUntilOutOfBounds(instructions []int) int {
-	maxIndex := len(instructions)
-
-	steps := 0
-	index := 0
-
-	for {
-		prevIndex := index
-
-		index += instructions[prevIndex]
-		instructions[prevIndex] += 1
-
-		steps++
-
-		if index < 0 || index >= maxIndex {
-			return steps
-		}
-	}
-}
-
-func SpecialJumpThroughInstructionsUntilOutOfBounds(instructions []int) int {
-	maxIndex := len(instructions)
-
-	steps := 0
-	index := 0
-
-	for {
-		prevIndex := index
-
-		offset := instructions[prevIndex]
-
-		index += offset
-
-		if offset >= 3 {
-			instructions[prevIndex] -= 1
+	return runProgram(instructions, func(ir *int) {
+		if *ir >= 3 {
+			*ir -= 1
 		} else {
-			instructions[prevIndex] += 1
+			*ir += 1
 		}
+	})
+}
+
+func parseInput(input string) []int {
+	return intslice.Atoi(strings.Split(input, "\n"))
+}
+
+func runProgram(instructions []int, modifyAfterJump func(*int)) (steps int) {
+	curr := 0
+
+	for {
+		prev := curr
+
+		curr += instructions[prev]
+		modifyAfterJump(&instructions[prev])
 
 		steps++
 
-		if index < 0 || index >= maxIndex {
+		if curr < 0 || curr >= len(instructions) {
 			return steps
 		}
 	}
