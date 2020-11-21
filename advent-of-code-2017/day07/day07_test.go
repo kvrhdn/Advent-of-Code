@@ -1,67 +1,68 @@
 package day07
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/aoc"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestParseProgram(t *testing.T) {
-	var cases = []struct {
-		in       string
-		expected Program
-	}{
-		{"pbga (66)", Program{Name: "pbga", Weight: 66}},
-		{"fwft (72) -> ktlj, cntj, xhth", Program{Name: "fwft", Weight: 72, HoldsNames: []string{"ktlj", "cntj", "xhth"}}},
-	}
-	for _, c := range cases {
-		got := ParseProgram(c.in)
-		if !reflect.DeepEqual(got, c.expected) {
-			t.Errorf("ParseProgram(%q) = %v, but expected %v", c.in, got, c.expected)
-		}
-	}
-}
+const exampleInput = `pbga (66)
+xhth (57)
+ebii (61)
+havc (66)
+ktlj (57)
+fwft (72) -> ktlj, cntj, xhth
+qoyq (66)
+padx (45) -> pbga, havc, qoyq
+tknk (41) -> ugml, padx, fwft
+jptl (61)
+ugml (68) -> gyxo, ebii, jptl
+gyxo (61)
+cntj (57)`
 
 func TestParseInput(t *testing.T) {
-	programTower := loadExampleInput()
+	programs := parseInput(exampleInput)
 
-	if programTower.Name != "tknk" {
-		t.Errorf("found bottom program %v, but expected \"tknk\"", programTower.Name)
-	}
+	assert.Equal(t,
+		ProgramDescription{
+			Name:      "pbga",
+			Weight:    66,
+			IsHolding: nil,
+		},
+		programs["pbga"],
+	)
+	assert.Equal(t,
+		ProgramDescription{
+			Name:      "fwft",
+			Weight:    72,
+			IsHolding: []string{"ktlj", "cntj", "xhth"},
+		},
+		programs["fwft"],
+	)
 }
 
-func TestProgram_RecursiveWeight(t *testing.T) {
-	programTower := loadExampleInput()
+func TestFindBottomProgram(t *testing.T) {
+	programs := parseInput(exampleInput)
 
-	got := programTower.RecursiveWeight()
-	if got != 778 {
-		t.Errorf("expected recursive weight to be 778, but got %v", got)
-	}
+	assert.Equal(t, "tknk", findBottomProgram(programs).Name)
 }
 
-func TestFindUnbalancedProgram(t *testing.T) {
-	programTower := loadExampleInput()
+func TestExamplePart2(t *testing.T) {
+	programs := parseInput(exampleInput)
+	bottom := findBottomProgram(programs)
 
-	got := FindTopMostUnbalancedProgram(programTower)
+	programTree := buildProgramTree(&bottom, programs)
 
-	if got.Name != "tknk" {
-		t.Errorf("expected unbalanced program to be \"tknk\", but got %v", got.Name)
-	}
+	unbalancedProgram, expectedTotalWeight := programTree.findUnbalancedProgram()
+
+	assert.Equal(t, "ugml", unbalancedProgram.Name)
+	assert.Equal(t, 243, expectedTotalWeight)
 }
 
-func loadExampleInput() Program {
-	input := `pbga (66)
-	xhth (57)
-	ebii (61)
-	havc (66)
-	ktlj (57)
-	fwft (72) -> ktlj, cntj, xhth
-	qoyq (66)
-	padx (45) -> pbga, havc, qoyq
-	tknk (41) -> ugml, padx, fwft
-	jptl (61)
-	ugml (68) -> gyxo, ebii, jptl
-	gyxo (61)
-	cntj (57)`
-	programTower := ParseInput(input)
-	return programTower
+func TestRealInput(t *testing.T) {
+	input := aoc.ReadInputRelative(2017, 7, "../")
+
+	assert.Equal(t, "dtacyn", SolvePart1(input))
+	assert.Equal(t, 521, SolvePart2(input))
 }

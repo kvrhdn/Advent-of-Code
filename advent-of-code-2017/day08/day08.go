@@ -1,47 +1,50 @@
 package day08
 
-import (
-	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day08/instruction"
-)
+import "strings"
 
 func SolvePart1(input string) interface{} {
-	instructions := instruction.ParseListOfJumpInstructions(input)
+	instructions := parseInput(input)
 
-	bank := instruction.NewRegisterBank()
-	bank.EvaluateAll(instructions)
+	memory := make(map[string]int)
 
-	_, value := registerWithLargestValue(bank)
-	return value
+	for _, ir := range instructions {
+		ir.execute(memory)
+	}
+
+	largest := 0
+
+	for _, value := range memory {
+		if value > largest {
+			largest = value
+		}
+	}
+
+	return largest
 }
 
 func SolvePart2(input string) interface{} {
-	instructions := instruction.ParseListOfJumpInstructions(input)
+	instructions := parseInput(input)
 
-	bank := instruction.NewRegisterBank()
+	memory := make(map[string]int)
 
-	_, value := registerWithLargestValueDuringEvaluation(instructions, bank)
-	return value
-}
+	largest := 0
 
-func registerWithLargestValue(bank instruction.RegisterBank) (name string, value int) {
-	for reg, v := range bank {
-		if v > value {
-			name = reg
-			value = v
+	for _, ir := range instructions {
+		ir.execute(memory)
+
+		for _, value := range memory {
+			if value > largest {
+				largest = value
+			}
 		}
 	}
-	return
+
+	return largest
 }
 
-func registerWithLargestValueDuringEvaluation(instructions []instruction.JumpInstruction, bank instruction.RegisterBank) (name string, value int) {
-	for _, ir := range instructions {
-		bank.Evaluate(ir)
-
-		largestRegister, largestValue := registerWithLargestValue(bank)
-		if largestValue > value {
-			name = largestRegister
-			value = largestValue
-		}
+func parseInput(input string) (instructions []Instruction) {
+	for _, line := range strings.Split(input, "\n") {
+		instructions = append(instructions, parseInstruction(line))
 	}
 	return
 }
