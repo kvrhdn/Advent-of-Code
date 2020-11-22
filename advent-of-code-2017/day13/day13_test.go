@@ -3,21 +3,23 @@ package day13
 import (
 	"testing"
 
-	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day13/firewall"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/aoc"
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_delayNeedToAvoidBeingCaught(t *testing.T) {
-	exampleInput := `0: 3
+func TestExample(t *testing.T) {
+	example := `0: 3
 1: 2
 4: 4
 6: 4`
 
-	expected := 10
+	assert.Equal(t, 24, SolvePart1(example))
+	assert.Equal(t, 10, SolvePart2(example))
+}
 
-	f := firewall.Init(exampleInput)
+func TestRealInput(t *testing.T) {
+	input := aoc.ReadInputRelative(2017, 13, "../")
 
-	got := delayNeededToAvoidGettingCaught(&f)
-	if got != expected {
-		t.Errorf("delayNeededToAvoidGettingCaught: got %v, but expected %v", got, expected)
-	}
+	assert.Equal(t, 1728, SolvePart1(input))
+	assert.Equal(t, 3946838, SolvePart2(input))
 }

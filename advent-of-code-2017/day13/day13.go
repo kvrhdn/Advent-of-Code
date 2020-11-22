@@ -1,28 +1,53 @@
 package day13
 
 import (
-	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day13/firewall"
+	"sort"
+	"strings"
 )
 
 func SolvePart1(input string) interface{} {
-	f := firewall.Init(input)
+	layers := parseInput(input)
 
-	return f.SeverityAccruedAfterSteppingThrough()
+	severityAccrued := 0
+
+	for _, layer := range layers {
+		if layer.isScannerAtZeroAfter(layer.depth) {
+			severityAccrued += layer.depth * layer.scannerRange
+		}
+	}
+
+	return severityAccrued
 }
 
 func SolvePart2(input string) interface{} {
-	f := firewall.Init(input)
+	layers := parseInput(input)
 
-	return delayNeededToAvoidGettingCaught(&f)
-}
+	// sort by smallest range first, since these are most likely to catch you
+	sort.Slice(layers, func(layer1, layer2 int) bool {
+		return layers[layer1].scannerRange < layers[layer2].scannerRange
+	})
 
-func delayNeededToAvoidGettingCaught(f *firewall.Firewall) int {
 	delay := 0
-
 	for {
-		if f.CanStepThroughWithoutGettingCaughtAfter(delay) {
+		if canPassWithoutBeingScanned(layers, delay) {
 			return delay
 		}
-		delay += 1
+		delay++
 	}
+}
+
+func parseInput(input string) (layers []Layer) {
+	for _, line := range strings.Split(input, "\n") {
+		layers = append(layers, parseLayer(line))
+	}
+	return
+}
+
+func canPassWithoutBeingScanned(layers []Layer, delay int) bool {
+	for _, l := range layers {
+		if l.isScannerAtZeroAfter(delay + l.depth) {
+			return false
+		}
+	}
+	return true
 }
