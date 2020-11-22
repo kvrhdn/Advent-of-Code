@@ -1,13 +1,15 @@
 package day09
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/aoc"
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_processTheGarbageStream_score(t *testing.T) {
+func TestExamplesPart1(t *testing.T) {
 	var cases = []struct {
-		in       string
+		input    string
 		expected int
 	}{
 		{"{}", 1},
@@ -21,16 +23,13 @@ func Test_processTheGarbageStream_score(t *testing.T) {
 		{"{<{}>}", 1},
 	}
 	for _, c := range cases {
-		got, _ := processTheGarbageStream(c.in)
-		if !reflect.DeepEqual(got, c.expected) {
-			t.Errorf("processTheGarbageStream(%q) = %v, _, but expected %v, _", c.in, got, c.expected)
-		}
+		assert.Equal(t, c.expected, SolvePart1(c.input))
 	}
 }
 
-func Test_processTheGarbageStream_garbageCount(t *testing.T) {
+func TestExamplesPart2(t *testing.T) {
 	var cases = []struct {
-		in       string
+		input    string
 		expected int
 	}{
 		{`<>`, 0},
@@ -42,9 +41,13 @@ func Test_processTheGarbageStream_garbageCount(t *testing.T) {
 		{`<{o"i!a,<{i<a>`, 10},
 	}
 	for _, c := range cases {
-		_, got := processTheGarbageStream(c.in)
-		if !reflect.DeepEqual(got, c.expected) {
-			t.Errorf("processTheGarbageStream(%q) = _, %v, but expected _, %v", c.in, got, c.expected)
-		}
+		assert.Equal(t, c.expected, SolvePart2(c.input))
 	}
+}
+
+func TestRealInput(t *testing.T) {
+	input := aoc.ReadInputRelative(2017, 9, "../")
+
+	assert.Equal(t, 14212, SolvePart1(input))
+	assert.Equal(t, 6569, SolvePart2(input))
 }

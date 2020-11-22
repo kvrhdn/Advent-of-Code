@@ -3,7 +3,7 @@ package grid
 import (
 	"fmt"
 
-	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day10/knotHash"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/shared/knotHash"
 )
 
 type Grid struct {

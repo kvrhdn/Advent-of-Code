@@ -1,53 +1,54 @@
 package day09
 
 func SolvePart1(input string) interface{} {
-	score, _ := processTheGarbageStream(input)
+	score, _ := processGarbageStream(input)
 	return score
 }
 
 func SolvePart2(input string) interface{} {
-	_, garbageCount := processTheGarbageStream(input)
+	_, garbageCount := processGarbageStream(input)
 	return garbageCount
 }
 
-func processTheGarbageStream(s string) (score, garbageCount int) {
-	chars := []rune(s)
-
+func processGarbageStream(s string) (score, garbageCount int) {
 	nesting := 0
 	inGarbage := false
 	ignoreNext := false
 
-	for _, c := range chars {
+	for _, c := range []rune(s) {
 		if ignoreNext {
 			ignoreNext = false
 			continue
 		}
-
-		if inGarbage && c != '!' && c != '>' {
-			garbageCount += 1
+		if c == '!' {
+			ignoreNext = true
+			continue
 		}
 
-		switch c {
-		case '{':
-			if !inGarbage {
-				nesting += 1
-				score += nesting
-			}
-		case '}':
-			if !inGarbage {
-				nesting -= 1
+		if inGarbage {
+			if c == '>' {
+				inGarbage = false
+				continue
 			}
 
-		case '<':
+			garbageCount += 1
+			continue
+		}
+
+		// not in garbage
+		if c == '{' {
+			nesting += 1
+			score += nesting
+			continue
+		}
+		if c == '}' {
+			nesting -= 1
+			continue
+		}
+		if c == '<' {
 			inGarbage = true
-		case '>':
-			inGarbage = false
-
-		case '!':
-			ignoreNext = true
-
-		default:
 		}
 	}
+
 	return
 }
