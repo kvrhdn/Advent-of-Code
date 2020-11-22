@@ -1,9 +1,10 @@
 package day12
 
 import (
-	"fmt"
-	"strconv"
+	"regexp"
 	"strings"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/shared/intslice"
 )
 
 func SolvePart1(input string) interface{} {
@@ -23,69 +24,36 @@ func SolvePart2(input string) interface{} {
 	return len(groups)
 }
 
-func parseInput(input string) []Set {
-	// parse pipe connections
-	var pipeGroups []Set
+func parseInput(input string) (groups []Set) {
+	regex := regexp.MustCompile(`(\d+)`)
 
 	for _, line := range strings.Split(input, "\n") {
-		set := newSet()
+		programs := intslice.Atoi(regex.FindAllString(line, -1))
 
-		var p int
-		_, err := fmt.Sscanf(line, "%d <-> ", &p)
-		if err != nil {
-			panic(err)
-		}
-
-		set.insert(p)
-
-		indexPipe := strings.Index(line, "<-> ")
-		if indexPipe == -1 {
-			panic("did not find <->")
-		}
-
-		programs := strings.Split(line[indexPipe+4:], ", ")
-		for _, pString := range programs {
-			p, err := strconv.Atoi(pString)
-			if err != nil {
-				panic(err)
-			}
-			set.insert(p)
-		}
-
-		pipeGroups = append(pipeGroups, set)
-	}
-
-	// combine groups
-	var groups []Set
-
-	for len(pipeGroups) > 0 {
-		curr := pipeGroups[0]
-		pipeGroups = pipeGroups[1:]
-
+		// look for groups that are connected to this pipe
 		var matches []int
 		for i, group := range groups {
-			if group.anyInCommon(curr) {
+			if group.containAnyOf(programs) {
 				matches = append(matches, i)
 			}
 		}
 
 		// no matches, add a new group
 		if len(matches) == 0 {
-			groups = append(groups, curr)
+			groups = append(groups, newSetFromSlice(programs))
 			continue
 		}
 
-		// join new group with first match
+		// merge new programs into the first match
 		firstMatch := matches[0]
-		groups[firstMatch].merge(curr)
+		groups[firstMatch].insertAll(programs)
 
-		// join any other matches and remove their groups
+		// merge the remaining matches and remove their groups
 		for i := len(matches) - 1; i > 0; i-- {
 			index := matches[i]
 			groups[firstMatch].merge(groups[index])
 			groups = append(groups[:index], groups[index+1:]...)
 		}
 	}
-
-	return groups
+	return
 }
