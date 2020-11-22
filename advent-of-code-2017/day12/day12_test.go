@@ -3,10 +3,11 @@ package day12
 import (
 	"testing"
 
-	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day12/program"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/aoc"
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_exampleInput(t *testing.T) {
+func TestExample(t *testing.T) {
 	var input = `0 <-> 2
 1 <-> 1
 2 <-> 0, 3, 4
@@ -15,16 +16,13 @@ func Test_exampleInput(t *testing.T) {
 5 <-> 6
 6 <-> 4, 5`
 
-	reports := program.ParseListOfReachabilityReports(input)
-	groups := program.DivideIntoReachabilityGroups(reports)
+	assert.Equal(t, 6, SolvePart1(input))
+	assert.Equal(t, 2, SolvePart2(input))
+}
 
-	gotSizeOfGroupWithProgram0 := sizeOfGroupWithProgram0(groups)
-	if gotSizeOfGroupWithProgram0 != 6 {
-		t.Errorf("sizeOfGroupWithProgram0: got %v, but expected 6", gotSizeOfGroupWithProgram0)
-	}
+func TestRealInput(t *testing.T) {
+	input := aoc.ReadInputRelative(2017, 12, "../")
 
-	gotAmountOfGroups := len(groups)
-	if gotAmountOfGroups != 2 {
-		t.Errorf("len(groups): got %v, but expected 2", gotAmountOfGroups)
-	}
+	assert.Equal(t, 128, SolvePart1(input))
+	assert.Equal(t, 209, SolvePart2(input))
 }

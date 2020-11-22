@@ -8,29 +8,30 @@ import (
 func SolvePart1(input string) interface{} {
 	steps := strings.Split(input, ",")
 
-	pos := Pos{}
-	pos.TakeSteps(steps)
+	pos := origin()
+	for _, s := range steps {
+		pos.step(s)
+	}
 
-	return pos.DistanceFromOrigin()
+	return pos.distanceFromOrigin()
 }
 
 func SolvePart2(input string) interface{} {
 	steps := strings.Split(input, ",")
 
-	pos := Pos{}
+	furthestDistance := 0.0
 
-	largestDistance := 0.0
+	pos := origin()
+	for _, s := range steps {
+		pos.step(s)
 
-	for _, step := range steps {
-		pos.TakeStep(step)
-
-		distance := pos.DistanceFromOrigin()
-		if distance > largestDistance {
-			largestDistance = distance
+		distance := pos.distanceFromOrigin()
+		if distance > furthestDistance {
+			furthestDistance = distance
 		}
 	}
 
-	return largestDistance
+	return furthestDistance
 }
 
 type Pos struct {
@@ -38,29 +39,27 @@ type Pos struct {
 	eastWest   float64
 }
 
-func (p *Pos) DistanceFromOrigin() float64 {
+func origin() Pos {
+	return Pos{}
+}
+
+func (p *Pos) distanceFromOrigin() float64 {
 	return math.Abs(p.northSouth) + math.Abs(p.eastWest)
 }
 
-func (p *Pos) TakeSteps(steps []string) {
-	for _, step := range steps {
-		p.TakeStep(step)
-	}
-}
-
-func (p *Pos) TakeStep(step string) {
+func (p *Pos) step(step string) {
 	value := 1 / float64(len(step))
 
-	if strings.ContainsAny(step, "n") {
+	if strings.Contains(step, "n") {
 		p.northSouth += value
 	}
-	if strings.ContainsAny(step, "s") {
+	if strings.Contains(step, "s") {
 		p.northSouth -= value
 	}
-	if strings.ContainsAny(step, "e") {
+	if strings.Contains(step, "e") {
 		p.eastWest += value
 	}
-	if strings.ContainsAny(step, "w") {
+	if strings.Contains(step, "w") {
 		p.eastWest -= value
 	}
 }
