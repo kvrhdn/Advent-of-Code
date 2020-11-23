@@ -1,18 +1,28 @@
 package circular
 
-type CircularBuffer struct {
+// Buffer is a circular array.
+type Buffer struct {
 	data []int
 }
 
-func NewBuffer() CircularBuffer {
-	return CircularBuffer{}
+func New(initial []int) Buffer {
+	return Buffer{
+		data: initial,
+	}
 }
 
-func (b *CircularBuffer) Get(index int) int {
+func (b *Buffer) wrap(index int) int {
+	if len(b.data) == 0 {
+		return 0
+	}
+	return index % len(b.data)
+}
+
+func (b *Buffer) Get(index int) int {
 	return b.data[b.wrap(index)]
 }
 
-func (b *CircularBuffer) InsertAfter(index int, value int) (newIndex int) {
+func (b *Buffer) InsertAfter(index int, value int) (newIndex int) {
 	splitIndex := b.wrap(index) + 1
 
 	if splitIndex > len(b.data) {
@@ -32,18 +42,11 @@ func (b *CircularBuffer) InsertAfter(index int, value int) (newIndex int) {
 	return splitIndex
 }
 
-func (b *CircularBuffer) Find(value int) (index int) {
+func (b *Buffer) Find(value int) (index int) {
 	for i, v := range b.data {
 		if v == value {
 			return i
 		}
 	}
 	return -1
-}
-
-func (b *CircularBuffer) wrap(index int) int {
-	if len(b.data) == 0 {
-		return 0
-	}
-	return index % len(b.data)
 }

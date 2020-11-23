@@ -11,16 +11,16 @@ func sum(v1, v2 Vec2) Vec2 {
 	}
 }
 
-func invert(v Vec2) Vec2 {
+func rotateLeft(v Vec2) Vec2 {
 	return Vec2{
-		x: -1 * v.x,
-		y: -1 * v.y,
+		x: -v.y,
+		y: v.x,
 	}
 }
 
-func rotate(v Vec2) Vec2 {
+func rotateRight(v Vec2) Vec2 {
 	return Vec2{
-		x: -1 * v.y,
-		y: 1 * v.x,
+		x: v.y,
+		y: -v.x,
 	}
 }

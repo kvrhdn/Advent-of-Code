@@ -1,26 +1,27 @@
 package day19
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/aoc"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestFollow(t *testing.T) {
-	expectedPath := []rune("ABCDEF")
-	expectedSteps := 38
-
-	input := `
-     |
+func TestExample(t *testing.T) {
+	exampleInput := `     |
      |  +--+    
      A  |  C    
  F---|----E|--+ 
      |  |  |  D 
      +B-+  +--+`
 
-	rd := NewRoutingDiagram(input)
+	assert.Equal(t, "ABCDEF", SolvePart1(exampleInput))
+	assert.Equal(t, 38, SolvePart2(exampleInput))
+}
 
-	gotPath, gotSteps := StepThrough(rd)
-	if !reflect.DeepEqual(gotPath, expectedPath) || gotSteps != expectedSteps {
-		t.Errorf("Followed routing diagram got %q, %v, but expected %q, %v", gotPath, gotSteps, expectedPath, expectedSteps)
-	}
+func TestRealInput(t *testing.T) {
+	input := aoc.ReadInputRelative(2017, 19, "../")
+
+	assert.Equal(t, "FEZDNIVJWT", SolvePart1(input))
+	assert.Equal(t, 17200, SolvePart2(input))
 }

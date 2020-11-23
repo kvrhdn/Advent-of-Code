@@ -6,24 +6,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParse(t *testing.T) {
+func TestParseWorld(t *testing.T) {
 	input := `p=< 3,0,0>, v=< 2,0,0>, a=<-1,0,0>
 p=< 4,0,0>, v=< 0,0,0>, a=<-2,0,0>`
 
-	got := Parse(input)
+	got := ParseWorld(input)
 
 	assert.Len(t, got, 2)
 	assert.Equal(t, got[0], Particle{
-		ID: 0,
-		A:  Vec3{-1, 0, 0},
-		V:  Vec3{2, 0, 0},
-		P:  Vec3{3, 0, 0},
+		ID:  0,
+		acc: Vec3{-1, 0, 0},
+		vel: Vec3{2, 0, 0},
+		pos: Vec3{3, 0, 0},
 	})
 	assert.Equal(t, got[1], Particle{
-		ID: 1,
-		A:  Vec3{-2, 0, 0},
-		V:  Vec3{0, 0, 0},
-		P:  Vec3{4, 0, 0},
+		ID:  1,
+		acc: Vec3{-2, 0, 0},
+		vel: Vec3{0, 0, 0},
+		pos: Vec3{4, 0, 0},
 	})
 }
 
@@ -31,36 +31,36 @@ func TestWorld_Tick(t *testing.T) {
 	input := `p=< 3,0,0>, v=< 2,0,0>, a=<-1,0,0>
 p=< 4,0,0>, v=< 0,0,0>, a=<-2,0,0>`
 
-	world := Parse(input)
+	world := ParseWorld(input)
 
 	assert.Len(t, world, 2)
 	assert.Equal(t, world[0], Particle{
-		ID: 0,
-		A:  Vec3{-1, 0, 0},
-		V:  Vec3{2, 0, 0},
-		P:  Vec3{3, 0, 0},
+		ID:  0,
+		acc: Vec3{-1, 0, 0},
+		vel: Vec3{2, 0, 0},
+		pos: Vec3{3, 0, 0},
 	})
 	assert.Equal(t, world[1], Particle{
-		ID: 1,
-		A:  Vec3{-2, 0, 0},
-		V:  Vec3{0, 0, 0},
-		P:  Vec3{4, 0, 0},
+		ID:  1,
+		acc: Vec3{-2, 0, 0},
+		vel: Vec3{0, 0, 0},
+		pos: Vec3{4, 0, 0},
 	})
 
 	world.Tick()
 
 	assert.Len(t, world, 2)
 	assert.Equal(t, world[0], Particle{
-		ID: 0,
-		A:  Vec3{-1, 0, 0},
-		V:  Vec3{1, 0, 0},
-		P:  Vec3{4, 0, 0},
+		ID:  0,
+		acc: Vec3{-1, 0, 0},
+		vel: Vec3{1, 0, 0},
+		pos: Vec3{4, 0, 0},
 	})
 	assert.Equal(t, world[1], Particle{
-		ID: 1,
-		A:  Vec3{-2, 0, 0},
-		V:  Vec3{-2, 0, 0},
-		P:  Vec3{2, 0, 0},
+		ID:  1,
+		acc: Vec3{-2, 0, 0},
+		vel: Vec3{-2, 0, 0},
+		pos: Vec3{2, 0, 0},
 	})
 }
 
@@ -70,7 +70,7 @@ p=<-4,0,0>, v=< 2,0,0>, a=< 0,0,0>
 p=< 3,0,0>, v=<-1,0,0>, a=< 0,0,0>
 p=<-2,0,0>, v=< 1,0,0>, a=< 0,0,0>`
 
-	world := Parse(input)
+	world := ParseWorld(input)
 	assert.Len(t, world, 4)
 
 	world.Tick()

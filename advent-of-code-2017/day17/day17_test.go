@@ -1,18 +1,17 @@
 package day17
 
-import "testing"
+import (
+	"testing"
 
-func Test_spinlockAlgorithm(t *testing.T) {
-	steps := 3
-	expected := 638
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/aoc"
+	"github.com/stretchr/testify/assert"
+)
 
-	got := spinlockAlgorithmFindValueAfter2017(steps)
-	if got != expected {
-		t.Errorf("spinlockAlgorithmFindValueAfter2017(%v) = %v, but expected %v", steps, got, expected)
-	}
+func TestExamplePart1(t *testing.T) {
+	assert.Equal(t, 638, SolvePart1("3"))
 }
 
-func Test_spinlockAlgorithmFindValueAfter0(t *testing.T) {
+func TestSpinlockAlgorithmFindValueAfter0(t *testing.T) {
 	steps := 3
 	expected := 5
 	stopAt := 5
@@ -24,8 +23,12 @@ func Test_spinlockAlgorithmFindValueAfter0(t *testing.T) {
 	// 0 2 4 3 1
 	// 0 5 2 4 3 1
 
-	got := spinlockAlgorithmFindValueAfter0(steps, stopAt)
-	if got != expected {
-		t.Errorf("spinlockAlgorithmFindValueAfter0(%v, %v) = %v, but expected %v", steps, stopAt, got, expected)
-	}
+	assert.Equal(t, expected, spinlockAlgorithmFindValueAfter0(steps, stopAt))
+}
+
+func TestRealInput(t *testing.T) {
+	input := aoc.ReadInputRelative(2017, 17, "../")
+
+	assert.Equal(t, 808, SolvePart1(input))
+	assert.Equal(t, 47465686, SolvePart2(input))
 }

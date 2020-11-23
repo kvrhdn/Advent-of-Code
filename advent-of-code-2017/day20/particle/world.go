@@ -6,11 +6,11 @@ import (
 
 type World []Particle
 
-func Parse(input string) World {
+func ParseWorld(input string) World {
 	var particles []Particle
 
 	for i, line := range strings.Split(input, "\n") {
-		particles = append(particles, ParseParticle(i, line))
+		particles = append(particles, parseParticle(i, line))
 	}
 
 	return particles
@@ -18,49 +18,41 @@ func Parse(input string) World {
 
 func (w *World) Tick() {
 	for i := range *w {
-		(*w)[i].Tick()
+		(*w)[i].tick()
 	}
 }
 
 func (w *World) RemoveCollisions() {
-	particles := *w
+	crashSites := make(map[Vec3]bool)
 
-	crashes := make(map[Vec3]bool)
-
-	for i, p1 := range particles {
-		for _, p2 := range particles[i+1:] {
-			if p1.P == p2.P {
-				crashes[p1.P] = true
+	for i, p1 := range *w {
+		for _, p2 := range (*w)[i+1:] {
+			if p1.pos == p2.pos {
+				crashSites[p1.pos] = true
 				break
 			}
 		}
 	}
 
-	i := 0
-	for i < len(particles) {
-		if crashes[particles[i].P] {
-			if i < len(particles)-1 {
-				copy(particles[i:], particles[i+1:])
+	for i := 0; i < len(*w); {
+		if crashSites[(*w)[i].pos] {
+			if i < len((*w))-1 {
+				copy((*w)[i:], (*w)[i+1:])
 			}
-			particles = particles[:len(particles)-1]
+			(*w) = (*w)[:len((*w))-1]
 			continue
 		}
 		i++
 	}
 
-	*w = particles
+	*w = (*w)
 }
 
-func (w *World) FindClosestOrigin() *Particle {
-	particles := *w
-
-	closest := &particles[0]
-
-	for i := range particles[1:] {
-		if particles[i].DistanceOrigin() < closest.DistanceOrigin() {
-			closest = &particles[i]
+func (w *World) FindClosestToOrigin() (closest *Particle) {
+	for i := range (*w)[1:] {
+		if closest == nil || (*w)[i].distanceFromOrigin() < closest.distanceFromOrigin() {
+			closest = &(*w)[i]
 		}
 	}
-
-	return closest
+	return
 }
