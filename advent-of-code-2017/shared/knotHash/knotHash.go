@@ -3,12 +3,14 @@ package knotHash
 import (
 	"fmt"
 	"strings"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/shared/util"
 )
 
 func DenseKnotHash(input string) string {
 	knot := newDenseKnotHash(input)
 
-	times(64, func() {
+	util.Times(64, func() {
 		knot.DoARound()
 	})
 
@@ -62,7 +64,7 @@ func (k *KnotHash) DoARound() {
 		from := k.wrapIndex(k.position)
 		to := k.wrapIndex(k.position + length - 1)
 
-		times(length/2, func() {
+		util.Times(length/2, func() {
 			k.Numbers[from], k.Numbers[to] = k.Numbers[to], k.Numbers[from]
 
 			from = k.wrapIndex(from + 1)

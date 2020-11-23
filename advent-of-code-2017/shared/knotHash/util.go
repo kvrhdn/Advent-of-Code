@@ -9,9 +9,3 @@ func createSequence(size int) []int {
 
 	return sequence
 }
-
-func times(times int, do func()) {
-	for i := 0; i < times; i++ {
-		do()
-	}
-}

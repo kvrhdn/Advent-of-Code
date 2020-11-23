@@ -1,82 +1,70 @@
 package day15
 
-func SolvePart1(input string) interface{} {
-	genDefA1 := GeneratorDefinition{116, 16807, nil}
-	genDefB1 := GeneratorDefinition{299, 48271, nil}
+import (
+	"fmt"
 
-	return runTheJudge(genDefA1, genDefB1, 40000000)
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/shared/util"
+)
+
+const (
+	factorA = 16807
+	factorB = 48271
+
+	million = 1000000
+)
+
+func SolvePart1(input string) interface{} {
+	valueA, valueB := parseInput(input)
+
+	count := 0
+
+	util.Times(40*million, func() {
+		valueA = generateNext(valueA, factorA)
+		valueB = generateNext(valueB, factorB)
+
+		if (valueA & 0xFFFF) == (valueB & 0xFFFF) {
+			count++
+		}
+	})
+
+	return count
 }
 
 func SolvePart2(input string) interface{} {
-	genDefA2 := GeneratorDefinition{116, 16807, notDivisbleBy(4)}
-	genDefB2 := GeneratorDefinition{299, 48271, notDivisbleBy(8)}
+	valueA, valueB := parseInput(input)
 
-	return runTheJudge(genDefA2, genDefB2, 5000000)
+	count := 0
+
+	util.Times(5*million, func() {
+		valueA = generateNextMultipleOf(valueA, factorA, 4)
+		valueB = generateNextMultipleOf(valueB, factorB, 8)
+
+		if (valueA & 0xFFFF) == (valueB & 0xFFFF) {
+			count++
+		}
+	})
+
+	return count
 }
 
-func runTheJudge(genDefA GeneratorDefinition, genDefB GeneratorDefinition, count int) (matches int) {
-	genA, stopA := CreateGenerator(genDefA)
-	defer close(stopA)
-
-	genB, stopB := CreateGenerator(genDefB)
-	defer close(stopB)
-
-	matches = Judge(genA, genB, count)
-
+func parseInput(input string) (valueA, valueB int) {
+	_, err := fmt.Sscanf(input, "Generator A starts with %d\nGenerator B starts with %d", &valueA, &valueB)
+	if err != nil {
+		panic(err)
+	}
 	return
 }
 
-type GeneratorDefinition struct {
-	firstValue uint64
-	factor     uint64
-	filter     func(uint64) bool
+func generateNext(value, factor int) int {
+	return (value * factor) % 2147483647
 }
 
-func CreateGenerator(genDef GeneratorDefinition) (dataChannel <-chan uint64, stopChannel chan<- struct{}) {
-	dataChan := make(chan uint64, 1000)
-	stopChan := make(chan struct{})
-
-	go generate(dataChan, stopChan, genDef.firstValue, genDef.factor, genDef.filter)
-
-	return dataChan, stopChan
-}
-
-func generate(dataChan chan<- uint64, stopChan <-chan struct{}, value uint64, factor uint64, filter func(uint64) bool) {
-	defer close(dataChan)
-
+func generateNextMultipleOf(value, factor, dividableBy int) int {
 	for {
-		value = (value * factor) % 2147483647
+		value = generateNext(value, factor)
 
-		if filter != nil && filter(value) {
-			continue
+		if value%dividableBy == 0 {
+			return value
 		}
-
-		select {
-		case <-stopChan:
-			return
-		case dataChan <- value:
-		}
-	}
-}
-
-func Judge(generatorA, generatorB <-chan uint64, count int) (matches int) {
-	for i := 0; i < count; i++ {
-		valueA := <-generatorA
-		valueB := <-generatorB
-
-		if lowestWord(valueA) == lowestWord(valueB) {
-			matches += 1
-		}
-	}
-	return
-}
-
-func lowestWord(value uint64) uint64 {
-	return value & 0xFFFF
-}
-
-func notDivisbleBy(divider uint64) func(uint64) bool {
-	return func(value uint64) bool {
-		return value%divider != 0
 	}
 }

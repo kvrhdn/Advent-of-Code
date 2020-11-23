@@ -1,62 +1,77 @@
 package day16
 
 import (
-	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day16/dance"
+	"strings"
+
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/shared/util"
+)
+
+const (
+	initialPrograms = "abcdefghijklmnop"
+	billion         = 1000000000
 )
 
 func SolvePart1(input string) interface{} {
-	danceMoves := dance.ParseMoves(input)
+	moves := parseInput(input)
+	programs := []rune(initialPrograms)
 
-	doTheDance := func(programs string) string {
-		return dance.Dance(programs, danceMoves)
+	for _, move := range moves {
+		move.apply(&programs)
 	}
 
-	return doTheDance(initialPrograms)
+	return string(programs)
 }
 
 func SolvePart2(input string) interface{} {
-	danceMoves := dance.ParseMoves(input)
+	moves := parseInput(input)
 
-	doTheDance := func(programs string) string {
-		return dance.Dance(programs, danceMoves)
-	}
+	offset, period := findRepetition(initialPrograms, func(value string) string {
+		p := []rune(value)
 
-	offset, period := findRepetition(initialPrograms, doTheDance)
-	iterationWanted := (one_billion - offset) % period
+		for _, move := range moves {
+			move.apply(&p)
+		}
 
-	return executeTimes(initialPrograms, doTheDance, iterationWanted)
+		return string(p)
+	})
+
+	iterationWanted := (billion - offset) % period
+
+	programs := []rune(initialPrograms)
+
+	util.Times(iterationWanted, func() {
+		for _, move := range moves {
+			move.apply(&programs)
+		}
+	})
+
+	return string(programs)
 }
 
-const initialPrograms = "abcdefghijklmnop"
-const one_billion = 1000000000
+func parseInput(input string) (moves []DanceMove) {
+	for _, line := range strings.Split(input, ",") {
+		moves = append(moves, parseDanceMove(line))
+	}
+	return
+}
 
-func findRepetition(input string, process func(string) string) (offset, period int) {
-	occurrences := make(map[string]int)
-	value := input
+func findRepetition(initialValue string, process func(string) string) (offset, period int) {
+	prevStates := make(map[string]int)
+	value := initialValue
 
 	iteration := 0
 
-	occurrences[value] = iteration
+	prevStates[value] = iteration
 
 	for {
 		value = process(value)
-		iteration += 1
+		iteration++
 
-		prevIteration, ok := occurrences[value]
+		prevIteration, ok := prevStates[value]
 		if ok {
 			return prevIteration, iteration
 		}
 
-		occurrences[value] = iteration
+		prevStates[value] = iteration
 	}
-}
-
-func executeTimes(input string, process func(string) string, times int) string {
-	value := input
-
-	for i := 0; i < times; i++ {
-		value = process(value)
-	}
-
-	return value
 }
