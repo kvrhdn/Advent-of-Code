@@ -4,6 +4,10 @@ type Pos struct {
 	X, Y int
 }
 
+func NewPos(x, y int) Pos {
+	return Pos{x, y}
+}
+
 func Step(p Pos, dir Dir) Pos {
 	switch dir {
 	case North:

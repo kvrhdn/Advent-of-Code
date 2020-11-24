@@ -7,7 +7,7 @@ import (
 )
 
 func SolvePart1(input string) interface{} {
-	g := readInput(input)
+	g := parseInput(input)
 	c := &VirusCarrier{
 		pos:       g.Center(),
 		dir:       grid.North,
@@ -18,7 +18,7 @@ func SolvePart1(input string) interface{} {
 }
 
 func SolvePart2(input string) interface{} {
-	g := readInput(input)
+	g := parseInput(input)
 	c := &VirusCarrier{
 		pos:       g.Center(),
 		dir:       grid.North,
@@ -28,20 +28,16 @@ func SolvePart2(input string) interface{} {
 	return infectionsAfterBursts(10_000_000, g, c)
 }
 
-const (
-	Clean    = 0
-	Infected = 1
-)
-
-func readInput(input string) grid.InfiniteGrid {
+func parseInput(input string) grid.InfiniteGrid {
 	infGrid := grid.New()
 
 	for y, l := range strings.Split(input, "\n") {
 		for x, r := range l {
+			// we have to set all cells to be able to calculate the center later
 			if r == '#' {
-				infGrid.Set(grid.Pos{x, y}, Infected)
+				infGrid.Set(grid.NewPos(x, y), Infected)
 			} else {
-				infGrid.Set(grid.Pos{x, y}, Clean)
+				infGrid.Set(grid.NewPos(x, y), Clean)
 			}
 		}
 	}
@@ -55,88 +51,10 @@ func infectionsAfterBursts(bursts int, g grid.InfiniteGrid, c *VirusCarrier) (in
 
 		g.Set(c.pos, newState)
 		if newState == Infected {
-			infections += 1
+			infections++
 		}
 
 		c.step()
 	}
 	return
 }
-
-type VirusCarrier struct {
-	pos       grid.Pos
-	dir       grid.Dir
-	virusImpl func(*VirusCarrier, int) int
-}
-
-func (c *VirusCarrier) process(current int) (new int) {
-	return c.virusImpl(c, current)
-}
-
-func (c *VirusCarrier) step() {
-	c.pos = grid.Step(c.pos, c.dir)
-}
-
-func virusV1(c *VirusCarrier, current int) (result int) {
-	switch current {
-	case Clean:
-		c.dir = grid.LeftOf(c.dir)
-		result = Infected
-
-	case Infected:
-		c.dir = grid.RightOf(c.dir)
-		result = Clean
-	}
-	return
-}
-
-const (
-	Weakened = 2
-	Flagged  = 3
-)
-
-func virusV2(c *VirusCarrier, current int) (result int) {
-	switch current {
-	case Clean:
-		c.dir = grid.LeftOf(c.dir)
-		result = Weakened
-
-	case Weakened:
-		result = Infected
-
-	case Infected:
-		c.dir = grid.RightOf(c.dir)
-		result = Flagged
-
-	case Flagged:
-		c.dir = grid.ReverseOf(c.dir)
-		result = Clean
-	}
-	return
-}
-
-var input = `...###.#.#.##...##.#..##.
-.#...#..##.#.#..##.#.####
-#..#.#...######.....#####
-.###.#####.#...#.##.##...
-.#.#.##......#....#.#.#..
-....##.##.#..##.#...#....
-#...###...#.###.#.#......
-..#..#.....##..####..##.#
-#...#..####.#####...#.##.
-###.#.#..#..#...##.#..#..
-.....##..###.##.#.....#..
-#.....#...#.###.##.##...#
-.#.##.##.##.#.#####.##...
-##.#.###..#.####....#.#..
-#.##.#...#.###.#.####..##
-#.##..#..##..#.##.####.##
-#.##.#....###.#.#......#.
-.##..#.##..###.#..#...###
-#..#.#.#####.....#.#.#...
-.#####..###.#.#.##..#....
-###..#..#..##...#.#.##...
-..##....##.####.....#.#.#
-..###.##...#..#.#####.###
-####.########.#.#..##.#.#
-#####.#..##...####.#..#..`

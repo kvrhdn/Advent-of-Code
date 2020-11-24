@@ -5,8 +5,6 @@ import (
 )
 
 func TestStep(t *testing.T) {
-	t.Parallel()
-
 	cases := []struct {
 		in       Pos
 		dir      Dir
