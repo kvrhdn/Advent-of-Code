@@ -4,8 +4,8 @@ My solutions for [Advent of Code](https://adventofcode.com).
 
 Years:
 
-[🎄 2015](https://adventofcode.com/2015) - [advent-of-code-2015](./advent-of-code-2015/) (Rust)  
-[⚡ 2017](https://adventofcode.com/2017) - [advent-of-code-2017](./advent-of-code-2017) (Go)  
+[🎄 2015](https://adventofcode.com/2015) - [advent-of-code-2015](./advent-of-code-2015/) (Rust) ⭐️  
+[⚡ 2017](https://adventofcode.com/2017) - [advent-of-code-2017](./advent-of-code-2017) (Go) ⭐️  
 [❓ 2020](https://adventofcode.com/2020) - [advent-of-code-2020](./advent-of-code-2020/) (Rust)
 
 Solutions in other repo's:

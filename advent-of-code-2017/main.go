@@ -26,6 +26,7 @@ import (
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day22"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day23"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day24"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2017/day25"
 )
 
 func main() {
@@ -127,6 +128,9 @@ func main() {
 			24: {
 				Part1: day24.SolvePart1,
 				Part2: day24.SolvePart2,
+			},
+			25: {
+				Part1: day25.SolvePart1,
 			},
 		},
 	}
