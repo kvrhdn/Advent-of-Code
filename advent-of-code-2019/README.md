@@ -1,29 +1,27 @@
-# Advent of Code 2019
+# Advent of Code 2019 ⭐️
 
-Advent of code: https://adventofcode.com/2019
+My solutions for [Advent of Code 2019](https://adventofcode.com/2019).
 
-Don't know what to expect? Check out the previous years: [2018](https://adventofcode.com/2018), [2017](https://adventofcode.com/2017), [2016](https://adventofcode.com/2016), [2015](https://adventofcode.com/2015).
+To run these solutions you'll need to have Rust ([install Rust](https://www.rust-lang.org/tools/install)) and [`cargo-aoc`][cargo-aoc]. Install [`cargo-aoc`][cargo-aoc]:
 
-#### How does it work
+```
+cargo install cargo-aoc
+```
 
-- New puzzles are added each day at midnight EST (that is 06:00 CET)
-- Solve the puzzle and post the solution to earn a star :star:,​ two stars can be earned each day
-- The quicker you are the more points you get
-- Document and share your frustrations, eureka's and black magic in #AoC2019
+To run all solutions sequentially:
 
-#### How to join
+```
+cargo run --release
+```
 
-- Create an account / login: https://adventofcode.com/2019/auth/login
-- Fork this repository and start hacking
+To run a specific day or part:
 
-#### Joining the leaderboard
+```
+# run the solution for day 13, part 1 and 2
+cargo aoc -d 13
 
-- Join the Kunlabora leaderbord [on this link](https://adventofcode.com/2019/leaderboard/private) with this code: `239979-3c68168f`
+# run the solution for day 13, only part 2
+cargo aoc -d 13 -p 2
+```
 
-#### Log
-
-To improve knowledge sharing and experimentation, please document how to build and run your code. It can also be nice to keep a log here:
-
-##### _30/11_
-
-_Today I forked this repository in preparation of the start._
+[cargo-aoc]: https://crates.io/crates/cargo-aoc

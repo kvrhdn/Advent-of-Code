@@ -1,9 +1,15 @@
-[workspace]
+[package]
+name = "advent-of-code-2019"
+version = "0.1.0"
+authors = ["Koenraad Verheyden <mail@kvrhdn.dev>"]
+edition = "2018"
 
-members = [
-    "day01", "day02", "day03", "day04", "day05",
-    "day06", "day07", "day08", "day09",
-    "day11", "day12", "day13",
-    "day16",
-    "common", "intcode",
-]
+[dependencies]
+aoc-runner = "0.3.0"
+aoc-runner-derive = "0.3.0"
+
+bytecount = "0.6.0"
+num = "0.2.0"
+num-derive = "0.3"
+num-traits = "0.2"
+permutohedron = "0.2"
