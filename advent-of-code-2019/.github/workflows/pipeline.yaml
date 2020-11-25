@@ -1,0 +1,55 @@
+name: CI/CD
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Cache cargo registry
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.toml') }}
+
+      - name: Cache cargo index
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.toml') }}
+
+      - name: Cache cargo build
+        uses: actions/cache@v1
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.toml') }}
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Run unit tests (Cargo test)
+        run: cargo test --verbose
+
+      - name: Run wasm integration tests (wasm-pack test))
+        run: make test_wasm
+
+      - name: Build all wasm packages
+        run: make build
+
+      - run: npm ci
+        working-directory: ./www
+
+      - run: npm run build
+        working-directory: ./www
+
+      - name: Deploy to Netlify
+        uses: netlify/actions/cli@master
+        with:
+          args: >
+            deploy --dir www/dist --prod
+            --auth ${{ secrets.NETLIFY_AUTH_TOKEN }} --site ${{ secrets.NETLIFY_SITE_ID }}
+            --message DeployGithubActions
+        if: github.ref == 'refs/heads/master'

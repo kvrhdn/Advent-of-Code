@@ -1,0 +1,13 @@
+[package]
+name = "common"
+version = "0.1.0"
+authors = ["Koenraad Verheyden <mail@koenraadverheyden.com>"]
+edition = "2018"
+
+[dependencies]
+
+[dependencies.web-sys]
+version = "0.3"
+features = [
+  "console",
+]

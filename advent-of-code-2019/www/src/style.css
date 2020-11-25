@@ -1,0 +1,38 @@
+body {
+    background: #222;
+    width: 99%;
+    max-width: 800px;
+    padding: 0px 10px 0px 10px;
+    height: 100%;
+    font-family: Consolas, monaco, monospace;
+    color: #eee;
+}
+
+hr {
+    border-width: 1px;
+}
+
+a {
+    color: #ebb;
+}
+
+textarea {
+    background: #eee;
+    font-size: 1em;
+    width: 99%;
+    height: 8em;
+    padding: 5px;
+}
+
+button {
+    background: #eee;
+    font-size: medium;
+    margin: 5px 0px;
+    padding: 5px;
+}
+
+span.response {
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 2px 5px;
+}
