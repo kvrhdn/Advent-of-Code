@@ -1,22 +1,18 @@
-use aoc_runner_derive::aoc;
 use crate::intcode::*;
+use aoc_runner_derive::aoc;
 
-/// See: https://adventofcode.com/2019/day/5
 #[aoc(day5, part1)]
-pub fn solve_part1(input: &str) -> Result<i64, &'static str> {
-    let mut computer = Computer::new_from_input(input)?;
+pub fn solve_part1(input: &str) -> i64 {
+    let mut computer = Computer::new_from_input(input).unwrap();
 
-    computer.run_diagnostics_test(1)
-        .map_err(|err| err.into())
+    computer.run_diagnostics_test(1).unwrap()
 }
 
-/// See: https://adventofcode.com/2019/day/5#part2
 #[aoc(day5, part2)]
-pub fn solve_part2(input: &str) -> Result<i64, &'static str> {
-    let mut computer = Computer::new_from_input(input)?;
+pub fn solve_part2(input: &str) -> i64 {
+    let mut computer = Computer::new_from_input(input).unwrap();
 
-    computer.run_diagnostics_test(5)
-        .map_err(|err| err.into())
+    computer.run_diagnostics_test(5).unwrap()
 }
 
 #[cfg(test)]
@@ -27,7 +23,7 @@ mod tests {
     fn real_input() {
         let input = include_str!("../input/2019/day5.txt");
 
-        assert_eq!(solve_part1(input), Ok(13978427));
-        assert_eq!(solve_part2(input), Ok(11189491));
+        assert_eq!(solve_part1(input), 13978427);
+        assert_eq!(solve_part2(input), 11189491);
     }
 }
