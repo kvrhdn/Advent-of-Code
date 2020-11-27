@@ -3,7 +3,7 @@ use itertools::{EitherOrBoth::Both, EitherOrBoth::Left, EitherOrBoth::Right, Ite
 use std::collections::HashMap;
 
 #[aoc(day6, part1)]
-pub fn solve_part1(input: &str) -> u32 {
+fn solve_part1(input: &str) -> u32 {
     let orbit_map = OrbitMap::build(input);
 
     orbit_map
@@ -13,7 +13,7 @@ pub fn solve_part1(input: &str) -> u32 {
 }
 
 #[aoc(day6, part2)]
-pub fn solve_part2(input: &str) -> u32 {
+fn solve_part2(input: &str) -> u32 {
     let orbit_map = OrbitMap::build(input);
 
     let mut path_you = orbit_map.path_to_center("YOU");

@@ -2,14 +2,14 @@ use crate::intcode::*;
 use aoc_runner_derive::aoc;
 
 #[aoc(day9, part1)]
-pub fn solve_part1(input: &str) -> i64 {
+fn solve_part1(input: &str) -> i64 {
     let mut computer = Computer::new_from_input(input).unwrap();
 
     computer.run_diagnostics_test(1).unwrap()
 }
 
 #[aoc(day9, part2)]
-pub fn solve_part2(input: &str) -> i64 {
+fn solve_part2(input: &str) -> i64 {
     let mut computer = Computer::new_from_input(input).unwrap();
 
     computer.put_input(2);
