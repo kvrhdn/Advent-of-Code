@@ -1,177 +1,114 @@
 use aoc_runner_derive::aoc;
-use std::collections::HashMap;
 
-/// See: https://adventofcode.com/2019/day/4
 #[aoc(day4, part1)]
-pub fn solve_part1(input: &str) -> Result<u32, &'static str> {
-    let range = parse_input(input)?;
-
-    let valid_passwords = range
-        .filter(|&p| has_six_digits(p))
-        .filter(|&p| has_same_adjacent_digits(p))
-        .filter(|&p| has_digits_that_never_decrease(p))
-        .count() as u32;
-
-    Ok(valid_passwords)
+fn solve_part1(input: &str) -> usize {
+    parse_input(input).filter(valid_part1).count()
 }
 
-/// See: https://adventofcode.com/2019/day/4#part2
 #[aoc(day4, part2)]
-pub fn solve_part2(input: &str) -> Result<u32, &'static str> {
-    let range = parse_input(input)?;
-
-    let valid_passwords = range
-        .filter(|&p| has_six_digits(p))
-        .filter(|&p| has_at_least_one_double_same_adjacent_digits(p))
-        .filter(|&p| has_digits_that_never_decrease(p))
-        .count() as u32;
-
-    Ok(valid_passwords)
+fn solve_part2(input: &str) -> usize {
+    parse_input(input).filter(valid_part2).count()
 }
 
-fn parse_input(input: &str) -> Result<std::ops::Range<u32>, &'static str> {
+fn parse_input(input: &str) -> std::ops::Range<u32> {
     let range = input
         .trim_end()
         .split('-')
-        .map(|l| {
-            l.parse::<u32>()
-                .map_err(|_| "could not parse input as integers")
-        })
-        .collect::<Result<Vec<u32>, &'static str>>()?;      // for some reason we have to specify the type here...
+        .map(|l| l.parse().unwrap())
+        .collect::<Vec<_>>();
 
-    if range.len() != 2 {
-        return Err("expected input to contain exactly two integers");
-    }
-    let lower = range[0];
-    let upper = range[1];
-
-    Ok(lower..upper)
+    range[0]..range[1]
 }
 
-fn has_six_digits(num: u32) -> bool {
-    num >= 100_000 && num <= 999_999
-}
+fn valid_part1(number: &u32) -> bool {
+    let mut atleast_one_double = false;
 
-fn has_same_adjacent_digits(num: u32) -> bool {
-    iterate_over_digits(num, &mut |left, right| left == right)
-}
+    let mut prev = number % 10;
 
-fn has_at_least_one_double_same_adjacent_digits(num: u32) -> bool {
-    let mut digit_frequency = HashMap::<u32, u32>::new();
-
-    iterate_over_digits(num, &mut |left, right| {
-        // only add adjacent digits that are the same to the frequency map
-        if left == right {
-            digit_frequency.entry(left)
-                .and_modify(|freq| *freq += 1)
-                .or_insert(2);
+    for digit in iter_digits(number / 10) {
+        if prev == digit {
+            atleast_one_double = true;
         }
 
-        false   // never stop iterating
-    });
-
-    // at least one digit should have a frequency of exactly 2
-    digit_frequency.into_iter().any(|(_, freq)| freq == 2)
-}
-
-fn has_digits_that_never_decrease(num: u32) -> bool {
-    iterate_over_digits(num, &mut |left, right| left > right)
-        .inverted()
-}
-
-/// Iterates over the digits of integer from right to left, calling predicate
-/// with both digits. The predicate is called with the left most digit as first
-/// parameter.
-/// Stops iterating if the predicate returns true or there are no digits left.
-fn iterate_over_digits<F>(num: u32, predicate: &mut F) -> bool
-where F: FnMut(u32, u32) -> bool
-{
-    let mut remainder = num;
-
-    let mut prev_last_digit = remainder % 10;
-    remainder /= 10;
-
-    loop {
-        let last_digit = remainder % 10;
-
-        if predicate(last_digit, prev_last_digit) {
-            return true;
-        }
-
-        prev_last_digit = last_digit;
-        remainder /= 10;
-
-        if remainder == 0 {
+        if digit > prev {
             return false;
         }
+
+        prev = digit;
     }
+
+    atleast_one_double
 }
 
-trait BoolToggleExt {
-    fn inverted(self) -> Self;
+fn valid_part2(number: &u32) -> bool {
+    let mut atleast_one_exact_double = false;
+    let mut consecutive_pairs = 0;
+
+    let mut prev = number % 10;
+
+    for digit in iter_digits(number / 10) {
+        if digit == prev {
+            consecutive_pairs += 1;
+        } else {
+            if consecutive_pairs == 1 {
+                atleast_one_exact_double = true;
+            }
+            consecutive_pairs = 0;
+        }
+
+        if digit > prev {
+            return false;
+        }
+
+        prev = digit;
+    }
+
+    if consecutive_pairs == 1 {
+        atleast_one_exact_double = true;
+    }
+
+    atleast_one_exact_double
 }
 
-impl BoolToggleExt for bool {
-    fn inverted(self) -> Self {
-        !self
-    }
+// Creates an iterator over the digits of the given number, from least
+// significant to most significant.
+fn iter_digits(mut number: u32) -> impl Iterator<Item = u32> {
+    std::iter::from_fn(move || {
+        if number > 0 {
+            let digit = number % 10;
+            number /= 10;
+            Some(digit)
+        } else {
+            None
+        }
+    })
 }
 
 #[cfg(test)]
-#[allow(clippy::unreadable_literal)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_has_six_digits() {
-        let cases = vec![
-            (12345, false),
-            (123456, true),
-            (1234567, false),
+    fn examples_part1() {
+        let examples = vec![
+            (111111, true), //
+            (223450, false),
+            (123789, false),
         ];
-        table_test(cases, has_six_digits, "has_six_digits");
+        for (input, expected) in examples {
+            assert_eq!(valid_part1(&input), expected);
+        }
     }
 
     #[test]
-    fn test_has_same_adjacent_digits() {
-        let cases = vec![
-            (123456, false),
-            (122345, true),
-            (111111, true),
-        ];
-        table_test(cases, has_same_adjacent_digits, "has_same_adjacent_digits");
-    }
-
-    #[test]
-    fn test_has_at_least_one_double_same_adjacent_digits() {
-        let cases = vec![
-            (123456, false),
-            (112233, true),
+    fn examples_part2() {
+        let examples = vec![
+            (112233, true), //
             (123444, false),
             (111122, true),
         ];
-        table_test(cases, has_at_least_one_double_same_adjacent_digits, "has_at_least_one_double_same_adjacent_digits");
-    }
-
-    #[test]
-    fn test_has_digits_that_never_decrease() {
-        let cases = vec![
-            (123456, true),
-            (111111, true),
-            (123345, true),
-            (123123, false),
-        ];
-        table_test(cases, has_digits_that_never_decrease, "has_digits_that_never_decrease");
-    }
-
-    fn table_test<F>(cases: Vec<(u32, bool)>, func: F, name: &str)
-    where F: Fn(u32) -> bool
-    {
-        for (input, expected) in cases {
-            let got = func(input);
-            if got != expected {
-                panic!("{}(\"{}\"): got {} but expected {}", name, input, got, expected);
-            }            
+        for (input, expected) in examples {
+            assert_eq!(valid_part2(&input), expected);
         }
     }
 
@@ -179,7 +116,7 @@ mod tests {
     fn real_input() {
         let input = include_str!("../input/2019/day4.txt");
 
-        assert_eq!(solve_part1(input), Ok(1767));
-        assert_eq!(solve_part2(input), Ok(1192));
+        assert_eq!(solve_part1(input), 1767);
+        assert_eq!(solve_part2(input), 1192);
     }
 }
