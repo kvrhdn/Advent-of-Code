@@ -55,7 +55,7 @@ fn solve_part1(input: &str) -> u32 {
 
     positions
         .keys()
-        .map(|&pos| distance_origin(pos))
+        .map(distance_origin)
         .min()
         .unwrap()
 }
