@@ -1,10 +1,10 @@
-use crate::day13::sparse_grid::SparseGrid;
 use crate::intcode::Computer;
+use crate::{grid::Pos, intcode};
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
+use std::collections::HashMap;
 
-#[derive(Clone, Copy, Eq, FromPrimitive, PartialEq)]
-#[repr(u8)]
+#[derive(Eq, FromPrimitive, PartialEq)]
 pub enum Tile {
     Empty = 0,
     Wall = 1,
@@ -19,28 +19,25 @@ impl Default for Tile {
     }
 }
 
-pub struct Arcade {
-    state: State,
-    score: i32,
-    computer: Computer,
-    screen: SparseGrid<Tile>,
+pub enum JoystickPosition {
+    Neutral = 0,
+    Left = -1,
+    Right = 1,
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
-#[repr(u8)]
 pub enum State {
-    Idle = 0,
+    Idle,
     InProgress,
     AwaitingInput,
     GameOver,
 }
 
-#[derive(Clone, Copy, Eq, FromPrimitive, PartialEq)]
-#[repr(i8)]
-pub enum JoystickPosition {
-    Neutral = 0,
-    Left = -1,
-    Right = 1,
+pub struct Arcade {
+    state: State,
+    score: i64,
+    computer: Computer,
+    screen: HashMap<Pos, Tile>,
 }
 
 impl Arcade {
@@ -49,7 +46,7 @@ impl Arcade {
             state: State::Idle,
             score: 0,
             computer: Computer::new(game_program),
-            screen: SparseGrid::new(),
+            screen: HashMap::new(),
         }
     }
 
@@ -57,33 +54,33 @@ impl Arcade {
         self.state
     }
 
-    pub fn get_score(&self) -> i32 {
+    pub fn get_score(&self) -> i64 {
         self.score
     }
 
-    pub fn get_screen(&self) -> &SparseGrid<Tile> {
-        &self.screen
+    pub fn tiles(&self, tile: Tile) -> impl Iterator<Item = &Pos> {
+        self.screen
+            .iter()
+            .filter(move |&(_, value)| *value == tile)
+            .map(|(pos, _)| pos)
     }
 
     pub fn set_joystick(&mut self, position: JoystickPosition) {
         self.computer.put_input(position as i64);
     }
 
-    pub fn insert_quarters(&mut self) {
+    pub fn insert_quarter(&mut self) -> Result<(), &'static str> {
         if self.state != State::Idle {
-            panic!("can't insert quarters while arcade is not in Idle");
+            return Err("can't insert quarters while arcade is not in Idle");
         }
         self.computer.set(0, 2);
+        Ok(())
     }
 
     pub fn run(&mut self) -> Result<(), &'static str> {
         self.computer.run()?;
 
-        loop {
-            if !self.computer.has_output() {
-                break;
-            }
-
+        while self.computer.has_output() {
             let x = self
                 .computer
                 .get_output()
@@ -98,20 +95,20 @@ impl Arcade {
                 .ok_or("Arcade::run: expected tile value from computer")?;
 
             if x == -1 && y == 0 {
-                self.score = tile as i32;
+                self.score = tile;
             } else {
-                self.screen.set(
-                    (x as i32, y as i32).into(),
+                self.screen.insert(
+                    Pos::at(x as i32, y as i32),
                     FromPrimitive::from_i64(tile).unwrap(),
                 );
             }
         }
 
         self.state = match self.computer.get_state() {
-            crate::intcode::State::READY => State::InProgress,
-            crate::intcode::State::BLOCKED => State::AwaitingInput,
-            crate::intcode::State::HALTED => State::GameOver,
-            crate::intcode::State::DEAD => State::GameOver,
+            intcode::State::READY => State::InProgress,
+            intcode::State::BLOCKED => State::AwaitingInput,
+            intcode::State::HALTED => State::GameOver,
+            intcode::State::DEAD => State::GameOver,
         };
 
         Ok(())

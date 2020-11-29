@@ -1,62 +1,140 @@
 use aoc_runner_derive::aoc;
-use universe::*;
+use lazy_static::lazy_static;
+use num::integer::lcm;
+use regex::Regex;
+use std::cmp;
 
-mod universe;
-
-/// See: https://adventofcode.com/2019/day/12
 #[aoc(day12, part1)]
-pub fn solve_part1(input: &str) -> Result<i32, &'static str> {
-    let mut universe = parse_input(input)?;
+fn solve_part1(input: &str) -> i32 {
+    let mut universe = parse_input(input);
 
     universe.step(1000);
 
-    Ok(universe.total_energy())
+    universe.total_energy()
 }
 
-/// See: https://adventofcode.com/2019/day/12#part2
 #[aoc(day12, part2)]
-pub fn solve_part2(input: &str) -> Result<u64, &'static str> {
-    let mut universe = parse_input(input)?;
+fn solve_part2(input: &str) -> u64 {
+    let mut universe = parse_input(input);
 
-    Ok(universe.find_cycle_time())
+    universe.find_cycle_time()
 }
 
-fn parse_input(input: &str) -> Result<Universe, &'static str> {
-    let positions_result: Result<Vec<_>, _> = input.trim_end().lines().map(parse_line).collect();
-    let positions = positions_result?;
-
-    if positions.len() != 4 {
-        return Err("this implementation expects exactly 4 moons");
+fn parse_input(input: &str) -> Universe {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"<x=(-?\d+), y=(-?\d+), z=(-?\d+)>").unwrap();
     }
 
-    Ok(Universe::new(&positions))
+    let positions = RE
+        .captures_iter(input)
+        .map(|cap| {
+            let x = cap.get(1).unwrap().as_str().parse().unwrap();
+            let y = cap.get(2).unwrap().as_str().parse().unwrap();
+            let z = cap.get(3).unwrap().as_str().parse().unwrap();
+
+            (x, y, z)
+        })
+        .collect::<Vec<_>>();
+
+    Universe::new(&positions)
 }
 
-fn parse_line(line: &str) -> Result<(i32, i32, i32), &'static str> {
-    // example input: <x=-3, y=-2, z=-4>
+struct Universe {
+    // Since the way the gravity is applied is dimension specific (dimensions
+    // don't influence each other), we destructe moons into their dimensions
+    // and work on the destructed dimensions seperately.
+    dimensions: [OneDimensionalUniverse; 3],
+}
 
-    let index_x = 2usize + line.find("x=").ok_or("could not parse input")?;
-    let index_comma = line.find(", y=").ok_or("could not parse input")?;
+impl Universe {
+    fn new(moons: &[(i32, i32, i32)]) -> Self {
+        let dim_x = OneDimensionalUniverse::new([moons[0].0, moons[1].0, moons[2].0, moons[3].0]);
+        let dim_y = OneDimensionalUniverse::new([moons[0].1, moons[1].1, moons[2].1, moons[3].1]);
+        let dim_z = OneDimensionalUniverse::new([moons[0].2, moons[1].2, moons[2].2, moons[3].2]);
 
-    let x = line[index_x..index_comma]
-        .parse::<i32>()
-        .map_err(|_| "could not parse value of x")?;
+        Self {
+            dimensions: [dim_x, dim_y, dim_z],
+        }
+    }
 
-    let index_y = 2usize + line.find("y=").ok_or("could not parse input")?;
-    let index_comma = line.find(", z=").ok_or("could not parse input")?;
+    fn step(&mut self, delta: u32) {
+        self.dimensions.iter_mut().for_each(|d| d.step(delta));
+    }
 
-    let y = line[index_y..index_comma]
-        .parse::<i32>()
-        .map_err(|_| "could not parse value of y")?;
+    fn total_energy(&self) -> i32 {
+        let mut total_energy = 0;
 
-    let index_z = 2usize + line.find("z=").ok_or("could not parse input")?;
-    let index_comma = line.find('>').ok_or("could not parse input")?;
+        for i in 0..4 {
+            let (kinetic_energy, potential_energy) = self
+                .dimensions
+                .iter()
+                .map(|d| (d.bodies[i].abs(), d.velocities[i].abs()))
+                .fold((0, 0), |acc, (pos, vel)| (acc.0 + pos, acc.1 + vel));
 
-    let z = line[index_z..index_comma]
-        .parse::<i32>()
-        .map_err(|_| "could not parse value of z")?;
+            total_energy += kinetic_energy * potential_energy;
+        }
 
-    Ok((x, y, z))
+        total_energy
+    }
+
+    fn find_cycle_time(&mut self) -> u64 {
+        self.dimensions
+            .iter_mut()
+            .map(|d| d.find_cycle_time())
+            .fold(1, lcm)
+    }
+}
+
+#[derive(Clone, Eq, PartialEq)]
+struct OneDimensionalUniverse {
+    bodies: [i32; 4],
+    velocities: [i32; 4],
+}
+
+impl OneDimensionalUniverse {
+    fn new(bodies: [i32; 4]) -> Self {
+        Self {
+            bodies,
+            velocities: [0; 4],
+        }
+    }
+
+    fn step(&mut self, delta: u32) {
+        for _ in 0..delta {
+            for i in 0..self.bodies.len() {
+                for j in 0..self.bodies.len() {
+                    if i == j {
+                        continue;
+                    }
+
+                    self.velocities[i] += match self.bodies[i].cmp(&self.bodies[j]) {
+                        cmp::Ordering::Less => 1,
+                        cmp::Ordering::Equal => 0,
+                        cmp::Ordering::Greater => -1,
+                    };
+                }
+            }
+
+            for i in 0..self.bodies.len() {
+                self.bodies[i] += self.velocities[i];
+            }
+        }
+    }
+
+    /// Find the amount of steps needed to return to the same state.
+    fn find_cycle_time(&mut self) -> u64 {
+        let mut steps = 0;
+        let original_state = self.clone();
+
+        loop {
+            self.step(1);
+            steps += 1;
+
+            if *self == original_state {
+                return steps;
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -64,26 +142,27 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_parse_input() {
-        let test_cases = vec![
-            ("<x=-1, y=0, z=2>", (-1, 0, 2)),
-            ("<x=2, y=-10, z=-7>", (2, -10, -7)),
-            ("<x=4, y=-8, z=8>", (4, -8, 8)),
-            ("<x=3, y=5, z=-1>", (3, 5, -1)),
-        ];
+    fn examples_part2() {
+        let input = r#"<x=-1, y=0, z=2>
+<x=2, y=-10, z=-7>
+<x=4, y=-8, z=8>
+<x=3, y=5, z=-1>"#;
 
-        for (input, expected) in test_cases {
-            let got = parse_line(input).unwrap();
+        assert_eq!(solve_part2(input), 2772);
 
-            assert_eq!(got, expected);
-        }
+        let input = r#"<x=-8, y=-10, z=0>
+<x=5, y=5, z=10>
+<x=2, y=-7, z=3>
+<x=9, y=-8, z=-3>"#;
+
+        assert_eq!(solve_part2(input), 4686774924);
     }
 
     #[test]
     fn real_input() {
         let input = include_str!("../input/2019/day12.txt");
 
-        assert_eq!(solve_part1(input), Ok(10055));
-        assert_eq!(solve_part2(input), Ok(374307970285176));
+        assert_eq!(solve_part1(input), 10055);
+        assert_eq!(solve_part2(input), 374307970285176);
     }
 }

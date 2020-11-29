@@ -1,75 +1,75 @@
 use crate::grid::*;
 use crate::intcode::*;
-use std::collections::{HashMap, HashSet};
 use aoc_runner_derive::aoc;
+use itertools::Itertools;
+use std::collections::HashMap;
 
-/// See: https://adventofcode.com/2019/day/11
 #[aoc(day11, part1)]
-pub fn solve_part1(input: &str) -> Result<i32, &'static str> {
+fn solve_part1(input: &str) -> usize {
     let mut spacecraft = SpacecraftHull::new();
 
-    let program = load_program(input)?;
+    let program = load_program(input).unwrap();
     let mut robot = Robot::new(program);
 
-    robot.run_on(&mut spacecraft)?;
+    robot.run_on(&mut spacecraft).unwrap();
 
-    Ok(spacecraft.panels_once_painted.len() as i32)
+    spacecraft.panels_painted()
 }
 
-/// See: https://adventofcode.com/2019/day/11#part2
 #[aoc(day11, part2)]
-pub fn solve_part2(input: &str) -> Result<String, &'static str> {
+fn solve_part2(input: &str) -> String {
     let mut spacecraft = SpacecraftHull::new();
-    spacecraft.set((0, 0).into(), Paint::White);
+    spacecraft.paint((0, 0).into(), Paint::White);
 
-    let program = load_program(input)?;
+    let program = load_program(input).unwrap();
     let mut robot = Robot::new(program);
 
-    robot.run_on(&mut spacecraft)?;
+    robot.run_on(&mut spacecraft).unwrap();
 
-    // get min/max of all painted cells
-    let min_x = spacecraft.panels.iter().map(|(pos, _)| pos.x).min().unwrap_or(0);
-    let max_x = spacecraft.panels.iter().map(|(pos, _)| pos.x).max().unwrap_or(0);
-    let min_y = spacecraft.panels.iter().map(|(pos, _)| pos.y).min().unwrap_or(0);
-    let max_y = spacecraft.panels.iter().map(|(pos, _)| pos.y).max().unwrap_or(0);
+    let (min_x, max_x) = spacecraft
+        .panels
+        .iter()
+        .map(|(pos, _)| pos.x)
+        .minmax()
+        .into_option()
+        .unwrap();
+    let (min_y, max_y) = spacecraft
+        .panels
+        .iter()
+        .map(|(pos, _)| pos.y)
+        .minmax()
+        .into_option()
+        .unwrap();
 
-    let mut image = Vec::<char>::new();
-
-    for y in (min_y..=max_y).rev() {
-        for x in min_x..=max_x {
-            let panel = match spacecraft.panels.get(&(x, y).into()) {
-                Some(&Paint::White) => '█',
-                _ => ' ',
-            };
-            image.push(panel);
-        }
-        image.push('\n');
-    }
-
-    let result = image.into_iter().collect::<String>();
-
-    println!("The solution to day 11, part 2:\n{}", result);
-
-    Ok("See the console".into())
+    (min_y..=max_y)
+        .rev()
+        .flat_map(|y| {
+            let mut line = (min_x..=max_x)
+                .map(|x| match spacecraft.panels.get(&(x, y).into()) {
+                    Some(&Paint::White) => '█',
+                    _ => ' ',
+                })
+                .collect::<Vec<_>>();
+            line.push('\n');
+            line
+        })
+        .collect::<String>()
 }
 
 #[derive(Copy, Clone, Eq, PartialEq)]
-#[repr(u8)]
 enum Paint {
-    Black = 0,
-    White = 1,
+    Black,
+    White,
 }
 
 struct SpacecraftHull {
     panels: HashMap<Pos, Paint>,
-    panels_once_painted: HashSet<Pos>,
 }
 
 impl SpacecraftHull {
     fn new() -> Self {
         SpacecraftHull {
             panels: HashMap::new(),
-            panels_once_painted: HashSet::new(),
         }
     }
 
@@ -77,12 +77,12 @@ impl SpacecraftHull {
         *self.panels.get(&pos).unwrap_or(&Paint::Black)
     }
 
-    fn set(&mut self, pos: Pos, paint: Paint) {
+    fn paint(&mut self, pos: Pos, paint: Paint) {
         self.panels.insert(pos, paint);
+    }
 
-        if paint == Paint::White {
-            self.panels_once_painted.insert(pos);
-        }
+    fn panels_painted(&self) -> usize {
+        self.panels.iter().count()
     }
 }
 
@@ -119,7 +119,7 @@ impl Robot {
                 Some(_) => return Err("program output an unexpected value"),
                 None => return Err("program did not output any value"),
             };
-            spacecraft.set(self.pos, new_paint);
+            spacecraft.paint(self.pos, new_paint);
 
             self.dir = match self.computer.get_output() {
                 Some(0) => self.dir.turn_left(),
@@ -141,7 +141,16 @@ mod tests {
     fn real_input() {
         let input = include_str!("../input/2019/day11.txt");
 
-        assert_eq!(solve_part1(input), Ok(2373));
-        // assert_eq!(solve_part2(input), Ok("PCKRLPUK".to_owned()));
+        assert_eq!(solve_part1(input), 2373);
+        assert_eq!(
+            solve_part2(input),
+            r#" ███   ██  █  █ ███  █    ███  █  █ █  █   
+ █  █ █  █ █ █  █  █ █    █  █ █  █ █ █    
+ █  █ █    ██   █  █ █    █  █ █  █ ██     
+ ███  █    █ █  ███  █    ███  █  █ █ █    
+ █    █  █ █ █  █ █  █    █    █  █ █ █    
+ █     ██  █  █ █  █ ████ █     ██  █  █   
+"#
+        );
     }
 }
