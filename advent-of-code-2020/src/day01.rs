@@ -19,10 +19,11 @@ fn solve_part2(input: &[u32]) -> u32 {
 fn product_of_entries_that_make_2020(entries: &[u32], window_size: usize) -> u32 {
     entries
         .iter()
+        .copied()
         .combinations(window_size)
-        .find(|values| values.iter().copied().sum::<u32>() == 2020)
+        .find(|values| values.iter().sum::<u32>() == 2020)
         .unwrap()
-        .into_iter()
+        .iter()
         .product()
 }
 
