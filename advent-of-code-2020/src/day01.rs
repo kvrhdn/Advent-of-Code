@@ -3,27 +3,17 @@ use itertools::Itertools;
 
 #[aoc_generator(day1)]
 fn parse_input(input: &str) -> Vec<u32> {
-    input.lines().map(|line| line.parse().unwrap()).collect()
+    let mut input: Vec<_> = input.lines().map(|line| line.parse().unwrap()).collect();
+    input.sort_unstable();
+    input
 }
 
-#[aoc(day1, part1, vec_combinations)]
-fn solve_part1_combinations(input: &[u32]) -> u32 {
+#[aoc(day1, part1)]
+fn solve_part1(input: &[u32]) -> u32 {
     input
         .iter()
-        .copied()
-        .combinations(2)
-        .find(|values| values.iter().sum::<u32>() == 2020)
-        .map(|values| values.iter().product())
-        .unwrap()
-}
-
-#[aoc(day1, part1, tuple_combinations)]
-fn solve_part1_tuple_combinations(input: &[u32]) -> u32 {
-    input
-        .iter()
-        .tuple_combinations::<(&u32, &u32)>()
-        .find(|&(v1, v2)| v1 + v2 == 2020)
-        .map(|(v1, v2)| v1 * v2)
+        .find(|&entry| input.binary_search(&(2020 - entry)).is_ok())
+        .map(|entry| entry * (2020 - entry))
         .unwrap()
 }
 
@@ -31,9 +21,10 @@ fn solve_part1_tuple_combinations(input: &[u32]) -> u32 {
 fn solve_part2(input: &[u32]) -> u32 {
     input
         .iter()
-        .tuple_combinations::<(&u32, &u32, &u32)>()
-        .find(|(&v1, &v2, &v3)| v1 + v2 + v3 == 2020)
-        .map(|(v1, v2, v3)| v1 * v2 * v3)
+        .tuple_combinations::<(&u32, &u32)>()
+        .filter(|&(v1, v2)| v1 + v2 < 2020)
+        .find(|&(v1, v2)| input.binary_search(&(2020 - v1 - v2)).is_ok())
+        .map(|(v1, v2)| v1 * v2 * (2020 - v1 - v2))
         .unwrap()
 }
 
@@ -51,8 +42,7 @@ mod tests {
 1456"#;
         let input = parse_input(input);
 
-        assert_eq!(solve_part1_combinations(&input), 514579);
-        assert_eq!(solve_part1_tuple_combinations(&input), 514579);
+        assert_eq!(solve_part1(&input), 514579);
         assert_eq!(solve_part2(&input), 241861950);
     }
 
@@ -61,8 +51,7 @@ mod tests {
         let input = include_str!("../input/2020/day1.txt");
         let input = parse_input(input);
 
-        assert_eq!(solve_part1_combinations(&input), 381699);
-        assert_eq!(solve_part1_tuple_combinations(&input), 381699);
+        assert_eq!(solve_part1(&input), 381699);
         assert_eq!(solve_part2(&input), 111605670);
     }
 }
