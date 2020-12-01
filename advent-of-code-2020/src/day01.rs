@@ -12,9 +12,8 @@ fn solve_part1_combinations(input: &[u32]) -> u32 {
         .iter()
         .copied()
         .combinations(2)
-        .filter(|values| values.iter().sum::<u32>() == 2020)
+        .find(|values| values.iter().sum::<u32>() == 2020)
         .map(|values| values.iter().product())
-        .next()
         .unwrap()
 }
 
@@ -23,9 +22,8 @@ fn solve_part1_tuple_combinations(input: &[u32]) -> u32 {
     input
         .iter()
         .tuple_combinations::<(&u32, &u32)>()
-        .filter(|&(v1, v2)| v1 + v2 == 2020)
+        .find(|&(v1, v2)| v1 + v2 == 2020)
         .map(|(v1, v2)| v1 * v2)
-        .next()
         .unwrap()
 }
 
@@ -34,9 +32,8 @@ fn solve_part2(input: &[u32]) -> u32 {
     input
         .iter()
         .tuple_combinations::<(&u32, &u32, &u32)>()
-        .filter(|(&v1, &v2, &v3)| v1 + v2 + v3 == 2020)
+        .find(|(&v1, &v2, &v3)| v1 + v2 + v3 == 2020)
         .map(|(v1, v2, v3)| v1 * v2 * v3)
-        .next()
         .unwrap()
 }
 
