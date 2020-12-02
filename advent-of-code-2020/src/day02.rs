@@ -1,27 +1,22 @@
 use aoc_runner_derive::aoc;
-use lazy_static::lazy_static;
-use regex::Regex;
 
-struct Password<'a> {
+struct PasswordWithPolicy<'a> {
     min: usize,
     max: usize,
     c: char,
     password: &'a str,
 }
 
-impl<'a> Password<'a> {
+impl<'a> PasswordWithPolicy<'a> {
     fn parse(password: &'a str) -> Self {
-        lazy_static! {
-            static ref RE: Regex = Regex::new(r"(\d+)-(\d+) ([a-z]): ([a-z]+)").unwrap();
-        }
-
-        let captures = RE.captures(password).unwrap();
+        let (min, max, c, password): (usize, usize, char, &str) =
+            serde_scan::scan!("{}-{} {}: {}" <- password).unwrap();
 
         Self {
-            min: captures.get(1).unwrap().as_str().parse().unwrap(),
-            max: captures.get(2).unwrap().as_str().parse().unwrap(),
-            c: captures.get(3).unwrap().as_str().chars().next().unwrap(),
-            password: captures.get(4).unwrap().as_str(),
+            min,
+            max,
+            c,
+            password,
         }
     }
 
@@ -42,18 +37,22 @@ impl<'a> Password<'a> {
     }
 }
 
-fn parse_passwords(input: &str) -> impl Iterator<Item = Password> {
-    input.lines().map(|line| Password::parse(line))
+fn parse_passwords(input: &str) -> impl Iterator<Item = PasswordWithPolicy> {
+    input.lines().map(|line| PasswordWithPolicy::parse(line))
 }
 
 #[aoc(day2, part1)]
 fn solve_part1(input: &str) -> usize {
-    parse_passwords(input).filter(|p| p.is_valid_v1()).count()
+    parse_passwords(input)
+        .filter(PasswordWithPolicy::is_valid_v1)
+        .count()
 }
 
 #[aoc(day2, part2)]
 fn solve_part2(input: &str) -> usize {
-    parse_passwords(input).filter(|p| p.is_valid_v2()).count()
+    parse_passwords(input)
+        .filter(PasswordWithPolicy::is_valid_v2)
+        .count()
 }
 
 #[cfg(test)]
