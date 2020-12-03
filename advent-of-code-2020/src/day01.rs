@@ -34,12 +34,13 @@ mod tests {
 
     #[test]
     fn example() {
-        let input = r#"1721
+        let input = "\
+1721
 979
 366
 299
 675
-1456"#;
+1456";
         let input = parse_input(input);
 
         assert_eq!(solve_part1(&input), 514579);

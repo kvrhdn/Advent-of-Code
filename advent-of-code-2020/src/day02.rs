@@ -61,9 +61,10 @@ mod tests {
 
     #[test]
     fn example() {
-        let input = r#"1-3 a: abcde
+        let input = "\
+1-3 a: abcde
 1-3 b: cdefg
-2-9 c: ccccccccc"#;
+2-9 c: ccccccccc";
 
         assert_eq!(solve_part1(input), 2);
         assert_eq!(solve_part2(input), 1);

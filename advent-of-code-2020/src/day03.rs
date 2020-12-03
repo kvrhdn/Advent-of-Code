@@ -1,6 +1,6 @@
 use crate::grid::Pos;
 use aoc_runner_derive::{aoc, aoc_generator};
-use std::{collections::HashSet, iter};
+use std::collections::HashSet;
 
 struct TreeMap {
     trees: HashSet<Pos>,
@@ -36,13 +36,8 @@ impl TreeMap {
     }
 }
 
-#[rustfmt::skip]
 fn slope_iter(slope: Pos) -> impl Iterator<Item = Pos> {
-    iter::repeat(slope)
-        .scan(Pos::at(0, 0), |curr_pos, slope| {
-            *curr_pos += slope;
-            Some(*curr_pos)
-        })
+    itertools::iterate(Pos::at(0, 0), move |&curr| curr + slope)
 }
 
 fn trees_encountered(trees: &TreeMap, slope: Pos) -> usize {
@@ -69,7 +64,7 @@ fn solve_part1(trees: &TreeMap) -> usize {
 
 #[aoc(day3, part2)]
 fn solve_part2(trees: &TreeMap) -> usize {
-    let slopes = vec![
+    let slopes = &[
         Pos::at(1, 1),
         Pos::at(3, 1),
         Pos::at(5, 1),
@@ -78,8 +73,8 @@ fn solve_part2(trees: &TreeMap) -> usize {
     ];
 
     slopes
-        .into_iter()
-        .map(|slope| trees_encountered(&trees, slope))
+        .iter()
+        .map(|&slope| trees_encountered(&trees, slope))
         .product()
 }
 
@@ -89,7 +84,8 @@ mod tests {
 
     #[test]
     fn example() {
-        let input = r#"..##.......
+        let input = "\
+..##.......
 #...#...#..
 .#....#..#.
 ..#.#...#.#
@@ -99,7 +95,7 @@ mod tests {
 .#........#
 #.##...#...
 #...##....#
-.#..#...#.#"#;
+.#..#...#.#";
 
         let trees = TreeMap::parse_input(input);
 
