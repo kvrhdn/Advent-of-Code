@@ -37,7 +37,7 @@ impl TreeMap {
 }
 
 #[rustfmt::skip]
-fn diagonal_iter(slope: Pos) -> impl Iterator<Item = Pos> {
+fn slope_iter(slope: Pos) -> impl Iterator<Item = Pos> {
     iter::repeat(slope)
         .scan(Pos::at(0, 0), |curr_pos, slope| {
             *curr_pos += slope;
@@ -46,7 +46,7 @@ fn diagonal_iter(slope: Pos) -> impl Iterator<Item = Pos> {
 }
 
 fn trees_encountered(trees: &TreeMap, slope: Pos) -> usize {
-    diagonal_iter(slope)
+    slope_iter(slope)
         .take_while(|&pos| pos.y < trees.height)
         .filter(|pos| trees.is_tree(pos))
         .count()
