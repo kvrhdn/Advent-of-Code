@@ -12,7 +12,7 @@ impl<'a> Passport<'a> {
     fn parse(data: &'a str) -> Self {
         let data = data
             .split_ascii_whitespace()
-            .map(|field| field.split(':').collect_tuple::<(&str, &str)>().unwrap())
+            .map(|field| field.split(':').collect_tuple::<(_, _)>().unwrap())
             .collect();
 
         Self { data }
@@ -33,7 +33,7 @@ impl<'a> Passport<'a> {
 
         let is_number_within = |value: Option<&&str>, range: RangeInclusive<u32>| -> bool {
             value
-                .and_then(|value| value.parse::<u32>().ok())
+                .and_then(|value| value.parse().ok())
                 .filter(|num| range.contains(num))
                 .is_some()
         };
