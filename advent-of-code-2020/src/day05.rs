@@ -1,20 +1,21 @@
 use aoc_runner_derive::aoc;
 use itertools::Itertools;
 
+// (row, col)
 type Seat = (u32, u32);
 
 fn parse_seat(input: &str) -> Seat {
     let (row, col) = input.split_at(7);
 
-    (parse_binary(row), parse_binary(col))
+    (parse_binary(row, 'B'), parse_binary(col, 'R'))
 }
 
-fn parse_binary(input: &str) -> u32 {
+fn parse_binary(input: &str, high: char) -> u32 {
     let mut weight = 2u32.pow(input.len() as u32 - 1);
     let mut value = 0;
 
     for c in input.chars() {
-        if c == 'B' || c == 'R' {
+        if c == high {
             value += weight;
         }
         weight /= 2;
@@ -51,17 +52,16 @@ fn solve_part2(input: &str) -> u32 {
             continue;
         }
 
-        let mut row_seats = row_seats.collect::<Vec<_>>();
+        let mut row_seats = row_seats.map(|seat| seat.1).collect::<Vec<_>>();
 
         if row_seats.len() != 8 {
-            // sort by col
-            row_seats.sort_unstable_by_key(|seat| seat.1);
+            row_seats.sort_unstable();
 
             let missing_seat_id = row_seats
-                .iter()
+                .into_iter()
                 .enumerate()
-                .find(|&(i, seat)| i as u32 != seat.1)
-                .map(|(i, seat)| seat_id((seat.0, i as u32)))
+                .find(|&(i, col)| i as u32 != col)
+                .map(|(i, _)| seat_id((row, i as u32)))
                 .unwrap();
 
             return missing_seat_id;
@@ -77,8 +77,8 @@ mod tests {
 
     #[test]
     fn examples_part1() {
-        let examples = vec![
-            ("BFFFBBFRRR", (70u32, 7u32), 567u32),
+        let examples: Vec<(&str, Seat, u32)> = vec![
+            ("BFFFBBFRRR", (70, 7), 567),
             ("FFFBBBFRRR", (14, 7), 119),
             ("BBFFBBFRLL", (102, 4), 820),
         ];
