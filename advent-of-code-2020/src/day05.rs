@@ -1,4 +1,3 @@
-use std::cmp;
 use aoc_runner_derive::aoc;
 
 // (row, col)
@@ -40,8 +39,8 @@ fn solve_part2(input: &str) -> u32 {
         .fold((0, u32::MAX, u32::MIN), |(sum, min, max), seat_id| {
             (
                 sum + seat_id,
-                cmp::min(min, seat_id),
-                cmp::max(max, seat_id),
+                min.min(seat_id),
+                max.max(seat_id),
             )
         },
     );
