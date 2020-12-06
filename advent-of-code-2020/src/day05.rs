@@ -1,8 +1,5 @@
+use std::cmp;
 use aoc_runner_derive::aoc;
-use itertools::{
-    Itertools,
-    MinMaxResult::{MinMax, NoElements, OneElement},
-};
 
 // (row, col)
 type Seat = (u16, u16);
@@ -15,17 +12,9 @@ fn parse_seat(input: &str) -> Seat {
 }
 
 fn parse_binary(input: &str, high: char) -> u16 {
-    let mut value = 0;
-
-    for c in input.chars() {
-        value *= 2;
-
-        if c == high {
-            value += 1;
-        }
-    }
-
-    value
+    input
+        .chars()
+        .fold(0, |acc, c| (acc * 2) + (c == high) as u16)
 }
 
 fn seat_id(seat: Seat) -> SeatId {
@@ -43,16 +32,21 @@ fn solve_part1(input: &str) -> SeatId {
 
 #[aoc(day5, part2)]
 fn solve_part2(input: &str) -> u32 {
-    let seats = process_input(input).collect::<Vec<_>>();
+    // we assume the seat IDs are consecutive from min to max, except for the one missing seat
 
-    // we assume the seat IDs are consecutive from min to max (except for the one missing seat)
-    let (min, max) = match seats.iter().minmax() {
-        MinMax(min, max) => (*min as u32, *max as u32),
-        OneElement(_) | NoElements => unreachable!(),
-    };
+    #[rustfmt::skip]
+    let (actual_sum, min, max) = process_input(input)
+        .map(|seat_id| seat_id as u32)
+        .fold((0, u32::MAX, u32::MIN), |(sum, min, max), seat_id| {
+            (
+                sum + seat_id,
+                cmp::min(min, seat_id),
+                cmp::max(max, seat_id),
+            )
+        },
+    );
+
     let expected_sum = ((max - min + 1) * (min + max)) / 2;
-
-    let actual_sum = seats.iter().map(|&s| s as u32).sum::<u32>();
 
     expected_sum - actual_sum
 }
