@@ -6,14 +6,14 @@ type Bag<'a> = &'a str;
 
 struct Rule<'a> {
     bag: Bag<'a>,
-    contains: HashMap<Bag<'a>, u32>,
+    should_contain: HashMap<Bag<'a>, u32>,
 }
 
 impl<'a> Rule<'a> {
     fn parse(input: &str) -> Rule {
         let (bag, contains) = input.split(" bags contain ").collect_tuple().unwrap();
 
-        let contains = if contains != "no other bags." {
+        let should_contain = if contains != "no other bags." {
             contains
                 .split(", ")
                 .map(|bag| {
@@ -30,17 +30,29 @@ impl<'a> Rule<'a> {
             HashMap::new()
         };
 
-        Rule { bag, contains }
+        Rule {
+            bag,
+            should_contain,
+        }
     }
 }
 
-fn parse_input(input: &str) -> impl Iterator<Item = Rule> {
+fn process_rules(input: &str) -> impl Iterator<Item = Rule> {
     input.lines().map(|line| Rule::parse(line))
 }
 
 #[aoc(day7, part1)]
 fn solve_part1(input: &str) -> usize {
-    let rules = parse_input(input).collect::<Vec<_>>();
+    // map: bag -> list of bags that should contain this bag
+    #[rustfmt::skip]
+    let contained_by: HashMap<Bag, Vec<Bag>> = process_rules(input)
+        .fold(HashMap::new(), |mut acc, rule| {
+            for (bag, _) in rule.should_contain {
+                let contained_by = acc.entry(bag).or_default();
+                contained_by.push(rule.bag);
+            }
+            acc
+        });
 
     let mut bags_that_contain_shiny_gold = HashSet::new();
 
@@ -51,11 +63,11 @@ fn solve_part1(input: &str) -> usize {
         let mut new_bags = HashSet::new();
 
         for bag in bags.iter() {
-            for r in rules.iter() {
-                if r.contains.contains_key(*bag) {
-                    let is_new = bags_that_contain_shiny_gold.insert(r.bag);
+            for holders in &contained_by.get(bag) {
+                for &holder in holders.iter() {
+                    let is_new = bags_that_contain_shiny_gold.insert(holder);
                     if is_new {
-                        new_bags.insert(r.bag);
+                        new_bags.insert(holder);
                     }
                 }
             }
@@ -73,9 +85,11 @@ fn solve_part1(input: &str) -> usize {
 
 #[aoc(day7, part2)]
 fn solve_part2(input: &str) -> u32 {
-    let rules = parse_input(input)
+    // map: bag -> rule related to this bag
+    #[rustfmt::skip]
+    let rules: HashMap<Bag, Rule> = process_rules(input)
         .map(|rule| (rule.bag, rule))
-        .collect::<HashMap<_, _>>();
+        .collect();
 
     let mut shiny_gold_contains = 0;
 
@@ -87,7 +101,7 @@ fn solve_part2(input: &str) -> u32 {
 
         for (&&bag, &count) in bags.iter() {
             if let Some(rule) = rules.get(bag) {
-                for (contains, &contains_count) in &rule.contains {
+                for (contains, &contains_count) in &rule.should_contain {
                     let new_bag_count = count * contains_count;
 
                     let curr_count = new_bags.entry(contains).or_default();
