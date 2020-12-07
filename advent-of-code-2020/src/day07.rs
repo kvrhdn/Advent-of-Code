@@ -79,18 +79,22 @@ fn solve_part2(input: &str) -> u32 {
 
     let mut shiny_gold_contains = 0;
 
-    let mut bags = vec![&"shiny gold"];
+    let mut bags = HashMap::new();
+    bags.insert(&"shiny gold", 1);
 
     while !bags.is_empty() {
-        let mut new_bags = Vec::new();
+        let mut new_bags = HashMap::new();
 
-        for &&bag in bags.iter() {
+        for (&&bag, &count) in bags.iter() {
             for r in rules.iter().filter(|r| r.bag == bag) {
-                for (contains, &count) in &r.contains {
-                    for _ in 0..count {
-                        new_bags.push(contains);
-                    }
-                    shiny_gold_contains += count;
+                for (contains, &contains_count) in &r.contains {
+                    let new_bag_count = count * contains_count;
+
+                    new_bags
+                        .entry(contains)
+                        .and_modify(|c| *c += new_bag_count)
+                        .or_insert(new_bag_count);
+                    shiny_gold_contains += new_bag_count;
                 }
             }
         }
