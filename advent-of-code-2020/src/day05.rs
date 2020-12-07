@@ -1,27 +1,15 @@
 use aoc_runner_derive::aoc;
 
-// (row, col)
-type Seat = (u16, u16);
 type SeatId = u16;
 
-fn parse_seat(input: &str) -> Seat {
-    let (row, col) = input.split_at(7);
-
-    (parse_binary(row, 'B'), parse_binary(col, 'R'))
-}
-
-fn parse_binary(input: &str, high: char) -> u16 {
+fn parse_seat_id(input: &str) -> SeatId {
     input
         .chars()
-        .fold(0, |acc, c| (acc * 2) + (c == high) as u16)
-}
-
-fn seat_id(seat: Seat) -> SeatId {
-    seat.0 * 8 + seat.1
+        .fold(0, |acc, c| (acc * 2) + ((c == 'B') != (c == 'R')) as u16)
 }
 
 fn process_input(input: &str) -> impl Iterator<Item = SeatId> + '_ {
-    input.lines().map(parse_seat).map(seat_id)
+    input.lines().map(parse_seat_id)
 }
 
 #[aoc(day5, part1)]
@@ -57,16 +45,13 @@ mod tests {
     #[test]
     fn examples_part1() {
         let examples = vec![
-            ("BFFFBBFRRR", (70, 7), 567),
-            ("FFFBBBFRRR", (14, 7), 119),
-            ("BBFFBBFRLL", (102, 4), 820),
+            ("BFFFBBFRRR", 567),
+            ("FFFBBBFRRR", 119),
+            ("BBFFBBFRLL", 820),
         ];
 
-        for (input, expected_seat, expected_seat_id) in examples {
-            let seat = parse_seat(input);
-
-            assert_eq!(seat, expected_seat);
-            assert_eq!(seat_id(seat), expected_seat_id);
+        for (input, expected) in examples {
+            assert_eq!(parse_seat_id(input), expected);
         }
     }
 
