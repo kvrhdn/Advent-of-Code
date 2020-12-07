@@ -34,20 +34,18 @@ impl<'a> Rule<'a> {
     }
 }
 
-fn parse_input(input: &str) -> Vec<Rule> {
-    input.lines().map(|line| Rule::parse(line)).collect()
+fn parse_input(input: &str) -> impl Iterator<Item = Rule> {
+    input.lines().map(|line| Rule::parse(line))
 }
 
 #[aoc(day7, part1)]
 fn solve_part1(input: &str) -> usize {
-    let rules = parse_input(input);
+    let rules = parse_input(input).collect::<Vec<_>>();
 
     let mut bags_that_contain_shiny_gold = HashSet::new();
 
     let mut bags = HashSet::new();
     bags.insert("shiny gold");
-
-    let mut prev_len = 0;
 
     loop {
         let mut new_bags = HashSet::new();
@@ -55,17 +53,17 @@ fn solve_part1(input: &str) -> usize {
         for bag in bags.iter() {
             for r in rules.iter() {
                 if r.contains.contains_key(*bag) {
-                    new_bags.insert(r.bag);
-                    bags_that_contain_shiny_gold.insert(r.bag);
+                    let is_new = bags_that_contain_shiny_gold.insert(r.bag);
+                    if is_new {
+                        new_bags.insert(r.bag);
+                    }
                 }
             }
         }
 
-        // stop looping once the set doesn't grow anymore
-        if bags_that_contain_shiny_gold.len() == prev_len {
+        if new_bags.is_empty() {
             break;
         }
-        prev_len = bags_that_contain_shiny_gold.len();
 
         bags = new_bags;
     }
@@ -75,7 +73,9 @@ fn solve_part1(input: &str) -> usize {
 
 #[aoc(day7, part2)]
 fn solve_part2(input: &str) -> u32 {
-    let rules = parse_input(input);
+    let rules = parse_input(input)
+        .map(|rule| (rule.bag, rule))
+        .collect::<HashMap<_, _>>();
 
     let mut shiny_gold_contains = 0;
 
@@ -86,14 +86,13 @@ fn solve_part2(input: &str) -> u32 {
         let mut new_bags = HashMap::new();
 
         for (&&bag, &count) in bags.iter() {
-            for r in rules.iter().filter(|r| r.bag == bag) {
-                for (contains, &contains_count) in &r.contains {
+            if let Some(rule) = rules.get(bag) {
+                for (contains, &contains_count) in &rule.contains {
                     let new_bag_count = count * contains_count;
 
-                    new_bags
-                        .entry(contains)
-                        .and_modify(|c| *c += new_bag_count)
-                        .or_insert(new_bag_count);
+                    let curr_count = new_bags.entry(contains).or_default();
+                    *curr_count += new_bag_count;
+
                     shiny_gold_contains += new_bag_count;
                 }
             }
