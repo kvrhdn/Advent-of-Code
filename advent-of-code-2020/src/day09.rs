@@ -1,4 +1,5 @@
 use aoc_runner_derive::{aoc, aoc_generator};
+use itertools::{Itertools, MinMaxResult::MinMax};
 
 #[aoc_generator(day9)]
 fn parse_input(input: &str) -> Vec<u64> {
@@ -30,33 +31,32 @@ fn solve_part1(input: &[u64]) -> u64 {
 
 #[aoc(day9, part2)]
 fn solve_part2(input: &[u64]) -> u64 {
-    let invalid_number = solve_part1(&input);
+    let invalid_number = solve_part1(input);
 
-    let prefix_sum = input
-        .iter()
-        .scan(0u64, |sum, value| {
-            *sum += *value;
-            Some(*sum)
-        })
-        .collect::<Vec<_>>();
+    let mut sum = 0;
+    let mut start = 0;
+    let mut end = 0;
 
-    for window_size in 2..input.len() {
-        for i in window_size..input.len() {
-            let sum = prefix_sum[i] - prefix_sum[i - window_size];
+    loop {
+        while sum < invalid_number {
+            sum += input[end];
+            end += 1;
+        }
 
-            if sum == invalid_number {
-                let (min, max) = input[i - window_size..i]
-                    .iter()
-                    .fold((u64::MAX, u64::MIN), |(min, max), &value| {
-                        (min.min(value), max.max(value))
-                    });
+        while sum > invalid_number {
+            sum -= input[start];
+            start += 1;
+        }
 
-                return min + max;
-            }
+        if sum == invalid_number {
+            break;
         }
     }
 
-    panic!("could not find a weakness");
+    match input[start..end].iter().minmax() {
+        MinMax(min, max) => min + max,
+        _ => panic!("expected a min and a max value"),
+    }
 }
 
 #[cfg(test)]
