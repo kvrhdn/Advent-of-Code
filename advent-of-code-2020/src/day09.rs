@@ -32,20 +32,31 @@ fn solve_part1(input: &[u64]) -> u64 {
 fn solve_part2(input: &[u64]) -> u64 {
     let invalid_number = solve_part1(&input);
 
-    (2..input.len())
-        .flat_map(|size| input.windows(size))
-        .filter(|window| window.iter().sum::<u64>() == invalid_number)
-        .map(|window| {
-            let (min, max) = window
-                .iter()
-                .fold((window[0], window[0]), |(min, max), &value| {
-                    (min.min(value), max.max(value))
-                });
-
-            min + max
+    let prefix_sum = input
+        .iter()
+        .scan(0u64, |sum, value| {
+            *sum += *value;
+            Some(*sum)
         })
-        .next()
-        .expect("could not find a valid contiguous window")
+        .collect::<Vec<_>>();
+
+    for window_size in 2..input.len() {
+        for i in window_size..input.len() {
+            let sum = prefix_sum[i] - prefix_sum[i - window_size];
+
+            if sum == invalid_number {
+                let (min, max) = input[i - window_size..i]
+                    .iter()
+                    .fold((u64::MAX, u64::MIN), |(min, max), &value| {
+                        (min.min(value), max.max(value))
+                    });
+
+                return min + max;
+            }
+        }
+    }
+
+    panic!("could not find a weakness");
 }
 
 #[cfg(test)]
