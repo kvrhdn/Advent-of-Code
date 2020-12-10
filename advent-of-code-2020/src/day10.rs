@@ -2,25 +2,25 @@ use aoc_runner_derive::{aoc, aoc_generator};
 
 #[aoc_generator(day10)]
 fn parse_input(input: &str) -> Vec<u32> {
-    let mut adapters: Vec<u32> = input.lines().map(|line| line.parse().unwrap()).collect();
+    let mut joltages: Vec<u32> = input.lines().map(|line| line.parse().unwrap()).collect();
 
     // add wall joltage
-    adapters.push(0);
+    joltages.push(0);
 
-    adapters.sort_unstable();
+    joltages.sort_unstable();
 
     // add device joltage
-    adapters.push(adapters[adapters.len() - 1] + 3);
+    joltages.push(joltages[joltages.len() - 1] + 3);
 
-    adapters
+    joltages
 }
 
 #[aoc(day10, part1)]
-fn solve_part1(joltage_adapters: &[u32]) -> u32 {
+fn solve_part1(joltages: &[u32]) -> u32 {
     // the difference between two joltages is guaranteed to be 1, 2 or 3
     let mut diffs = [0; 4];
 
-    joltage_adapters
+    joltages
         .windows(2)
         .for_each(|w| diffs[(w[1] - w[0]) as usize] += 1);
 
@@ -28,31 +28,31 @@ fn solve_part1(joltage_adapters: &[u32]) -> u32 {
 }
 
 #[aoc(day10, part2)]
-fn solve_part2(joltage_adapters: &[u32]) -> u64 {
+fn solve_part2(joltages: &[u32]) -> u64 {
     // keep track of the amount of branches up to the corresponding joltage
-    let mut branches = vec![0u64; joltage_adapters.len()];
+    let mut branches = vec![0u64; joltages.len()];
     branches[0] = 1;
 
-    for i in 1..joltage_adapters.len() {
-        let adapter = joltage_adapters[i];
+    for i in 1..joltages.len() {
+        let adapter = joltages[i];
 
         // check if previous joltages are in range and count sum of branches
         let mut count = 0;
 
-        if i >= 3 && adapter - joltage_adapters[i - 3] <= 3 {
+        if i >= 3 && adapter - joltages[i - 3] <= 3 {
             count += branches[i - 3];
         }
-        if i >= 2 && adapter - joltage_adapters[i - 2] <= 3 {
+        if i >= 2 && adapter - joltages[i - 2] <= 3 {
             count += branches[i - 2];
         }
-        if i >= 1 && adapter - joltage_adapters[i - 1] <= 3 {
+        if i >= 1 && adapter - joltages[i - 1] <= 3 {
             count += branches[i - 1];
         }
 
         branches[i] = count;
     }
 
-    branches[joltage_adapters.len() - 1]
+    branches[joltages.len() - 1]
 }
 
 #[cfg(test)]
