@@ -1,6 +1,7 @@
-use crate::grid::Pos;
 use aoc_runner_derive::{aoc, aoc_generator};
 use std::collections::HashSet;
+
+type Pos = crate::grid::Pos<i32>;
 
 struct TreeMap {
     trees: HashSet<Pos>,

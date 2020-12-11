@@ -1,16 +1,17 @@
 #![allow(unused)]
 
+use num_traits::{Num, NumAssignOps, Signed};
 use std::fmt;
 use std::ops::{Add, AddAssign};
 
 #[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
-pub struct Pos {
-    pub x: i32,
-    pub y: i32,
+pub struct Pos<T> {
+    pub x: T,
+    pub y: T,
 }
 
-impl From<(i32, i32)> for Pos {
-    fn from(tuple: (i32, i32)) -> Self {
+impl<T> From<(T, T)> for Pos<T> {
+    fn from(tuple: (T, T)) -> Self {
         Self {
             x: tuple.0,
             y: tuple.1,
@@ -18,8 +19,11 @@ impl From<(i32, i32)> for Pos {
     }
 }
 
-impl Pos {
-    pub fn at(x: i32, y: i32) -> Self {
+impl<T> Pos<T>
+where
+    T: Num,
+{
+    pub fn at(x: T, y: T) -> Self {
         Self { x, y }
     }
 
@@ -27,25 +31,28 @@ impl Pos {
         match dir {
             Dir::Up => Self {
                 x: self.x,
-                y: self.y + 1,
+                y: self.y + T::one(),
             },
             Dir::Down => Self {
                 x: self.x,
-                y: self.y - 1,
+                y: self.y - T::one(),
             },
             Dir::Right => Self {
-                x: self.x + 1,
+                x: self.x + T::one(),
                 y: self.y,
             },
             Dir::Left => Self {
-                x: self.x - 1,
+                x: self.x - T::one(),
                 y: self.y,
             },
         }
     }
 }
 
-impl Add for Pos {
+impl<T> Add for Pos<T>
+where
+    T: Num,
+{
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
@@ -56,25 +63,37 @@ impl Add for Pos {
     }
 }
 
-impl AddAssign for Pos {
+impl<T> AddAssign for Pos<T>
+where
+    T: NumAssignOps,
+{
     fn add_assign(&mut self, rhs: Self) {
         self.x += rhs.x;
         self.y += rhs.y;
     }
 }
 
-impl fmt::Display for Pos {
+impl<T> fmt::Display for Pos<T>
+where
+    T: fmt::Display,
+{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
         write!(f, "({}, {})", self.x, self.y)
     }
 }
 
-pub fn distance(p1: &Pos, p2: &Pos) -> u32 {
-    ((p2.x - p1.x).abs() + (p2.y - p1.y).abs()) as u32
+pub fn distance<T>(p1: &Pos<T>, p2: &Pos<T>) -> T
+where
+    T: Copy + Signed,
+{
+    ((p2.x - p1.x).abs() + (p2.y - p1.y).abs())
 }
 
-pub fn distance_origin(p: &Pos) -> u32 {
-    distance(p, &Pos::at(0, 0))
+pub fn distance_origin<T>(p: &Pos<T>) -> T
+where
+    T: Copy + Signed,
+{
+    distance(p, &Pos::at(T::zero(), T::zero()))
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
