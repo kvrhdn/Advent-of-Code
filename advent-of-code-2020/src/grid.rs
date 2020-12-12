@@ -28,21 +28,25 @@ where
     }
 
     pub fn step(self, dir: Dir) -> Self {
+        self.stepn(dir, T::one())
+    }
+
+    pub fn stepn(self, dir: Dir, count: T) -> Self {
         match dir {
             Dir::Up => Self {
                 x: self.x,
-                y: self.y + T::one(),
+                y: self.y + count,
             },
             Dir::Down => Self {
                 x: self.x,
-                y: self.y - T::one(),
+                y: self.y - count,
             },
             Dir::Right => Self {
-                x: self.x + T::one(),
+                x: self.x + count,
                 y: self.y,
             },
             Dir::Left => Self {
-                x: self.x - T::one(),
+                x: self.x - count,
                 y: self.y,
             },
         }
