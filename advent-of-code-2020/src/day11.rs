@@ -2,30 +2,30 @@ use aoc_runner_derive::aoc;
 
 type Pos = crate::grid::Pos<i32>;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-enum Seat {
+#[derive(Copy, Clone, Eq, PartialEq)]
+enum Cell {
     Floor,
     Empty,
     Occupied,
 }
 
 #[derive(Clone, Eq, PartialEq)]
-struct SeatLayout {
-    grid: Vec<Vec<Seat>>,
+struct Ferry {
+    grid: Vec<Vec<Cell>>,
     width: usize,
     height: usize,
 }
 
-impl SeatLayout {
+impl Ferry {
     fn parse(input: &str) -> Self {
         let grid = input
             .lines()
             .map(|line| {
                 line.chars()
                     .map(|c| match c {
-                        '.' => Seat::Floor,
-                        'L' => Seat::Empty,
-                        '#' => Seat::Occupied,
+                        '.' => Cell::Floor,
+                        'L' => Cell::Empty,
+                        '#' => Cell::Occupied,
                         _ => panic!("Unexpected character {}", c),
                     })
                     .collect::<Vec<_>>()
@@ -39,13 +39,13 @@ impl SeatLayout {
         }
     }
 
-    fn get(&self, pos: Pos) -> Option<&Seat> {
+    fn get(&self, pos: Pos) -> Option<&Cell> {
         self.grid
             .get(pos.x as usize)
             .and_then(|row| row.get(pos.y as usize))
     }
 
-    fn set(&mut self, pos: Pos, seat: Seat) {
+    fn set(&mut self, pos: Pos, seat: Cell) {
         self.grid[pos.x as usize][pos.y as usize] = seat;
     }
 
@@ -69,11 +69,11 @@ impl SeatLayout {
                 pos += dir;
 
                 match self.get(pos) {
-                    Some(Seat::Occupied) => {
+                    Some(Cell::Occupied) => {
                         count += 1;
                         break;
                     }
-                    Some(Seat::Floor) => {
+                    Some(Cell::Floor) => {
                         continue;
                     }
                     _ => {
@@ -88,7 +88,7 @@ impl SeatLayout {
 
     fn evolve<F>(&self, target: &mut Self, f: F)
     where
-        F: Fn(Pos, Seat) -> Option<Seat>,
+        F: Fn(Pos, Cell) -> Option<Cell>,
     {
         for row in 0..self.height {
             for col in 0..self.width {
@@ -106,11 +106,11 @@ impl SeatLayout {
 
     fn evolve_with_rules_part1(&self, target: &mut Self) {
         self.evolve(target, |pos, curr| match curr {
-            Seat::Empty if self.occupied_seats_in_line_of_sight(pos, 1) == 0 => {
-                Some(Seat::Occupied)
+            Cell::Empty if self.occupied_seats_in_line_of_sight(pos, 1) == 0 => {
+                Some(Cell::Occupied)
             }
-            Seat::Occupied if self.occupied_seats_in_line_of_sight(pos, 1) >= 4 => {
-                Some(Seat::Empty)
+            Cell::Occupied if self.occupied_seats_in_line_of_sight(pos, 1) >= 4 => {
+                Some(Cell::Empty)
             }
             _ => None,
         });
@@ -118,11 +118,11 @@ impl SeatLayout {
 
     fn evolve_with_rules_part2(&self, target: &mut Self) {
         self.evolve(target, |pos, curr| match curr {
-            Seat::Empty if self.occupied_seats_in_line_of_sight(pos, usize::MAX) == 0 => {
-                Some(Seat::Occupied)
+            Cell::Empty if self.occupied_seats_in_line_of_sight(pos, usize::MAX) == 0 => {
+                Some(Cell::Occupied)
             }
-            Seat::Occupied if self.occupied_seats_in_line_of_sight(pos, usize::MAX) >= 5 => {
-                Some(Seat::Empty)
+            Cell::Occupied if self.occupied_seats_in_line_of_sight(pos, usize::MAX) >= 5 => {
+                Some(Cell::Empty)
             }
             _ => None,
         });
@@ -131,13 +131,13 @@ impl SeatLayout {
     fn seats_occupied(&self) -> usize {
         self.grid
             .iter()
-            .map(|row| row.iter().filter(|&&s| s == Seat::Occupied).count())
+            .map(|row| row.iter().filter(|&&s| s == Cell::Occupied).count())
             .sum()
     }
 }
 
-fn parse_input(input: &str) -> SeatLayout {
-    SeatLayout::parse(input)
+fn parse_input(input: &str) -> Ferry {
+    Ferry::parse(input)
 }
 
 #[aoc(day11, part1)]
