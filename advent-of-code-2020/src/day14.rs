@@ -1,9 +1,7 @@
 use aoc_runner_derive::aoc;
+use arrayvec::ArrayVec;
 use std::collections::HashMap;
 
-const U32_MAX: u64 = 0xFFFFFFFFF;
-
-#[derive(Debug)]
 enum Instruction {
     Mask(Bitmask),
     Mem(usize, u64),
@@ -19,52 +17,68 @@ impl Instruction {
     }
 }
 
-#[derive(Debug)]
 struct Bitmask {
-    ones: u64,   // example: `value & 0010` will always set the second bit
-    zeroes: u64, // example: `value ^ 1011` will always zero the third bit
+    zeroes_mask: u64,
+    ones_mask: u64,
+    floating: ArrayVec<[usize; 40]>,
 }
 
 impl Bitmask {
     fn parse(s: &str) -> Self {
-        let (ones, zeroes) =
-            s.as_bytes()
-                .iter()
-                .enumerate()
-                .fold((0u64, U32_MAX), |(ones, zeroes), (i, v)| {
-                    let index = 36 - i - 1;
-                    match v {
-                        b'0' => (ones, zeroes ^ 1 << index),
-                        b'1' => (ones | 1 << index, zeroes),
-                        b'X' => (ones, zeroes),
-                        _ => panic!("Unsupported binary value {:b}", v),
-                    }
-                });
+        let mut bitmask: Bitmask = Default::default();
 
-        Self { ones, zeroes }
+        for (i, b) in s.as_bytes().iter().enumerate() {
+            let index = 36 - i - 1;
+
+            match b {
+                b'0' => bitmask.zeroes_mask |= 1 << index,
+                b'1' => bitmask.ones_mask |= 1 << index,
+                b'X' => bitmask.floating.push(index),
+                _ => panic!("Unsupported value {:b}", b),
+            };
+        }
+
+        bitmask
     }
 
-    fn apply(&self, value: u64) -> u64 {
-        (value | self.ones) & self.zeroes
+    fn apply_mask_to_value(&self, value: u64) -> u64 {
+        (value | self.ones_mask) & !self.zeroes_mask
+    }
+
+    fn decode_address(&self, addr: u64) -> impl Iterator<Item = u64> + '_ {
+        let addr = addr | self.ones_mask;
+
+        self.floating
+            .iter()
+            .fold(vec![addr], |addresses, floating| {
+                let mut new = Vec::new();
+
+                for addr in addresses {
+                    new.push(addr | 1 << floating);
+                    new.push(addr & !(1 << floating));
+                }
+
+                new
+            })
+            .into_iter()
     }
 }
 
 impl Default for Bitmask {
     fn default() -> Self {
         Bitmask {
-            ones: 0,
-            zeroes: U32_MAX,
+            ones_mask: 0,
+            zeroes_mask: 0,
+            floating: Default::default(),
         }
     }
 }
 
-fn parse_input(input: &str) -> impl Iterator<Item = Instruction> + '_ {
-    input.lines().map(|line| Instruction::parse(line))
-}
-
-#[aoc(day14, part1)]
-fn solve_part1(input: &str) -> u64 {
-    let instructions = parse_input(input);
+fn process_instructions<F>(input: &str, exec_mem: F) -> u64
+where
+    F: Fn(&mut HashMap<usize, u64>, &Bitmask, usize, u64),
+{
+    let instructions = input.lines().map(|line| Instruction::parse(line));
 
     let mut mask = Default::default();
     let mut mem = HashMap::new();
@@ -75,7 +89,7 @@ fn solve_part1(input: &str) -> u64 {
                 mask = new_mask;
             }
             Instruction::Mem(addr, value) => {
-                mem.insert(addr, mask.apply(value));
+                exec_mem(&mut mem, &mask, addr, value);
             }
         }
     }
@@ -83,10 +97,20 @@ fn solve_part1(input: &str) -> u64 {
     mem.values().sum()
 }
 
+#[aoc(day14, part1)]
+fn solve_part1(input: &str) -> u64 {
+    process_instructions(input, |mem, mask, addr, value| {
+        mem.insert(addr, mask.apply_mask_to_value(value));
+    })
+}
+
 #[aoc(day14, part2)]
-fn solve_part2(input: &str) -> i32 {
-    // TODO
-    0
+fn solve_part2(input: &str) -> u64 {
+    process_instructions(input, |mem, mask, addr, value| {
+        for addr in mask.decode_address(addr as u64) {
+            mem.insert(addr as usize, value);
+        }
+    })
 }
 
 #[cfg(test)]
@@ -105,10 +129,21 @@ mem[8] = 0";
     }
 
     #[test]
+    fn example_part2() {
+        let input = "\
+mask = 000000000000000000000000000000X1001X
+mem[42] = 100
+mask = 00000000000000000000000000000000X0XX
+mem[26] = 1";
+
+        assert_eq!(solve_part2(input), 208);
+    }
+
+    #[test]
     fn real_input() {
         let input = include_str!("../input/2020/day14.txt");
 
         assert_eq!(solve_part1(input), 5875750429995);
-        assert_eq!(solve_part2(input), 0);
+        assert_eq!(solve_part2(input), 5272149590143);
     }
 }
