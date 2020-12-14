@@ -50,8 +50,16 @@ fn solve_part2_bruteforce(_: &str) -> usize {
     let steps = 787;
     let mut answer = 768;
 
+    let print_step = 10_000_000_000_000;
+    let mut print = print_step;
+
     loop {
         answer += steps;
+
+        if answer > print {
+            println!("Currently at: {}", answer);
+            print += print_step;
+        }
 
         if (answer + 50) % 571 == 0
             && (answer + 9) % 41 == 0
