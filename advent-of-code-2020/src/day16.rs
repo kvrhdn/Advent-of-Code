@@ -1,25 +1,22 @@
 use aoc_runner_derive::aoc;
 use arrayvec::ArrayVec;
-use itertools::Itertools;
+use serde_scan::scan;
 use std::ops::RangeInclusive;
 
 #[derive(Clone, Debug)]
 struct Rule<'a> {
     name: &'a str,
-    constraints: ArrayVec<[RangeInclusive<u32>; 2]>,
+    constraints: [RangeInclusive<u32>; 2],
 }
 
 impl<'a> Rule<'a> {
     fn parse(input: &'a str) -> Self {
-        let (name, constraints) = input.split(": ").collect_tuple().unwrap();
+        let (name, from1, to1, from2, to2) = scan!("{}: {}-{} or {}-{}" <- input).unwrap();
 
-        let constraints = constraints
-            .split(" or ")
-            .map(|c| serde_scan::scan!("{}-{}" <- c).unwrap())
-            .map(|(from, to)| from..=to)
-            .collect();
-
-        Self { name, constraints }
+        Self {
+            name,
+            constraints: [from1..=to1, from2..=to2],
+        }
     }
 
     fn check(&self, value: u32) -> bool {
