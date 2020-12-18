@@ -7,7 +7,7 @@ enum Operator {
     Mult,
 }
 
-fn solve_expression(expr: &str, mult_has_precedence: bool) -> (u64, usize) {
+fn solve_expression(expr: &str, plus_has_precedence: bool) -> (u64, usize) {
     let mut acc = 0;
     let mut op: Option<Operator> = None;
 
@@ -33,16 +33,18 @@ fn solve_expression(expr: &str, mult_has_precedence: bool) -> (u64, usize) {
                 op = Some(Operator::Mult);
                 i += 1;
 
-                if mult_has_precedence {
-                    // if multiplication has precedence, calculate the expression to the right first
-                    let (value, n) = solve_expression(&expr[i..], mult_has_precedence);
+                if plus_has_precedence {
+                    // if plus has precedence, we calculate everything between
+                    // multiplications first (this works since there are only
+                    // two operators)
+                    let (value, n) = solve_expression(&expr[i..], plus_has_precedence);
                     i += n;
 
                     apply(&mut acc, value, op);
                 }
             }
             b'(' => {
-                let (value, n) = solve_expression(&expr[i + 1..], mult_has_precedence);
+                let (value, n) = solve_expression(&expr[i + 1..], plus_has_precedence);
                 // +2 to skip both braces '(' and ')'
                 i += n + 2;
 
