@@ -12,9 +12,7 @@ type RuleMap = HashMap<RuleId, Rule>;
 enum Rule {
     Literal(u8),
     And(Vec<RuleId>),
-    Or(Vec<RuleId>, Vec<RuleId>),
-    Rule8(),
-    Rule11(),
+    Or(Vec<Vec<RuleId>>),
 }
 
 impl Rule {
@@ -25,20 +23,23 @@ impl Rule {
         }
 
         if s.contains('|') {
-            if let Ok((r1, r2, r3, r4)) = scan!("{} {} | {} {}" <- s) {
-                return Rule::Or(vec![r1, r2], vec![r3, r4]);
-            }
-            if let Ok((r1, r2)) = scan!("{} | {}" <- s) {
-                return Rule::Or(vec![r1], vec![r2]);
-            }
+            Rule::Or(
+                s.split(" | ")
+                    .map(|segments| {
+                        segments
+                            .split(' ')
+                            .map(|v| v.parse::<RuleId>().unwrap())
+                            .collect()
+                    })
+                    .collect(),
+            )
+        } else {
+            Rule::And(
+                s.split(' ')
+                    .map(|s| s.parse::<RuleId>().unwrap())
+                    .collect::<Vec<_>>(),
+            )
         }
-
-        let rule_ids = s
-            .split(' ')
-            .map(|s| s.parse::<RuleId>().unwrap())
-            .collect::<Vec<_>>();
-
-        Rule::And(rule_ids)
     }
 
     /// Evalutate checks whether the given string matches with the rule and
@@ -79,88 +80,10 @@ impl Rule {
 
                 possible_n
             }
-            Rule::Or(rs1, rs2) => {
-                let n = Rule::And(rs1.clone()).evaluate(rules, s);
-                if !n.is_empty() {
-                    return n;
-                }
-                Rule::And(rs2.clone()).evaluate(rules, s)
-            }
-            Rule::Rule8() => {
-                // 8: 42 | 42 8
-                let rule_42 = rules.get(&42).unwrap();
-
-                // there should always be at least one successful evaluation of rule 42
-                let mut possible_n = rule_42.evaluate(rules, s);
-                if possible_n.is_empty() {
-                    return possible_n;
-                }
-
-                let mut new = possible_n.clone();
-
-                loop {
-                    new = new
-                        .into_iter()
-                        .flat_map(|n| {
-                            rule_42
-                                .evaluate(rules, &s[n..])
-                                .into_iter()
-                                .map(move |result| n + result)
-                        })
-                        .collect();
-
-                    // no new matches - return matches so far
-                    if new.is_empty() {
-                        return possible_n;
-                    }
-
-                    possible_n.extend(new.iter());
-                }
-            }
-            Rule::Rule11() => {
-                // 11: 42 31 | 42 11 31
-                let rule_42 = rules.get(&42).unwrap();
-                let rule_31 = rules.get(&31).unwrap();
-
-                // there should always be at least one successful evaluation of rule 42
-                let mut possible_n = rule_42.evaluate(rules, s);
-                if possible_n.is_empty() {
-                    return possible_n;
-                }
-
-                // there can be many evaluations of rule 11
-                let mut new = possible_n.clone();
-
-                loop {
-                    new = new
-                        .into_iter()
-                        .flat_map(|n| {
-                            Rule::Rule11()
-                                .evaluate(rules, &s[n..])
-                                .into_iter()
-                                .map(move |result| n + result)
-                        })
-                        .collect();
-
-                    // no new matches
-                    if new.is_empty() {
-                        break;
-                    }
-
-                    possible_n.extend(new.iter());
-                }
-
-                // there should be a final successful evaluation of rule 31
-                possible_n
-                    .into_iter()
-                    .flat_map(|n| {
-                        rule_31
-                            .evaluate(rules, &s[n..])
-                            .into_iter()
-                            .map(move |result| n + result)
-                    })
-                    .collect()
-            }
+            Rule::Or(expr) => expr
+                .iter()
+                .flat_map(|r| Rule::And(r.clone()).evaluate(rules, s))
+                .collect(),
         }
     }
 }
@@ -192,8 +115,10 @@ fn solve_part1(input: &str) -> usize {
 fn solve_part2(input: &str) -> usize {
     let (mut rules, messages) = parse_input(input);
 
-    rules.insert(8, Rule::Rule8());
-    rules.insert(11, Rule::Rule11());
+    // 8: 42 | 42 8
+    rules.insert(8, Rule::Or(vec![vec![42], vec![42, 8]]));
+    // 11: 42 31 | 42 11 31
+    rules.insert(11, Rule::Or(vec![vec![42, 31], vec![42, 11, 31]]));
 
     let rule_0 = rules.get(&0).unwrap();
 
