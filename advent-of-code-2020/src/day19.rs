@@ -1,7 +1,6 @@
-use std::collections::HashMap;
-
 use aoc_runner_derive::aoc;
 use serde_scan::scan;
+use std::collections::HashMap;
 
 // Rule IDs are never higher than about 140
 type RuleId = u8;
@@ -22,27 +21,16 @@ impl Rule {
             return Rule::Literal(c as u8);
         }
 
+        let split_rule_ids = |s: &str| s.split(' ').map(|v| v.parse().unwrap()).collect();
+
         if s.contains('|') {
-            Rule::Or(
-                s.split(" | ")
-                    .map(|segments| {
-                        segments
-                            .split(' ')
-                            .map(|v| v.parse::<RuleId>().unwrap())
-                            .collect()
-                    })
-                    .collect(),
-            )
+            Rule::Or(s.split(" | ").map(|s| split_rule_ids(s)).collect())
         } else {
-            Rule::And(
-                s.split(' ')
-                    .map(|s| s.parse::<RuleId>().unwrap())
-                    .collect::<Vec<_>>(),
-            )
+            Rule::And(split_rule_ids(s))
         }
     }
 
-    /// Evalutate checks whether the given string matches with the rule and
+    /// Evaluate checks whether the given string matches with the rule and
     /// returns the amount of characters 'consumed' by the rule. If the rule
     /// contains a loop (only Rule8 or Rule11) it can return multiple matches.
     fn evaluate(&self, rules: &RuleMap, s: &str) -> Vec<usize> {
