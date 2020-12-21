@@ -1,3 +1,4 @@
+#![feature(iterator_fold_self)]
 #![feature(min_const_generics)]
 #![feature(str_split_once)]
 
@@ -23,6 +24,7 @@ mod day17;
 mod day18;
 mod day19;
 mod day20;
+mod day21;
 
 mod grid;
 
