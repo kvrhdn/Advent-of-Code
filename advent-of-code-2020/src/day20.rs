@@ -306,12 +306,13 @@ impl Image {
             }
         }
 
-        for y in 0..image.data.size {
-            for x in 0..image.data.size {
-                print!("{}", if image.data[(x, y)] { '#' } else { '.' });
-            }
-            println!();
-        }
+        // // print entire image
+        // for y in 0..image.data.size {
+        //     for x in 0..image.data.size {
+        //         print!("{}", if image.data[(x, y)] { '#' } else { '.' });
+        //     }
+        //     println!();
+        // }
 
         image
     }
