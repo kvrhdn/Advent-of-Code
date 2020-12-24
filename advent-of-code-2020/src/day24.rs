@@ -77,12 +77,53 @@ fn solve_part1(input: &str) -> usize {
 }
 
 #[aoc(day24, part2)]
-fn solve_part2(input: &str) -> i32 {
+fn solve_part2(input: &str) -> usize {
     let mut tiles = parse_input(input);
 
-    // TODO
+    let count_neighbors = |tiles: &HashSet<Pos>, pos: Pos| -> u32 {
+        tiles.contains(&(pos.0 + 1.0, pos.1)) as u32
+            + tiles.contains(&(pos.0 + 0.5, pos.1 - 0.5)) as u32
+            + tiles.contains(&(pos.0 - 0.5, pos.1 - 0.5)) as u32
+            + tiles.contains(&(pos.0 - 1.0, pos.1)) as u32
+            + tiles.contains(&(pos.0 - 0.5, pos.1 + 0.5)) as u32
+            + tiles.contains(&(pos.0 + 0.5, pos.1 + 0.5)) as u32
+    };
 
-    0
+    for _ in 0..100 {
+        let mut new_tiles = HashSet::new();
+
+        let (min_x, max_x, min_y, max_y): (R32, R32, R32, R32) = tiles.iter().fold(
+            (r32(0.0), r32(0.0), r32(0.0), r32(0.0)),
+            |(min_x, max_x, min_y, max_y), &(x, y)| {
+                (min_x.min(x), max_x.max(x), min_y.min(y), max_y.max(y))
+            },
+        );
+
+        let mut y = min_y - 1.0f32;
+        while y < max_y + 1.0 {
+            let mut x = min_x - 1.0f32;
+
+            while x < max_x + 1.0 {
+                let n = count_neighbors(&tiles, (x, y));
+                let is_black = tiles.contains(&(x, y));
+
+                if is_black && (n == 1 || n == 2) {
+                    new_tiles.insert((x, y));
+                }
+                if !is_black && n == 2 {
+                    new_tiles.insert((x, y));
+                }
+
+                x += 0.5;
+            }
+
+            y += 0.5;
+        }
+
+        tiles = new_tiles;
+    }
+
+    tiles.len()
 }
 
 #[cfg(test)]
@@ -114,7 +155,7 @@ neswnwewnwnwseenwseesewsenwsweewe
 wseweeenwnesenwwwswnew";
 
         assert_eq!(solve_part1(input), 10);
-        assert_eq!(solve_part2(input), 0);
+        assert_eq!(solve_part2(input), 2208);
     }
 
     #[test]
@@ -122,6 +163,6 @@ wseweeenwnesenwwwswnew";
         let input = include_str!("../input/2020/day24.txt");
 
         assert_eq!(solve_part1(input), 282);
-        assert_eq!(solve_part2(input), 0);
+        assert_eq!(solve_part2(input), 3445);
     }
 }
