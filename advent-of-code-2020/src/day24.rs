@@ -1,6 +1,6 @@
 use aoc_runner_derive::aoc;
 use noisy_float::prelude::*;
-use std::collections::HashMap;
+use std::collections::HashSet;
 
 type Pos = (R32, R32);
 
@@ -38,44 +38,32 @@ impl Direction {
     }
 }
 
-#[derive(Copy, Clone, Eq, PartialEq)]
-enum Tile {
-    Black,
-    White,
-}
-
-impl Tile {
-    fn flip(&mut self) {
-        *self = match self {
-            Tile::Black => Tile::White,
-            Tile::White => Tile::Black,
-        }
-    }
-}
-
-fn parse_input(input: &str) -> HashMap<Pos, Tile> {
-    let mut tiles = HashMap::new();
+fn parse_input(input: &str) -> HashSet<Pos> {
+    let mut tiles = HashSet::new();
 
     for mut line in input.lines() {
-        let mut directions = Vec::new();
+        let mut pos: Pos = (r32(0.0), r32(0.0));
 
         while !line.is_empty() {
             let (dir, remaining) = Direction::parse(line);
 
-            directions.push(dir);
+            pos = match dir {
+                Direction::East => (pos.0 + 1.0, pos.1),
+                Direction::SouthEast => (pos.0 + 0.5, pos.1 - 0.5),
+                Direction::SouthWest => (pos.0 - 0.5, pos.1 - 0.5),
+                Direction::West => (pos.0 - 1.0, pos.1),
+                Direction::NorthWest => (pos.0 - 0.5, pos.1 + 0.5),
+                Direction::NorthEast => (pos.0 + 0.5, pos.1 + 0.5),
+            };
+
             line = remaining;
         }
 
-        let (x, y) = directions.iter().fold((0.0, 0.0), |(x, y), dir| match dir {
-            Direction::East => (x + 1.0, y),
-            Direction::SouthEast => (x + 0.5, y - 0.5),
-            Direction::SouthWest => (x - 0.5, y - 0.5),
-            Direction::West => (x - 1.0, y),
-            Direction::NorthWest => (x - 0.5, y + 0.5),
-            Direction::NorthEast => (x + 0.5, y + 0.5),
-        });
-
-        tiles.entry((r32(x), r32(y))).or_insert(Tile::White).flip();
+        if tiles.contains(&pos) {
+            tiles.remove(&pos);
+        } else {
+            tiles.insert(pos);
+        }
     }
 
     tiles
@@ -85,7 +73,7 @@ fn parse_input(input: &str) -> HashMap<Pos, Tile> {
 fn solve_part1(input: &str) -> usize {
     let tiles = parse_input(input);
 
-    tiles.values().filter(|&&tile| tile == Tile::Black).count()
+    tiles.len()
 }
 
 #[aoc(day24, part2)]
