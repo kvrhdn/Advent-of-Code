@@ -1,8 +1,25 @@
 use aoc_runner_derive::aoc;
-use noisy_float::prelude::*;
-use std::collections::HashSet;
+use std::{collections::HashSet, ops::Add};
 
-type Pos = (R32, R32);
+/// A position in the a hex grid, following the doubled coordinates approach.
+/// For a position to be valid, `col + row % 2 == 0` should be true.
+/// Source: https://www.redblobgames.com/grids/hexagons/#coordinates-doubled
+#[derive(Copy, Clone, Eq, Hash, PartialEq)]
+struct Pos {
+    col: i32,
+    row: i32,
+}
+
+impl Add<Pos> for Pos {
+    type Output = Pos;
+
+    fn add(self, rhs: Pos) -> Self::Output {
+        Pos {
+            col: self.col + rhs.col,
+            row: self.row + rhs.row,
+        }
+    }
+}
 
 #[derive(Debug)]
 enum Direction {
@@ -36,94 +53,109 @@ impl Direction {
         }
         panic!("unrecognized direction: {}", s);
     }
+
+    /// Returns a relative position corresponding to this direction.
+    fn as_relative_pos(&self) -> Pos {
+        match self {
+            Direction::East => Pos { col: 2, row: 0 },
+            Direction::West => Pos { col: -2, row: 0 },
+            Direction::NorthEast => Pos { col: 1, row: -1 },
+            Direction::SouthEast => Pos { col: 1, row: 1 },
+            Direction::NorthWest => Pos { col: -1, row: -1 },
+            Direction::SouthWest => Pos { col: -1, row: 1 },
+        }
+    }
 }
 
 fn parse_input(input: &str) -> HashSet<Pos> {
-    let mut tiles = HashSet::new();
+    let mut black_tiles = HashSet::new();
 
     for mut line in input.lines() {
-        let mut pos: Pos = (r32(0.0), r32(0.0));
+        let mut pos: Pos = Pos { col: 0, row: 0 };
 
         while !line.is_empty() {
             let (dir, remaining) = Direction::parse(line);
 
-            pos = match dir {
-                Direction::East => (pos.0 + 1.0, pos.1),
-                Direction::SouthEast => (pos.0 + 0.5, pos.1 - 0.5),
-                Direction::SouthWest => (pos.0 - 0.5, pos.1 - 0.5),
-                Direction::West => (pos.0 - 1.0, pos.1),
-                Direction::NorthWest => (pos.0 - 0.5, pos.1 + 0.5),
-                Direction::NorthEast => (pos.0 + 0.5, pos.1 + 0.5),
-            };
-
+            pos = pos + dir.as_relative_pos();
             line = remaining;
         }
 
-        if tiles.contains(&pos) {
-            tiles.remove(&pos);
+        if black_tiles.contains(&pos) {
+            black_tiles.remove(&pos);
         } else {
-            tiles.insert(pos);
+            black_tiles.insert(pos);
         }
     }
 
-    tiles
+    black_tiles
 }
 
 #[aoc(day24, part1)]
 fn solve_part1(input: &str) -> usize {
-    let tiles = parse_input(input);
+    let black_tiles = parse_input(input);
 
-    tiles.len()
+    black_tiles.len()
 }
 
 #[aoc(day24, part2)]
 fn solve_part2(input: &str) -> usize {
-    let mut tiles = parse_input(input);
+    let mut black_tiles = parse_input(input);
 
-    let count_neighbors = |tiles: &HashSet<Pos>, pos: Pos| -> u32 {
-        tiles.contains(&(pos.0 + 1.0, pos.1)) as u32
-            + tiles.contains(&(pos.0 + 0.5, pos.1 - 0.5)) as u32
-            + tiles.contains(&(pos.0 - 0.5, pos.1 - 0.5)) as u32
-            + tiles.contains(&(pos.0 - 1.0, pos.1)) as u32
-            + tiles.contains(&(pos.0 - 0.5, pos.1 + 0.5)) as u32
-            + tiles.contains(&(pos.0 + 0.5, pos.1 + 0.5)) as u32
+    let count_neighbors = |tiles: &HashSet<Pos>, pos: &Pos| -> usize {
+        vec![
+            Direction::East,
+            Direction::West,
+            Direction::NorthEast,
+            Direction::NorthWest,
+            Direction::SouthEast,
+            Direction::SouthWest,
+        ]
+        .into_iter()
+        .map(|dir| *pos + dir.as_relative_pos())
+        .filter(|pos| tiles.contains(pos))
+        .count()
     };
 
     for _ in 0..100 {
         let mut new_tiles = HashSet::new();
 
-        let (min_x, max_x, min_y, max_y): (R32, R32, R32, R32) = tiles.iter().fold(
-            (r32(0.0), r32(0.0), r32(0.0), r32(0.0)),
-            |(min_x, max_x, min_y, max_y), &(x, y)| {
-                (min_x.min(x), max_x.max(x), min_y.min(y), max_y.max(y))
-            },
-        );
+        let (min_col, max_col, min_row, max_row) =
+            black_tiles
+                .iter()
+                .fold((0, 0, 0, 0), |(min_col, max_col, min_row, max_row), pos| {
+                    (
+                        min_col.min(pos.col),
+                        max_col.max(pos.col),
+                        min_row.min(pos.row),
+                        max_row.max(pos.row),
+                    )
+                });
 
-        let mut y = min_y - 1.0f32;
-        while y < max_y + 1.0 {
-            let mut x = min_x - 1.0f32;
-
-            while x < max_x + 1.0 {
-                let n = count_neighbors(&tiles, (x, y));
-                let is_black = tiles.contains(&(x, y));
-
-                if is_black && (n == 1 || n == 2) {
-                    new_tiles.insert((x, y));
-                }
-                if !is_black && n == 2 {
-                    new_tiles.insert((x, y));
-                }
-
-                x += 0.5;
+        for row in min_row - 1..=max_row + 1 {
+            let mut start_col = min_col;
+            if (row + start_col) % 2 != 0 {
+                start_col += 1;
             }
 
-            y += 0.5;
+            for col in (start_col - 2..=max_col + 2).step_by(2) {
+                let pos = Pos { col, row };
+
+                let n = count_neighbors(&black_tiles, &pos);
+                let is_black = black_tiles.contains(&pos);
+
+                if is_black && (n == 1 || n == 2) {
+                    new_tiles.insert(pos);
+                }
+                if !is_black && n == 2 {
+                    new_tiles.insert(pos);
+                }
+            }
         }
 
-        tiles = new_tiles;
+        black_tiles = new_tiles;
     }
 
-    tiles.len()
+    black_tiles.len()
 }
 
 #[cfg(test)]
