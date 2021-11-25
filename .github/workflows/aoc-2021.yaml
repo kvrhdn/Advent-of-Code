@@ -1,0 +1,35 @@
+name: AoC 2021
+
+on:
+  push:
+    paths:
+    - 'advent-of-code-2021/**'
+
+defaults:
+  run:
+    working-directory: advent-of-code-2021
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+
+    env:
+      OTEL_EXPORTER_OTLP_ENDPOINT: tempo-us-central-0.grafana.net:443
+      OTEL_EXPORTER_OTLP_HEADERS: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS }}
+      OTEL_RESOURCE_ATTRIBUTES: ci=true
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - run: make install-gotip
+
+      - run: gotip build
+
+      - run: gotip test -v ./...
+
+      - run: gotip run .
