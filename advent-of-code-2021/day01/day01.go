@@ -2,26 +2,18 @@ package day01
 
 import (
 	"context"
-	"strconv"
-	"strings"
 
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/aoc"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/shared/ints"
 )
 
 var Solution = aoc.NewDayGen(generator, part1, part2)
 
-func generator(ctx context.Context, input string) (ints []int, err error) {
-	for _, line := range strings.Split(input, "\n") {
-		i, err := strconv.Atoi(line)
-		if err != nil {
-			return nil, err
-		}
-		ints = append(ints, i)
-	}
-	return
+func generator(ctx context.Context, input string) ([]int, error) {
+	return ints.Parse(input)
 }
 
-func part1(ctx context.Context, input []int) (string, error) {
+func part1(ctx context.Context, input []int) (interface{}, error) {
 	increases := 0
 
 	prevDepth := input[0]
@@ -32,27 +24,20 @@ func part1(ctx context.Context, input []int) (string, error) {
 		prevDepth = depth
 	}
 
-	return strconv.Itoa(increases), nil
+	return increases, nil
 }
 
-func part2(ctx context.Context, input []int) (string, error) {
+func part2(ctx context.Context, input []int) (interface{}, error) {
 	increases := 0
 
-	prevDepth := sum(input[0:3])
-	for i := range input[1 : len(input)-1] {
-		depth := sum(input[i : i+3])
+	prevDepth := ints.Sum(input[0:3])
+	ints.Windows(input[1:], 3, func(window []int) {
+		depth := ints.Sum(window)
 		if depth > prevDepth {
 			increases += 1
 		}
 		prevDepth = depth
-	}
+	})
 
-	return strconv.Itoa(increases), nil
-}
-
-func sum(slice []int) (sum int) {
-	for _, s := range slice {
-		sum += s
-	}
-	return
+	return increases, nil
 }
