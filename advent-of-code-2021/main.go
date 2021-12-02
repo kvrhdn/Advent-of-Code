@@ -8,6 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/aoc"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day01"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day02"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -23,7 +24,8 @@ func main() {
 
 	shutdown, err := setupTracing(ctx)
 	if err != nil {
-		exitWithError(err)
+		_, _ = fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+		return
 	}
 	defer shutdown()
 
@@ -33,17 +35,14 @@ func main() {
 	config := aoc.Configuration{
 		Days: map[int]aoc.Day{
 			1: day01.Solution,
+			2: day02.Solution,
 		},
 	}
 	err = config.Run(ctx)
 	if err != nil {
-		exitWithError(err)
+		_, _ = fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+		return
 	}
-}
-
-func exitWithError(err error) {
-	_, _ = fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-	os.Exit(1)
 }
 
 func setupTracing(ctx context.Context) (func(), error) {

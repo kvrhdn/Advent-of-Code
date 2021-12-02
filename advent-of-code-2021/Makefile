@@ -1,4 +1,10 @@
-.PHONY: tidy install-gotip
+.PHONY: run test tidy install-gotip
+
+run:
+	gotip run .
+
+test:
+	gotip test ./...
 
 tidy:
 	gotip fmt ./...
