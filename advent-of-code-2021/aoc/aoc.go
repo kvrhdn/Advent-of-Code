@@ -20,7 +20,7 @@ func (c *Configuration) Run(ctx context.Context) error {
 	part := flag.Int("p", 0, "The part to run (1 or 2), runs both if omitted")
 	flag.Parse()
 
-	fmt.Printf("Advent of Code %d\n\n", year)
+	fmt.Printf("Advent of Code %d\n", year)
 
 	if *day == 0 {
 		for _, day := range c.daysSorted() {

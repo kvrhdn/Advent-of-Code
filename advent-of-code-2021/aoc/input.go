@@ -39,7 +39,7 @@ func downloadInput(ctx context.Context, day int, dest string) error {
 	ctx, span := otel.Tracer("").Start(ctx, fmt.Sprintf("downloading input day %d", day))
 	defer span.End()
 
-	fmt.Printf("Input for day %d does not exist, downloading...\n\n", day)
+	fmt.Printf("Input for day %d does not exist, downloading...\n", day)
 
 	session := os.Getenv("AOC_SESSION")
 	if session == "" {

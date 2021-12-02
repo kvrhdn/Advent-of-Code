@@ -37,12 +37,12 @@ func (s *dayImpl[T]) run(ctx context.Context, day, part int) error {
 	ctx, span := otel.Tracer("").Start(ctx, fmt.Sprintf("day %d", day))
 	defer span.End()
 
+	fmt.Printf("\nDay %d\n", day)
+
 	input, err := readInput(ctx, day)
 	if err != nil {
 		return fmt.Errorf("could not read input for day %d: %w", day, err)
 	}
-
-	fmt.Printf("Day %d\n", day)
 
 	gen, err := s.runGenerator(ctx, input)
 	if err != nil {
@@ -97,7 +97,7 @@ func (s *dayImpl[T]) runSolver(ctx context.Context, part int, input T) error {
 	var output interface{}
 	defer func() {
 		fmt.Printf("- Part %d    [%s]\n", part, time.Since(start))
-		fmt.Printf("%s\n", output)
+		fmt.Printf("%v\n", output)
 	}()
 
 	output, err := solver(ctx, input)
