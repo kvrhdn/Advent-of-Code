@@ -2,12 +2,13 @@ package ints
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParse(t *testing.T) {
+func TestParseLines(t *testing.T) {
 	tests := []struct {
 		str    string
 		output []int
@@ -21,14 +22,56 @@ func TestParse(t *testing.T) {
 			str: "123\n\n456",
 			err: true,
 		},
+	}
+	for _, test := range tests {
+		t.Run(test.str, func(t *testing.T) {
+			output, err := ParseLines(test.str)
+
+			if test.err {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, output, test.output)
+			}
+		})
+	}
+}
+
+func TestParse(t *testing.T) {
+	tests := []struct {
+		str     string
+		splitFn func(string) []string
+		output  []int
+		err     bool
+	}{
 		{
-			str: "123\n0.1",
+			str:     "123 456   0\t-123",
+			splitFn: strings.Fields,
+			output:  []int{123, 456, 0, -123},
+		},
+		{
+			str: "123\n\n456",
+			splitFn: func(s string) []string {
+				return strings.Split(s, "\n\n")
+			},
+			output: []int{123, 456},
+		},
+		{
+			str: "123\n\n456",
+			splitFn: func(s string) []string {
+				return strings.Split(s, "\n")
+			},
 			err: true,
+		},
+		{
+			str:     "123 0.1",
+			splitFn: strings.Fields,
+			err:     true,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.str, func(t *testing.T) {
-			output, err := Parse(test.str)
+			output, err := Parse(test.str, test.splitFn)
 
 			if test.err {
 				assert.Error(t, err)

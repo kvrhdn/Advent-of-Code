@@ -10,7 +10,7 @@ import (
 var Solution = aoc.NewDayGen(generator, part1, part2)
 
 func generator(ctx context.Context, input string) ([]int, error) {
-	return ints.Parse(input)
+	return ints.ParseLines(input)
 }
 
 func part1(ctx context.Context, input []int) (interface{}, error) {

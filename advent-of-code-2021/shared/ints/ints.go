@@ -6,9 +6,15 @@ import (
 	"strings"
 )
 
-func Parse(s string) ([]int, error) {
+func ParseLines(s string) ([]int, error) {
+	return Parse(s, func(s string) []string {
+		return strings.Split(s, "\n")
+	})
+}
+
+func Parse(s string, splitFn func(string) []string) ([]int, error) {
 	var ints []int
-	for _, line := range strings.Split(s, "\n") {
+	for _, line := range splitFn(s) {
 		i, err := strconv.Atoi(line)
 		if err != nil {
 			return nil, err

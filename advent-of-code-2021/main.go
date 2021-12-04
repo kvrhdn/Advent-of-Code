@@ -10,6 +10,7 @@ import (
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day01"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day02"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day03"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day04"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -38,6 +39,7 @@ func main() {
 			1: day01.Solution,
 			2: day02.Solution,
 			3: day03.Solution,
+			4: day04.Solution,
 		},
 	}
 	err = config.Run(ctx)
