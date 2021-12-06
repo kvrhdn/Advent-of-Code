@@ -6,6 +6,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCopy(t *testing.T) {
+	originalSlice := []int{1, 2, 3}
+
+	newSlice := Copy(originalSlice)
+	assert.Equal(t, originalSlice, newSlice)
+
+	newSlice[0] += 5
+	assert.Equal(t, 1, originalSlice[0])
+
+	originalSlice[2] += 5
+	assert.Equal(t, 3, newSlice[2])
+}
+
 func TestFilter(t *testing.T) {
 	outputInt := Filter([]int{1, 2, 3, 4, 5}, func(i int) bool {
 		return i%2 == 0
