@@ -15,3 +15,11 @@ func Filter[T any](slice []T, filter func(T) bool) []T {
 	}
 	return filteredSlice
 }
+
+func Sum[T any](slice []T, fn func(T) int) int {
+	sum := 0
+	for _, t := range slice {
+		sum += fn(t)
+	}
+	return sum
+}

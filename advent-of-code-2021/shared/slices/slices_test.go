@@ -30,3 +30,13 @@ func TestFilter(t *testing.T) {
 	})
 	assert.Equal(t, []string{"bar", "bzz"}, outputString)
 }
+
+func TestSum(t *testing.T) {
+	assert.Equal(t, 6, Sum([]int{1, 2, 3}, func(i int) int {
+		return i
+	}))
+
+	assert.Equal(t, 6, Sum([]string{"a", "ab", "abc"}, func(s string) int {
+		return len(s)
+	}))
+}
