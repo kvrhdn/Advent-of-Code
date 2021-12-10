@@ -16,6 +16,7 @@ import (
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day07"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day08"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day09"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day10"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -41,15 +42,16 @@ func main() {
 
 	config := aoc.Configuration{
 		Days: map[int]aoc.Day{
-			1: day01.Solution,
-			2: day02.Solution,
-			3: day03.Solution,
-			4: day04.Solution,
-			5: day05.Solution,
-			6: day06.Solution,
-			7: day07.Solution,
-			8: day08.Solution,
-			9: day09.Solution,
+			1:  day01.Solution,
+			2:  day02.Solution,
+			3:  day03.Solution,
+			4:  day04.Solution,
+			5:  day05.Solution,
+			6:  day06.Solution,
+			7:  day07.Solution,
+			8:  day08.Solution,
+			9:  day09.Solution,
+			10: day10.Solution,
 		},
 	}
 	err = config.Run(ctx)
