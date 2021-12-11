@@ -6,6 +6,13 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/sdk/resource"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
+	"google.golang.org/grpc/credentials"
+
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/aoc"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day01"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day02"
@@ -17,12 +24,7 @@ import (
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day08"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day09"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day10"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
-	"go.opentelemetry.io/otel/sdk/resource"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
-	"google.golang.org/grpc/credentials"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day11"
 )
 
 func main() {
@@ -52,6 +54,7 @@ func main() {
 			8:  day08.Solution,
 			9:  day09.Solution,
 			10: day10.Solution,
+			11: day11.Solution,
 		},
 	}
 	err = config.Run(ctx)
