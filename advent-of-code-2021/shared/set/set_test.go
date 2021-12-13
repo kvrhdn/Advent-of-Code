@@ -11,11 +11,41 @@ func TestSet(t *testing.T) {
 
 	assert.False(t, set.Contains("foo"))
 	assert.False(t, set.Contains("bar"))
+	assert.Equal(t, 0, set.Len())
 
 	set.Add("foo")
 
 	assert.True(t, set.Contains("foo"))
 	assert.False(t, set.Contains("bar"))
+	assert.Equal(t, 1, set.Len())
+
+	set.Remove("bar")
+
+	assert.True(t, set.Contains("foo"))
+	assert.False(t, set.Contains("bar"))
+	assert.Equal(t, 1, set.Len())
+
+	set.Remove("foo")
+
+	assert.False(t, set.Contains("foo"))
+	assert.False(t, set.Contains("bar"))
+	assert.Equal(t, 0, set.Len())
+}
+
+func TestSet_Range(t *testing.T) {
+	set := New[string]()
+
+	set.Add("foo")
+	set.Add("bar")
+	set.Add("bzz")
+	set.Remove("bar")
+
+	var visited []string
+	for _, value := range set.Values() {
+		visited = append(visited, value)
+	}
+
+	assert.ElementsMatch(t, []string{"foo", "bzz"}, visited)
 }
 
 func TestSet_Copy(t *testing.T) {
