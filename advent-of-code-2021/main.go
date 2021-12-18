@@ -31,6 +31,7 @@ import (
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day15"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day16"
 	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day17"
+	"github.com/kvrhdn/advent-of-code/advent-of-code-2021/day18"
 )
 
 func main() {
@@ -67,6 +68,7 @@ func main() {
 			15: day15.Solution,
 			16: day16.Solution,
 			17: day17.Solution,
+			18: day18.Solution,
 		},
 	}
 	err = config.Run(ctx)
