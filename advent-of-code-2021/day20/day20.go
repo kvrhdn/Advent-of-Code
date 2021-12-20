@@ -128,7 +128,7 @@ func (i image) TrimmedBorder() image {
 
 	new := image{grid: make(map[vec2]bool)}
 
-	// assumption: a border will show up as a band of pixels with the thickness size on every side
+	// assumption: a border will show up as a band of pixels with the same thickness on every side
 	borderThickness := 0
 	// iterate from left to right until we find a not lit pixel (= the border has stopped)
 	middleY := (minY + maxY) / 2
