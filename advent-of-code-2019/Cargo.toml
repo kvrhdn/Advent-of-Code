@@ -15,5 +15,5 @@ num = "0.3"
 num-derive = "0.3"
 num-traits = "0.2"
 noisy_float="0.1"
-regex = "1.4"
+regex = "1.5"
 
